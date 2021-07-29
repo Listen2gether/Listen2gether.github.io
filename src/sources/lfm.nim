@@ -1,6 +1,6 @@
 import asyncdispatch, options, json, strutils
 include lastfm
-import lastfm/[user, track]
+include lastfm/[track, user]
 include utils
 import ../types
 
@@ -28,7 +28,7 @@ func newFMTrack*(
   artist, album: FMObject,
   mbid, name, url: string,
   streamable: bool,
-  attr: Option[Attributes] = none(Attributes)): FMTrack = 
+  attr: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
   new(result)
   result.artist = artist
@@ -41,7 +41,7 @@ func newFMTrack*(
 
 
 func newFMObject*(
-  mbid, text: string): FMObject = 
+  mbid, text: string): FMObject =
   ## Create new `FMObject` object
   new(result)
   result.mbid = mbid
@@ -69,7 +69,7 @@ func newScrobble*(
   result.duration = duration
 
 
-proc to*(fmTrack: FMTrack): Track = 
+proc to*(fmTrack: FMTrack): Track =
   ## Convert an `FMTrack` to a `Track`
   result = newTrack(trackName = fmTrack.name,
                     artistName = fmTrack.artist.text,
@@ -79,7 +79,7 @@ proc to*(fmTrack: FMTrack): Track =
                     artistMbids = some(@[fmTrack.artist.mbid]))
 
 
-proc to*(scrobble: Scrobble): Track = 
+proc to*(scrobble: Scrobble): Track =
   ## Convert an `Scrobble` to a `Track`
   result = newTrack(trackName = scrobble.track,
                     artistName = scrobble.artist,
@@ -105,27 +105,27 @@ proc getRecentTracks*(
     echo "User has no recent tracks!"
 
 
-proc setNowPlaying*(
+proc setNowPlayingTrack*(
   fm: SyncLastFM | AsyncLastFM,
-  scrob: Scrobble): Future[JsonNode] {.multisync.} =
+  scrobble: Scrobble): Future[JsonNode] {.multisync.} =
   ## Sets the current playing track on Last.FM
-  result = await fm.setNowPlaying(track = scrob.track,
-                                  artist = scrob.artist,
-                                  album = scrob.album,
-                                  mbid = scrob.mbid,
-                                  albumArtist = scrob.albumArtist,
-                                  trackNumber = scrob.trackNumber,
-                                  duration = scrob.duration)
+  result = await fm.setNowPlaying(track = scrobble.track,
+                                  artist = scrobble.artist,
+                                  album = scrobble.album,
+                                  mbid = scrobble.mbid,
+                                  albumArtist = scrobble.albumArtist,
+                                  trackNumber = scrobble.trackNumber,
+                                  duration = scrobble.duration)
 
 
 proc scrobbleTrack*(
   fm: SyncLastFM | AsyncLastFM,
-  scrob: Scrobble): Future[JsonNode] {.multisync.} = 
+  scrob: Scrobble): Future[JsonNode] {.multisync.} =
   ## Scrobble a track to Last.FM
   result = await fm.scrobble(track = scrob.track,
-                              artist = scrob.artist,
-                              album = scrob.album,
-                              mbid = scrob.mbid,
-                              albumArtist = scrob.albumArtist,
-                              trackNumber = scrob.trackNumber,
-                              duration = scrob.duration)
+                             artist = scrob.artist,
+                             album = scrob.album,
+                             mbid = scrob.mbid,
+                             albumArtist = scrob.albumArtist,
+                             trackNumber = scrob.trackNumber,
+                             duration = scrob.duration)
