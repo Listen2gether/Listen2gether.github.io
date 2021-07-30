@@ -65,7 +65,7 @@ main {
   bottom: 0;
   background-color: #FFFFFF;
   border: .01rem solid #000000;
-  border-radius: 34px; /* 34px */
+  border-radius: 34px;
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -73,10 +73,10 @@ main {
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px; /* 26px */
-  width: 26px; /* 26px */
-  left: 4px; /* 4px */
-  bottom: 3px; /* 4px */
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 3px;
   background-color: #EB743B;
   border-radius: 50%;
   -webkit-transition: .4s;
@@ -88,7 +88,7 @@ input:checked + .slider:before {
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px /* 1px */ black;
+  box-shadow: 0 0 1px  black;
 }
 
 input:checked + .slider:before {
