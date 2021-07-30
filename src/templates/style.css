@@ -72,18 +72,24 @@ main {
 
 .slider:before {
   position: absolute;
-  content: "";
+  display: block;
+  content: '';
+  background-image: url(assets/listenbrainz-logo.svg);
+  background-size: 22px 22px;
+  background-position: 2px;
+  background-repeat: no-repeat;
   height: 26px;
   width: 26px;
   left: 4px;
   bottom: 3px;
-  background-color: #EB743B;
+  background-color: #FFB084;
   border-radius: 50%;
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .slider:before {
+  background-image: url(assets/lastfm-logo.svg);
   background-color: #FF4545;
 }
 
