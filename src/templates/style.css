@@ -25,7 +25,7 @@ header {
 
 main {
   display: flex;
-  width: 21.5em;
+  width: 22em;
   justify-content: space-between;
   margin: 10% auto auto auto;
   border: .01rem solid #000000;
@@ -46,8 +46,8 @@ main {
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 3.75em; /* 60px */
+  height: 2.125em; /* 34px */
 }
 
 .switch input {
@@ -65,7 +65,7 @@ main {
   bottom: 0;
   background-color: #FFFFFF;
   border: .01rem solid #000000;
-  border-radius: 34px;
+  border-radius: 2.125em; /* 34px */
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -75,13 +75,13 @@ main {
   display: block;
   content: '';
   background-image: url(assets/listenbrainz-logo.svg);
-  background-size: 20px 20px;
-  background-position: 3px;
+  background-size: 1.25em 1.25em; /* 20px 20px */
+  background-position: 0.1875em; /* 3px */
   background-repeat: no-repeat;
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 2px;
+  height: 1.625em; /* 26px */
+  width: 1.625em; /* 26px */
+  left: 0.2em; /* 4px */
+  bottom: 0.15em; /* 4px */
   background-color: #FFB084;
   border: .01rem solid #000000;
   border-radius: 50%;
@@ -95,13 +95,13 @@ input:checked + .slider:before {
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px  black;
+  box-shadow: 0 0 0.0625em /* 1px */  black;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(24px);
-  -ms-transform: translateX(24px);
-  transform: translateX(24px);
+  -webkit-transform: translateX(1.55em);
+  -ms-transform: translateX(1.55em);
+  transform: translateX(1.55em);
 }
 
 footer {
