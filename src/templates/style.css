@@ -23,6 +23,10 @@ header {
   color: #000000;
 }
 
+header > a, header > a:visited {
+  color: #000000;
+}
+
 main {
   display: flex;
   width: 22em;
