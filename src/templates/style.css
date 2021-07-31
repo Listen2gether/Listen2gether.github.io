@@ -17,7 +17,7 @@ header {
   padding: 2.5% 0% 1% 0%;
   border: .01rem solid #CCCCCC;
   box-sizing: border-box;
-  font: normal 3em Inter, sans-serif;
+  font: normal 4em Inter, sans-serif;
   font-weight: 600;
   text-align: center;
   color: #000000;
@@ -105,6 +105,9 @@ input:checked + .slider:before {
 }
 
 footer {
+  padding: 2% 0% 0% 0%;
+  border: .01rem solid #CCCCCC;
+  box-sizing: border-box;
   text-align: center;
 }
 
