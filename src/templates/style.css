@@ -18,7 +18,7 @@ header {
   padding: 2.5% 0% 1% 0%;
   border: 0.01rem solid #cccccc;
   box-sizing: border-box;
-  font: normal 4em Inter, sans-serif;
+  font: normal 3em Inter, sans-serif;
   font-weight: 600;
   text-align: center;
   color: #000000;
@@ -31,8 +31,8 @@ header > a:visited {
 
 main > div {
   display: flex;
-  width: 23em;
   justify-content: space-between;
+  max-width: 20em;
   margin: auto auto auto auto;
   border: 0.01rem solid #000000;
   border-radius: 2rem;
@@ -46,7 +46,12 @@ main > div {
 }
 
 #token {
-  margin: 2% auto auto auto;
+  margin: 2.5% auto auto auto;
+}
+
+input {
+  min-width: 14em;
+
 }
 
 .textbox {
