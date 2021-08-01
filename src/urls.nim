@@ -1,7 +1,7 @@
 import prologue
 
-import ./views
+import views
 
 const urlPatterns* = @[
-  pattern("/home", home),
+  pattern("/", home),
 ]
