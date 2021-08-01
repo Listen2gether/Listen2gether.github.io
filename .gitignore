@@ -9,3 +9,4 @@ htmldocs/
 keys.json
 .vscode/
 *.db
+src/templates/*.js
