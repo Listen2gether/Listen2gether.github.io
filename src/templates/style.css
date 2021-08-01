@@ -29,6 +29,10 @@ header > a:visited {
   color: #000000;
 }
 
+a > span {
+  color: #FF4545;
+}
+
 main > div {
   display: flex;
   justify-content: space-between;
@@ -47,6 +51,7 @@ main > div {
 
 #token {
   margin: 2.5% auto auto auto;
+  display: none;
 }
 
 input {
