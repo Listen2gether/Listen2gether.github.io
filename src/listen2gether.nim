@@ -5,7 +5,7 @@ import sources/[lb, lfm]
 import prologue
 import prologue/middlewares/utils
 import prologue/middlewares/staticfile
-import ./routes/urls
+import urls
 
 when isMainModule:
   # let
@@ -20,17 +20,12 @@ when isMainModule:
   #   listenSubmission = syncListenBrainz.listenTrack(listenPayload, listenType="single")
   # #db.insertListen(listenPayload.listens[0])
 
-  let
-    env = loadPrologueEnv(".env")
-    settings = newSettings(appName = env.getOrDefault("appName", "Prologue"),
-                  debug = env.getOrDefault("debug", true),
-                  port = Port(env.getOrDefault("port", 8888)),
-                  secretKey = env.getOrDefault("secretKey", "a")
-      )
-
+  let settings = newSettings(appName = "Listen2gether",
+                             debug = true,
+                             port = Port(8080))
   var app = newApp(settings = settings)
 
-  app.use(staticFileMiddleware(env.getOrDefault("staticDir", "static")))
+  app.use(staticFileMiddleware("templates"))
   app.use(debugRequestMiddleware())
   app.addRoute(urls.urlPatterns, "")
   app.run()
