@@ -37,7 +37,7 @@ main > div {
   border: 0.01rem solid #000000;
   border-radius: 2rem;
   box-sizing: border-box;
-  box-shadow: 0em 0.2em 0.2em /* 0px 4px 4px */ rgba(0, 0, 0, 0.25);
+  box-shadow: 0em 0.2em 0.2em rgba(0, 0, 0, 0.25);
   padding: 0.4rem 0.5rem 0.4rem 1rem;
 }
 
@@ -61,8 +61,8 @@ main > div {
 .switch {
   position: relative;
   display: inline-block;
-  width: 3.75em; /* 60px */
-  height: 2.125em; /* 34px */
+  width: 3.75em;
+  height: 2.125em;
 }
 
 .switch input {
@@ -80,7 +80,7 @@ main > div {
   bottom: 0;
   background-color: #ffffff;
   border: 0.01rem solid #000000;
-  border-radius: 2.125em; /* 34px */
+  border-radius: 2.125em;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -90,13 +90,13 @@ main > div {
   display: block;
   content: "";
   background-image: url(assets/listenbrainz-logo.svg);
-  background-size: 1.25em 1.25em; /* 20px 20px */
-  background-position: 0.1875em; /* 3px */
+  background-size: 1.25em 1.25em;
+  background-position: 0.1875em;
   background-repeat: no-repeat;
-  height: 1.625em; /* 26px */
-  width: 1.625em; /* 26px */
-  left: 0.2em; /* 4px */
-  bottom: 0.15em; /* 4px */
+  height: 1.625em;
+  width: 1.625em;
+  left: 0.2em;
+  bottom: 0.15em;
   background-color: #ffb084;
   border: 0.01rem solid #000000;
   border-radius: 50%;
@@ -105,7 +105,7 @@ main > div {
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 0.0625em /* 1px */ black;
+  box-shadow: 0 0 0.0625em black;
 }
 
 input:checked + .slider:before {
@@ -118,6 +118,7 @@ input:checked + .slider:before {
 
 footer {
   padding: 2% 0% 0% 0%;
+  margin: 10% 0% 0% 0%;
   border: 0.01rem solid #cccccc;
   box-sizing: border-box;
   text-align: center;
