@@ -31,7 +31,7 @@ header > a:visited {
 
 main > div {
   display: flex;
-  width: 22em;
+  width: 23em;
   justify-content: space-between;
   margin: auto auto auto auto;
   border: 0.01rem solid #000000;
