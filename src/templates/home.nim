@@ -1,11 +1,11 @@
 include karax / prelude
 import karax / kdom
 
-proc onServiceToggleClick(ev: Event; n: VNode) =
+proc onServiceToggleClick(ev: kdom.Event; n: VNode) =
  if getElementById("service_switch").checked:
   getElementById("token").style.display = "none"
 
-proc onUsernameEnter(ev: Event; n: VNode) =
+proc onUsernameEnter(ev: kdom.Event; n: VNode) =
   if not getElementById("service_switch").checked:
     getElementById("token").style.display = "flex"
 
