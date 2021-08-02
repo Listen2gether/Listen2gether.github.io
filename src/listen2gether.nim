@@ -4,7 +4,7 @@ import prologue/middlewares/staticfile
 
 import sources/[lb, lfm]
 #import models
-import urls
+import routes/urls
 
 # let
 #   #db = openDbConn()
@@ -18,10 +18,9 @@ import urls
 #   listenSubmission = syncListenBrainz.listenTrack(listenPayload, listenType="single")
 # #db.insertListen(listenPayload.listens[0])
 
-let settings = newSettings(appName = "Listen2gether",
-                           debug = true,
-                           port = Port(8080))
-var app = newApp(settings = settings)
+var app = newApp(settings = newSettings(appName = "Listen2gether",
+                                        debug = true,
+                                        port = Port(8080)))
 
 app.use(staticFileMiddleware("templates"))
 app.use(debugRequestMiddleware())
