@@ -3,7 +3,7 @@ import tools
 
 proc makeMain(): Vnode =
   result = buildHtml(main()):
-    tdiv(id = "username")
+    tdiv(class = "mirror-grid")
 
 proc createDom(): VNode =
   result = buildHtml(tdiv(class = "grid")):
