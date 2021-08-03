@@ -18,5 +18,6 @@ requires "jsony"
 requires "https://github.com/disruptek/frosty"
 
 task buildjs, "compile templates":
-  withDir "src":
-    exec "nim js templates/home.nim"
+  withDir "src/templates":
+    exec "nim js home.nim"
+    exec "nim js mirror.nim"
