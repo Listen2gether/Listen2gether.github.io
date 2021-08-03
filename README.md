@@ -1,5 +1,5 @@
 ## Listen2gether
-### sync your listens on [Last.fm](https://last.fm) and [ListenBrainz](https://listenbrainz.org) with other people
+### Sync your listens on [Last.fm](https://last.fm) and [ListenBrainz](https://listenbrainz.org) with other people.
 
 ![Current state of the Figma UI](docs/UIdraft.png)
 
