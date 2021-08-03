@@ -16,3 +16,7 @@ requires "norm"
 requires "prologue"
 requires "jsony"
 requires "https://github.com/disruptek/frosty"
+
+task buildjs, "compile templates":
+  withDir "src":
+    exec "nim js templates/home.nim"
