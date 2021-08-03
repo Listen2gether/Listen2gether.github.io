@@ -3,5 +3,5 @@ import prologue
 import views
 
 const urlPatterns* = @[
-  pattern("/", home),
+  pattern("/home", home),
 ]
