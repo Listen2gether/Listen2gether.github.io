@@ -21,8 +21,7 @@ import routes/urls
 var app = newApp(settings = newSettings(appName = "Listen2gether",
                                         debug = true,
                                         port = Port(8080)))
-
-app.use(staticFileMiddleware("templates"))
+app.use(staticFileMiddleware("src/templates"))
 app.use(debugRequestMiddleware())
 app.addRoute(urls.urlPatterns, "")
 app.run()
