@@ -14,6 +14,12 @@ body {
   grid-template-columns: 100%;
 }
 
+.mirror-grid {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: auto 1fr;
+}
+
 header {
   padding: 2.5% 0% 1% 0%;
   border: 0.01rem solid #cccccc;
@@ -33,7 +39,7 @@ a > span {
   color: #FF4545;
 }
 
-main > div {
+.textbox {
   display: flex;
   justify-content: space-between;
   max-width: 20em;
@@ -56,10 +62,9 @@ main > div {
 
 input {
   min-width: 14em;
-
 }
 
-.textbox {
+.textinput {
   background: none;
   border: none;
   outline: none;
