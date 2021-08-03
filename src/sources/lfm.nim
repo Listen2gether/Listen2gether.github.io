@@ -1,6 +1,7 @@
 import asyncdispatch, options, json, strutils
 include lastfm
-include lastfm/[track, user]
+import lastfm / [track, user]
+import options
 include utils
 import ../types
 

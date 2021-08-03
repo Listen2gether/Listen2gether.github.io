@@ -1,6 +1,6 @@
-import norm/[model, sqlite]
+import norm / [model, sqlite]
 import frosty
-import types, sources/[lfm, lb]
+import types, sources / [lfm, lb]
 
 
 let DBLOCATION = "listen2gether.db"
@@ -52,11 +52,11 @@ proc insertUser*(
 proc insertListen*(
   db: DbConn,
   listen: Listen) =
-  var 
+  var
     trackMetadata = newTrackMetadataTable(freeze(listen.trackMetadata))
     listen = newListenTable(freeze(listen), trackMetadata)
   db.insert(trackMetadata)
   db.insert(listen)
 
 
-#proc getListen*(db: DbConn, ): Listen = 
+#proc getListen*(db: DbConn, ): Listen =
