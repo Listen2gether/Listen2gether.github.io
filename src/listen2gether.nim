@@ -19,9 +19,7 @@ import routes/urls
 # #db.insertListen(listenPayload.listens[0])
 
 var app = newApp(settings = newSettings(appName = "Listen2gether",
-                                        debug = true,
                                         port = Port(8080)))
 app.use(staticFileMiddleware("src/templates"))
-app.use(debugRequestMiddleware())
 app.addRoute(urls.urlPatterns, "")
 app.run()
