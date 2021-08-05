@@ -2,7 +2,7 @@ import karax / [karaxdsl, vdom]
 
 proc makeHeader*(): Vnode =
   result = buildHtml(header()):
-    a(class = "header", href = "home.html"):
+    a(class = "header", href = "/"):
       text "Listen"
       span:
         text "2"
