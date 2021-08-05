@@ -10,5 +10,7 @@ proc makeHeader*(): Vnode =
 
 proc makeFooter*(): Vnode =
   result = buildHtml(footer()):
-    a(href = "https://www.gnu.org/licenses/agpl-3.0.html"):
-      img(src = "src/templates/assets/agpl.svg", class = "icon", alt = "GNU AGPL icon")
+    a(href = "https://www.gnu.org/licenses/agpl-3.0.html", class = "icon"):
+      img(src = "src/templates/assets/agpl.svg", id = "agpl", alt = "GNU AGPL icon")
+    a(href = "https://github.com/Listen2gether/website", class = "icon"):
+      img(src = "src/templates/assets/github-logo.svg", id = "github", alt = "GitHub Repository")

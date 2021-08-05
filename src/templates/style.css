@@ -146,15 +146,23 @@ input:checked + .slider:before {
 }
 
 footer {
-  padding: 2% 0% 0% 0%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5% 0% 1.5% 0%;
   border: 0.01rem solid #cccccc;
   border-top: none;
   box-sizing: border-box;
-  text-align: center;
 }
 
 .icon {
-  display: inline-block;
-  width: 4rem;
-  padding: 1% 0% 1% 0%;
+  margin-right: 1%;
+}
+
+#agpl {
+  width: 5.5rem;
+}
+
+#github {
+  height: 1.25rem;
 }
