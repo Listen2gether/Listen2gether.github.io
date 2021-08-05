@@ -14,12 +14,6 @@ body {
   grid-template-columns: 100%;
 }
 
-.mirror-grid {
-  display: grid;
-  grid-template-rows: 100%;
-  grid-template-columns: auto 1fr;
-}
-
 header {
   padding: 2.5% 0% 1% 0%;
   border: 0.01rem solid #cccccc;
@@ -39,6 +33,13 @@ a > span {
   color: #FF4545;
 }
 
+main {
+}
+
+#login {
+    margin: 5% 0 5% 0;
+}
+
 .textbox {
   display: flex;
   justify-content: space-between;
@@ -52,7 +53,7 @@ a > span {
 }
 
 #username {
-  margin: 10% auto auto auto;
+  /* margin: 10% auto auto auto; */
 }
 
 #token {
@@ -131,9 +132,25 @@ input:checked + .slider:before {
   transform: translateX(1.55em);
 }
 
+.mirror-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  height: 100%;
+}
+
+#chat-container {
+  border-left: 0.01rem solid #cccccc;
+  padding: 2% 2% 2% 2%;
+}
+
+#right-panel {
+  border-left: 0.01rem solid #cccccc;
+  padding: 2% 2% 2% 2%;
+
+}
+
 footer {
   padding: 2% 0% 0% 0%;
-  margin: 10% 0% 0% 0%;
   border: 0.01rem solid #cccccc;
   box-sizing: border-box;
   text-align: center;
