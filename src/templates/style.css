@@ -17,6 +17,7 @@ body {
 header {
   padding: 2.5% 0% 1% 0%;
   border: 0.01rem solid #cccccc;
+  border-bottom: none;
   box-sizing: border-box;
   font: normal 3em Inter, sans-serif;
   font-weight: 600;
@@ -31,6 +32,10 @@ header > a:visited {
 
 a > span {
   color: #FF4545;
+}
+
+main {
+  border: 0.01rem solid #cccccc;
 }
 
 #login {
@@ -132,20 +137,18 @@ input:checked + .slider:before {
 }
 
 #chat-container {
-  border-left: 0.01rem solid #cccccc;
   padding: 2% 2% 2% 2%;
+  border-right: 0.01rem solid #cccccc;
 }
 
 #right-panel {
-  border-left: 0.01rem solid #cccccc;
-  border-right: 0.01rem solid #cccccc;
   padding: 2% 2% 2% 2%;
-
 }
 
 footer {
   padding: 2% 0% 0% 0%;
   border: 0.01rem solid #cccccc;
+  border-top: none;
   box-sizing: border-box;
   text-align: center;
 }
