@@ -136,13 +136,52 @@ input:checked + .slider:before {
   height: 100%;
 }
 
-#chat-container {
-  padding: 2% 2% 2% 2%;
-  border-right: 0.01rem solid #cccccc;
+.listens{
+  padding: 0 27.5% 0 27.5%;
 }
 
-#right-panel {
-  padding: 2% 2% 2% 2%;
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  padding: 1em 1.25em 1em 1.25em;
+  border: 0.01rem solid #000000;
+  border-radius: .5em;
+  box-sizing: border-box;
+  box-shadow: 0em 0.2em 0.2em rgba(0, 0, 0, 0.25);
+  margin: 3%;
+}
+
+#listen-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+#listen-details > span {
+  float: right;
+  font-style: italic;
+}
+
+#track-details > p {
+  margin: 0;
+}
+
+#listening, #listened {
+  width: 1em;
+}
+
+#track-name {
+  padding-bottom: 2.5%;
+}
+
+#artist-name {
+  font-size: .85rem;
 }
 
 footer {
@@ -156,7 +195,7 @@ footer {
 }
 
 .icon {
-  margin-right: 1.25%;
+  margin-right: 1.25em;
 }
 
 #agpl {
