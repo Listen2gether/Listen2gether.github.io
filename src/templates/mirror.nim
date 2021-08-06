@@ -3,6 +3,7 @@ import tools
 
 proc makeMain(): Vnode =
   result = buildHtml(main()):
+    verbatim("<div id = 'mirror'><p>You are mirroring <a href='test'>X</a>!</p></div>")
     tdiv(class = "listens"):
       ul:
         li:

@@ -136,6 +136,15 @@ input:checked + .slider:before {
   height: 100%;
 }
 
+#mirror {
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+#mirror > p > a {
+  font-style: italic;
+}
+
 .listens{
   padding: 0 27.5% 0 27.5%;
 }
