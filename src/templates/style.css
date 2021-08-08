@@ -28,6 +28,7 @@ header {
 header > a,
 header > a:visited {
   color: #000000;
+  text-decoration: none;
 }
 
 a > span {
@@ -146,7 +147,10 @@ input:checked + .slider:before {
 }
 
 .listens{
-  padding: 0 27.5% 0 27.5%;
+  padding: 0 25% 0 25%;
+  max-width: 35em;
+  width: 50%;
+  margin: 0 auto;
 }
 
 ul {
