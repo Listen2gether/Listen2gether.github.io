@@ -19,7 +19,7 @@ header {
   border: 0.01rem solid #cccccc;
   border-bottom: none;
   box-sizing: border-box;
-  font: normal 3.5rem Inter, sans-serif;
+  font: normal 2.5rem Inter, sans-serif;
   font-weight: 600;
   text-align: center;
   color: #000000;
@@ -40,14 +40,14 @@ main {
 }
 
 #login {
-    margin: 5% 0 5% 0;
+    margin: 5% 0;
 }
 
 .textbox {
   display: flex;
   justify-content: space-between;
   max-width: 20em;
-  margin: auto auto auto auto;
+  margin: auto;
   border: 0.01rem solid #000000;
   border-radius: 2rem;
   box-sizing: border-box;
@@ -105,7 +105,7 @@ input {
   display: block;
   content: "";
   background-image: url(assets/listenbrainz-logo.svg);
-  background-size: 1.25em 1.25em;
+  background-size: 1.25em;
   background-position: 0.1875em;
   background-repeat: no-repeat;
   height: 1.625em;
@@ -132,7 +132,7 @@ input:checked + .slider:before {
 }
 
 #token_input {
-  padding: .375em 0rem .375em 0rem;
+  padding: .375em 0rem;
 }
 
 .mirror-grid {
@@ -146,31 +146,43 @@ input:checked + .slider:before {
   text-align: center;
 }
 
+#mirror > p {
+  margin: .5em 0 0 0;
+}
+
 #mirror > p > a {
   font-style: italic;
 }
 
 .listens{
-  padding: 0 25% 0 25%;
-  max-width: 35em;
-  width: 50%;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+
 }
 
 ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
+  min-width: 20em;
+  max-width: 30em;
+  flex-grow: 1;
 }
 
-li {
+.listen {
   display: flex;
   align-items: center;
-  padding: 1em 1.25em 1em 1.25em;
+  margin: 1em 1.25em;
   border: 0.01rem solid #000000;
   border-radius: .5em;
   box-sizing: border-box;
   box-shadow: 0em 0.2em 0.2em rgba(0, 0, 0, 0.25);
-  margin: 3%;
+  padding: .8rem;
+}
+
+.listen > img {
+  height: 1rem;
+  margin-right: .8rem;
 }
 
 #listen-details {
@@ -205,20 +217,17 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5% 0% 1.5% 0%;
+  padding: 1em 0;
   border: 0.01rem solid #cccccc;
   border-top: none;
   box-sizing: border-box;
 }
 
 .icon {
-  margin-right: 1.25em;
+  display: block;
+  height: 1rem;
 }
 
 #agpl {
-  width: 5.25rem;
-}
-
-#github {
-  height: 1.125rem;
+  margin-right: .5rem;
 }
