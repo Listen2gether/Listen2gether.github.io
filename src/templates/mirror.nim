@@ -35,7 +35,7 @@ proc makeMain(): Vnode =
               p(id = "artist-name"): text "Nobue Kawana"
             span: text "24 Jul, 3:58 pm"
         li:
-          img(src = "src/templates/assets/listened.svg", id = "listened", class = "icon")
+          img(src = "src/templates/assets/pre-mirror-listen.svg", id = "listened", class = "icon")
           tdiv(id = "listen-details"):
             tdiv(id = "track-details"):
               p(id = "track-name"): text "Ai No Shizuku"
