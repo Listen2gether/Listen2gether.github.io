@@ -19,7 +19,7 @@ header {
   border: 0.01rem solid #cccccc;
   border-bottom: none;
   box-sizing: border-box;
-  font: normal 3em Inter, sans-serif;
+  font: normal 3.5rem Inter, sans-serif;
   font-weight: 600;
   text-align: center;
   color: #000000;
@@ -129,6 +129,10 @@ input:checked + .slider:before {
   -webkit-transform: translateX(1.55em);
   -ms-transform: translateX(1.55em);
   transform: translateX(1.55em);
+}
+
+#token_input {
+  padding: .375em 0rem .375em 0rem;
 }
 
 .mirror-grid {
