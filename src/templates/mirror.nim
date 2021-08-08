@@ -7,7 +7,7 @@ proc makeMain(): Vnode =
     tdiv(class = "listens"):
       ul:
         li:
-          img(src = "src/templates/assets/listening.gif", id = "scrobble", class = "icon")
+          img(src = "src/templates/assets/listening.svg", id = "scrobble", class = "icon")
           tdiv(id = "listen-details"):
             tdiv(id = "track-details"):
               p(id = "track-name"): text "Ai No Shizuku"
