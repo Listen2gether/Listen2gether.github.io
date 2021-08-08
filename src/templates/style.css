@@ -1,6 +1,6 @@
 html,
 body {
-  font: normal 1rem Inter, sans-serif;
+  font: normal .9rem Inter, sans-serif;
   color: #000000;
   background: #ffffff;
   padding: 0;
@@ -12,6 +12,8 @@ body {
   display: grid;
   grid-template-rows: auto 1fr auto;
   grid-template-columns: 100%;
+  position: relative;
+  margin: auto;
 }
 
 header {
@@ -147,6 +149,7 @@ input:checked + .slider:before {
 }
 
 #mirror > p {
+  font-size: 1.1rem;
   margin: .5em 0 0 0;
 }
 
