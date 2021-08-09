@@ -48,7 +48,7 @@ main {
 .textbox {
   display: flex;
   justify-content: space-between;
-  max-width: 20em;
+  max-width: 21em;
   margin: auto;
   border: 0.01rem solid #000000;
   border-radius: 2rem;
@@ -58,12 +58,12 @@ main {
 }
 
 #token {
-  margin: 2.5% auto auto auto;
+  margin: 1em auto auto auto;
   display: none;
 }
 
 input {
-  min-width: 14em;
+  min-width: 13em;
 }
 
 .textinput {
@@ -134,7 +134,7 @@ input:checked + .slider:before {
 }
 
 #token_input {
-  padding: .375em 0rem;
+  padding: .3rem 0rem;
 }
 
 .mirror-grid {
@@ -150,7 +150,7 @@ input:checked + .slider:before {
 
 #mirror > p {
   font-size: 1.1rem;
-  margin: .5em 0 0 0;
+  margin: 1em 0 0;
 }
 
 #mirror > p > a {
