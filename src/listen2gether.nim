@@ -14,7 +14,7 @@ let
                                     username = "tandy1000")
   mirroredUser = newUser(services = [lastFmUser, listenBrainzUser])
   #syncListenBrainz = newSyncListenBrainz(mirroredUser.services[listenBrainz].token)
-  syncLastFM = newSyncLastFM(sessionKey = mirroredUser.services[lastFm].apiKey)
+  syncLastFM = newSyncLastFM(apiKey = mirroredUser.services[lastFm].apiKey)
 #db.insertTables()
 # syncListenBrainz.validateLbToken(get(clientUser.lbToken))
 #let
