@@ -1,38 +1,62 @@
 import options
 
-type
-  User* = ref object
-    username*: string
-    lfmSessionKey*, lbToken*: Option[string]
-    playingNow*, lastPlayed*: Option[Track]
 
-  Track* = ref object
-    trackName*, artistName*: string
-    releaseName*, recordingMbid*, releaseMbid*: Option[string]
-    artistMbids*: Option[seq[string]]
+type
+  Service* = enum
+    listenBrainz,
+    lastFm
+
+  ServiceUser* = ref object
+    username*: string
+    case service: Service
+    of listenBrainz:
+      token*: string
+    of lastFm:
+      apiKey*, apiSecret*, sessionKey*: string
+
+  User* = ref object
+    services*: array[Service, ServiceUser]
+    playingNow*: Option[Track]
+    listenHistory*: seq[Track]
+
+  Track* = object
+    trackName*, artistName*, releaseName*, recordingMbid*, releaseMbid*: string
+    artistMbids*: seq[string]
     trackNumber*, duration*: Option[int]
 
 
-func newUser*(
+func newServiceUser*(
+  service: Service,
   username: string,
-  lfmSessionKey, lbToken: Option[string] = none(string),
-  playingNow, lastPlayed: Option[Track] = none(Track)): User =
+  token, apiKey, apiSecret, sessionKey: string = ""): ServiceUser =
+  ## Create a new ServiceUser object
+  result = ServiceUser(service: service)
+  result.username = username
+  case service:
+  of listenBrainz:
+    result.token = token
+  of lastFm:
+    result.apiKey = apiKey
+    result.apiSecret = apiSecret
+    result.sessionKey = sessionKey
+
+
+func newUser*(
+  services: array[Service, ServiceUser],
+  playingNow: Option[Track] = none(Track),
+  listenHistory: seq[Track] = @[]): User =
   ## Create new User object
   new(result)
-  result.username = username
-  result.lfmSessionKey = lfmSessionKey
-  result.lbToken = lbToken
+  result.services = services
   result.playingNow = playingNow
-  result.lastPlayed = lastPlayed
+  result.listenHistory = listenHistory
 
 
 func newTrack*(
-  trackName, artistName: string,
-  releaseName, recordingMbid, releaseMbid: Option[string] = none(string),
-  artistMbids: Option[seq[string]] = none(seq[string]),
+  trackName, artistName, releaseName, recordingMbid, releaseMbid: string = "",
+  artistMbids: seq[string] = @[],
   trackNumber, duration: Option[int] = none(int)): Track =
   ## Create new Track object
-  new(result)
   result.trackName = trackName
   result.artistName = artistName
   result.releaseName = releaseName
