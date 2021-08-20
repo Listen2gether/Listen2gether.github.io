@@ -1,6 +1,18 @@
 import options, jsony
 
 
+
+type Node = ref object
+  kind: string
+
+
+proc renameHook*(v: var Node, fieldName: var string) =
+  if fieldName == "@attr":
+    fieldName = "attr"
+  elif fieldName == "#text":
+    fieldName = "text"
+
+
 proc camel2snake*(s: string): string =
   ## CanBeFun => can_be_fun
   ## https://forum.nim-lang.org/t/1701
@@ -53,13 +65,3 @@ proc dumpHook*(s: var string, v: object) =
         s.dumpHook(e)
         inc i
   s.add '}'
-
-
-type Node = ref object
-  kind: string
-
-proc renameHook*(v: var Node, fieldName: var string) =
-  if fieldName == "@attr":
-    fieldName = "attr"
-  elif fieldName == "#text":
-    fieldName = "text"
