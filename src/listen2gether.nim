@@ -8,11 +8,13 @@ import types
 
 let
   #db = openDbConn()
+  lastFmUser = newServiceUser(service = lastFm,
+                              username = "tandy1000")
   listenBrainzUser = newServiceUser(service = listenBrainz,
                                     username = "tandy1000")
-  mirroredUser = newUser(services = [listenBrainzUser])
+  mirroredUser = newUser(services = [lastFmUser, listenBrainzUser])
   #syncListenBrainz = newSyncListenBrainz(mirroredUser.services[listenBrainz].token)
-  # syncLastFM = newSyncLastFM(sessionKey = mirroredUser.services[lastFm].apiKey)
+  syncLastFM = newSyncLastFM(sessionKey = mirroredUser.services[lastFm].apiKey)
 #db.insertTables()
 # syncListenBrainz.validateLbToken(get(clientUser.lbToken))
 #let
