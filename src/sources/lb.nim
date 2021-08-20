@@ -5,37 +5,35 @@ import ../types
 
 
 type
-  SubmissionPayload* = ref object
+  SubmissionPayload* = object
     listenType*: string
     payload*: seq[Listen]
 
-  ListenPayload* = ref object
+  ListenPayload* = object
     count*: int
     latestListenTs*: Option[int64]
     listens*: seq[Listen]
     playingNow*: Option[bool]
     userId*: string
 
-  Listen* = ref object
+  Listen* = object
     listenedAt*: Option[int64]
     trackMetadata*: TrackMetadata
-  
+
   TrackMetadata* = ref object
-    trackName*, artistName*: string
-    releaseName*: Option[string]
+    trackName*, artistName*, releaseName*: string
     additionalInfo*: Option[AdditionalInfo]
-  
+
   AdditionalInfo* = ref object
     tracknumber*: Option[int]
-    trackMbid*, recordingMbid*, releaseGroupMbid*, releaseMbid*, isrc*, spotifyId*, listeningFrom*: Option[string]
-    tags*, artistMbids*, workMbids*: Option[seq[string]]
+    trackMbid*, recordingMbid*, releaseGroupMbid*, releaseMbid*, isrc*, spotifyId*, listeningFrom*: string
+    tags*, artistMbids*, workMbids*: seq[string]
 
 
 func newSubmissionPayload*(
   listenType: string,
   payload: seq[Listen]): SubmissionPayload =
   ## Create new SubmissionPayload object
-  new(result)
   result.listenType = listenType
   result.payload = payload
 
@@ -47,7 +45,6 @@ func newListenPayload*(
   playingNow: Option[bool] = none(bool),
   userId: string): ListenPayload =
   ## Create new ListenPayload object
-  new(result)
   result.count = count
   result.latestListenTs = latestListenTs
   result.listens = listens
@@ -59,17 +56,15 @@ func newListen*(
   listenedAt: Option[int64] = none(int64),
   trackMetadata: TrackMetadata): Listen =
   ## Create new Listen object
-  new(result)
   result.listenedAt = listenedAt
   result.trackMetadata = trackMetadata
 
 
 func newTrackMetadata*(
   trackName, artistName: string,
-  releaseName: Option[string] = none(string),
+  releaseName: string = "",
   additionalInfo: Option[AdditionalInfo] = none(AdditionalInfo)): TrackMetadata =
   ## Create new TrackMetadata object
-  new(result)
   result.trackName = trackName
   result.artistName = artistName
   result.releaseName = releaseName
@@ -78,10 +73,9 @@ func newTrackMetadata*(
 
 func newAdditionalInfo*(
   tracknumber: Option[int] = none(int),
-  trackMbid, recordingMbid, releaseGroupMbid, releaseMbid, isrc, spotifyId, listeningFrom: Option[string] = none(string),
-  tags, artistMbids, workMbids: Option[seq[string]] = none(seq[string])): AdditionalInfo =
+  trackMbid, recordingMbid, releaseGroupMbid, releaseMbid, isrc, spotifyId, listeningFrom: string = "",
+  tags, artistMbids, workMbids: seq[string] = @[]): AdditionalInfo =
   ## Create new Track object
-  new(result)
   result.tracknumber = tracknumber
   result.trackMbid = trackMbid
   result.recordingMbid = recordingMbid
@@ -97,7 +91,7 @@ func newAdditionalInfo*(
 
 proc to*(
   track: Track,
-  listenedAt: Option[int64]): Listen = 
+  listenedAt: Option[int64]): Listen =
   ## Convert a `Track` object to a `Listen` object
   let
     additionalInfo = newAdditionalInfo(tracknumber = track.trackNumber,
@@ -123,6 +117,10 @@ proc to*(listen: Listen): Track =
                     artistMbids = get(listen.trackMetadata.additionalInfo).artistMbids,
                     trackNumber = get(listen.trackMetadata.additionalInfo).trackNumber)
 
+proc to*(listens: seq[Listen]): seq[Track] =
+  ## Convert a sequence of `Listen` objects to a sequence of `Track` objects
+  for listen in listens:
+    result.add(to(listen))
 
 proc to*(
   listenPayload: ListenPayload,
@@ -148,23 +146,22 @@ proc getNowPlaying*(
   user: User) {.multisync.} =
   ## Get a ListenBrainz user's now playing
   let
-    nowPlaying = await lb.getUserPlayingNow(user.username)
+    nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainz].username)
     listen = fromJson($nowPlaying["payload"], ListenPayload)
-  if listen.listens != @[]:
-    user.playingNow = some(to(listen.listens[0]))
+  # if listen.listens.len != 0:
+  #   user.playingNow = to(listen.listens[0])
 
 
 proc getCurrentTrack*(
   lb: SyncListenBrainz | AsyncListenBrainz,
   user: User): Future[ListenPayload] {.multisync.} =
   ## Get a user's last listened track
-  let recentListens = await lb.getUserListens(user.userName, count=1)
-  result = fromJson($recentListens["payload"], ListenPayload)  
-  if result.count == 0:
-    user.lastPlayed = none(Track)
-    raise newException(ValueError, "ERROR: User has no recent listens!")
+  let recentListens = await lb.getUserListens(user.services[listenBrainz].username, count=1)
+  result = fromJson($recentListens["payload"], ListenPayload)
+  if result.count > 0:
+    user.listenHistory = to(result.listens)
   else:
-    user.lastPlayed = some(to(result.listens[0]))
+    raise newException(ValueError, "ERROR: User has no recent listens!")
 
 proc listenTrack*(
   lb: SyncListenBrainz | AsyncListenBrainz,
