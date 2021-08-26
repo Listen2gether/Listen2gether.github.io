@@ -1,4 +1,5 @@
-import options, jsony
+import std/[options, strutils]
+import jsony
 
 
 
@@ -11,6 +12,12 @@ proc renameHook*(v: var Node, fieldName: var string) =
     fieldName = "attr"
   elif fieldName == "#text":
     fieldName = "text"
+
+
+proc parseHook*(s: string, i: var int, v: var bool) =
+  var str: string
+  parseHook(s, i, str)
+  v = parseBool(str)
 
 
 proc camel2snake*(s: string): string =
