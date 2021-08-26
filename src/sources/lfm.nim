@@ -1,6 +1,5 @@
 import asyncdispatch, options, json, strutils
 include lastfm
-import options
 include utils
 import ../types
 
@@ -9,7 +8,6 @@ type
   FMTrack* = object
     artist*, album*: FMObject
     mbid*, name*, url*: string
-    streamable*: bool
     attr: Option[Attributes]
 
   FMObject* = object
@@ -26,7 +24,6 @@ type
 func newFMTrack*(
   artist, album: FMObject,
   mbid, name, url: string,
-  streamable: bool,
   attr: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
   result.artist = artist
@@ -34,7 +31,6 @@ func newFMTrack*(
   result.mbid = mbid
   result.name = name
   result.url = url
-  result.streamable = streamable
   result.attr = attr
 
 
@@ -93,19 +89,23 @@ proc to*(scrobble: Scrobble): Track =
 
 proc getRecentTracks*(
   fm: SyncLastFM | AsyncLastFM,
-  user: User) {.multisync.} =
-  ## Get now playing for a Last.FM user
+  user: User,
+  limit: int = 10) {.multisync.} =
+  ## Get now playing and listen history for a Last.FM user
   let
-    recentTracks = await fm.userRecentTracks(user = user.services[lastFm].username)
-    tracks = recentTracks["track"]
-  echo fromJson($tracks, seq[FMTrack])
-  # if tracks.len == 1:
-  #   user.listenHistory = to(fromJson($tracks[0], FMTrack))
-  # elif tracks.len == 2:
-  #   user.playingNow = some(to(fromJson($tracks[0], FMTrack)))
-  #   user.listenHistory = to(fromJson($tracks[1:], FMTrack))
-  # else:
-  #   echo "User has no recent tracks!"
+    recentTracks = await fm.userRecentTracks(user = user.services[lastFmService].username, limit = limit)
+    tracks = recentTracks["recenttracks"]["track"]
+    nowPlaying = parseBool($tracks[0]["@attr"]["nowplaying"])
+  if tracks.len == limit:
+    if nowPlaying:
+      user.playingNow = some(to(fromJson($tracks[0], FMTrack)))
+    else:
+      user.listenHistory = to(fromJson($tracks, seq[FMTrack]))
+  elif tracks.len == limit+1:
+    user.playingNow = some(to(fromJson($tracks[0], FMTrack)))
+    user.listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
+  else:
+    echo "User has no recent tracks!"
 
 
 proc setNowPlayingTrack*(
