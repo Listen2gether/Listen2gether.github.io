@@ -1,4 +1,4 @@
-import asyncdispatch, options, json, strutils
+import std/[asyncdispatch, json, strutils, options]
 include listenbrainz
 include utils
 import ../types
@@ -146,22 +146,24 @@ proc getNowPlaying*(
   user: User) {.multisync.} =
   ## Get a ListenBrainz user's now playing
   let
-    nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainz].username)
-    listen = fromJson($nowPlaying["payload"], ListenPayload)
-  # if listen.listens.len != 0:
-  #   user.playingNow = to(listen.listens[0])
-
-
-proc getCurrentTrack*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
-  user: User): Future[ListenPayload] {.multisync.} =
-  ## Get a user's last listened track
-  let recentListens = await lb.getUserListens(user.services[listenBrainz].username, count=1)
-  result = fromJson($recentListens["payload"], ListenPayload)
-  if result.count > 0:
-    user.listenHistory = to(result.listens)
+    nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
+    payload = fromJson($nowPlaying, ListenPayload)
+  if payload.count == 1:
+    user.playingNow = some(to(payload.listens[0]))
   else:
-    raise newException(ValueError, "ERROR: User has no recent listens!")
+    user.playingNow = none(Track)
+
+
+proc getRecentTracks*(
+  lb: SyncListenBrainz | AsyncListenBrainz,
+  user: User,
+  count: int = 10) {.multisync.} =
+  ## Get a user's last listened track
+  let
+    recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
+    payload = fromJson($recentListens["payload"], ListenPayload)
+  if payload.count > 0:
+    user.listenHistory = to(payload.listens)
 
 proc listenTrack*(
   lb: SyncListenBrainz | AsyncListenBrainz,
