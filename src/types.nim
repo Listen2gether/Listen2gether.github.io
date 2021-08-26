@@ -1,17 +1,17 @@
-import options
+import std/options
 
 
 type
   Service* = enum
-    listenBrainz,
-    lastFm
+    listenBrainzService,
+    lastFmService
 
   ServiceUser* = ref object
     username*: string
     case service: Service
-    of listenBrainz:
+    of listenBrainzService:
       token*: string
-    of lastFm:
+    of lastFmService:
       apiKey*, apiSecret*, sessionKey*: string
 
   User* = ref object
@@ -33,9 +33,9 @@ func newServiceUser*(
   result = ServiceUser(service: service)
   result.username = username
   case service:
-  of listenBrainz:
+  of listenBrainzService:
     result.token = token
-  of lastFm:
+  of lastFmService:
     result.apiKey = apiKey
     result.apiSecret = apiSecret
     result.sessionKey = sessionKey
