@@ -20,6 +20,22 @@ type
     track*, artist*, album*, mbid*, albumArtist*: string
     trackNumber*, duration*: Option[int]
 
+  Node = ref object
+    kind: string
+
+
+proc renameHook*(v: var Node, fieldName: var string) =
+  if fieldName == "@attr":
+    fieldName = "attr"
+  elif fieldName == "#text":
+    fieldName = "text"
+
+
+proc parseHook*(s: string, i: var int, v: var bool) =
+  var str: string
+  parseHook(s, i, str)
+  v = parseBool(str)
+
 
 func newFMTrack*(
   artist, album: FMObject,
