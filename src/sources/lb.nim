@@ -1,4 +1,4 @@
-import std/[asyncdispatch, json, strutils, options]
+import std/[asyncdispatch, json, strutils]
 include listenbrainz
 include utils
 import ../types
@@ -20,11 +20,11 @@ type
     listenedAt*: Option[int64]
     trackMetadata*: TrackMetadata
 
-  TrackMetadata* = ref object
+  TrackMetadata* = object
     trackName*, artistName*, releaseName*: string
     additionalInfo*: Option[AdditionalInfo]
 
-  AdditionalInfo* = ref object
+  AdditionalInfo* = object
     tracknumber*: Option[int]
     trackMbid*, recordingMbid*, releaseGroupMbid*, releaseMbid*, isrc*, spotifyId*, listeningFrom*: string
     tags*, artistMbids*, workMbids*: seq[string]
@@ -164,6 +164,7 @@ proc getRecentTracks*(
     payload = fromJson($recentListens["payload"], ListenPayload)
   if payload.count > 0:
     user.listenHistory = to(payload.listens)
+
 
 proc listenTrack*(
   lb: SyncListenBrainz | AsyncListenBrainz,
