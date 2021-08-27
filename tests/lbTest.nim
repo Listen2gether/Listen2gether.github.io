@@ -1,6 +1,5 @@
 import std/unittest
 include ../src/sources/lb
-import print
 
 suite "ListenBrainz source":
   setup:
