@@ -1,4 +1,4 @@
-import asyncdispatch, options, json, strutils
+import std/strutils
 include lastfm
 include utils
 import ../types
@@ -8,7 +8,7 @@ type
   FMTrack* = object
     artist*, album*: FMObject
     mbid*, name*, url*: string
-    attr: Option[Attributes]
+    attr*: Option[Attributes]
 
   FMObject* = object
     mbid*, text*: string
@@ -20,14 +20,14 @@ type
     track*, artist*, album*, mbid*, albumArtist*: string
     trackNumber*, duration*: Option[int]
 
-  Node = ref object
-    kind: string
 
-
-proc renameHook*(v: var Node, fieldName: var string) =
+proc renameHook*(v: var FMTrack, fieldName: var string) =
   if fieldName == "@attr":
     fieldName = "attr"
-  elif fieldName == "#text":
+
+
+proc renameHook*(v: var FMObject, fieldName: var string) =
+  if fieldName == "#text":
     fieldName = "text"
 
 
@@ -106,22 +106,33 @@ proc to*(scrobble: Scrobble): Track =
 proc getRecentTracks*(
   fm: SyncLastFM | AsyncLastFM,
   user: User,
-  limit: int = 10) {.multisync.} =
-  ## Get now playing and listen history for a Last.FM user
+  limit: int = 10): Future[(Option[Track], seq[Track])] {.multisync.} =
+  ## Return a Last.FM user's listen history and now playing
+  var
+    playingNow: Option[Track]
+    listenHistory: seq[Track]
   let
     recentTracks = await fm.userRecentTracks(user = user.services[lastFmService].username, limit = limit)
     tracks = recentTracks["recenttracks"]["track"]
-    nowPlaying = parseBool($tracks[0]["@attr"]["nowplaying"])
+    nowPlaying = $tracks[0]["@attr"]["nowplaying"]
   if tracks.len == limit:
-    if nowPlaying:
-      user.playingNow = some(to(fromJson($tracks[0], FMTrack)))
+    if parseBool(nowPlaying):
+      playingNow = some(to(fromJson($tracks[0], FMTrack)))
     else:
-      user.listenHistory = to(fromJson($tracks, seq[FMTrack]))
+      listenHistory = to(fromJson($tracks, seq[FMTrack]))
   elif tracks.len == limit+1:
-    user.playingNow = some(to(fromJson($tracks[0], FMTrack)))
-    user.listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
-  else:
-    echo "User has no recent tracks!"
+    playingNow = some(to(fromJson($tracks[0], FMTrack)))
+    listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
+  result = (playingNow, listenHistory)
+
+
+proc updateUser*(
+  fm: SyncLastFM | AsyncLastFM,
+  user: User) {.multisync.} =
+  # Update a Last.FM user's `playingNow` and `listenHistory`
+  let tracks = await getRecentTracks(fm, user)
+  user.playingNow = tracks[0]
+  user.listenHistory = tracks[1]
 
 
 proc setNowPlayingTrack*(
