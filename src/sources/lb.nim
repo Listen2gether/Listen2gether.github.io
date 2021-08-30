@@ -143,27 +143,38 @@ proc validateLbToken*(
 
 proc getNowPlaying*(
   lb: SyncListenBrainz | AsyncListenBrainz,
-  user: User) {.multisync.} =
-  ## Get a ListenBrainz user's now playing
+  user: User): Future[Option[Track]] {.multisync.} =
+  ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
-    payload = fromJson($nowPlaying, ListenPayload)
+    payload = fromJson($nowPlaying["payload"], ListenPayload)
+  echo nowPlaying
   if payload.count == 1:
-    user.playingNow = some(to(payload.listens[0]))
+    result = some(to(payload.listens[0]))
   else:
-    user.playingNow = none(Track)
+    result = none(Track)
 
 
 proc getRecentTracks*(
   lb: SyncListenBrainz | AsyncListenBrainz,
   user: User,
-  count: int = 10) {.multisync.} =
-  ## Get a user's last listened track
+  count: int = 10): Future[seq[Track]] {.multisync.} =
+  ## Return a ListenBrainz user's listen history
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
     payload = fromJson($recentListens["payload"], ListenPayload)
   if payload.count > 0:
-    user.listenHistory = to(payload.listens)
+    result = to(payload.listens)
+  else:
+    result = @[]
+
+
+proc updateUser*(
+  lb: SyncListenBrainz | AsyncListenBrainz,
+  user: User) {.multisync.} =
+  # Update a ListenBrainz user's `playingNow` and `listenHistory`
+  user.playingNow = await getNowPlaying(lb, user)
+  user.listenHistory = await getRecentTracks(lb, user)
 
 
 proc listenTrack*(
