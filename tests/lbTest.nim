@@ -1,11 +1,15 @@
 import std/unittest
 include ../src/sources/lb
 
-suite "ListenBrainz source":
+suite "ListenBrainz source":   
   setup:
     let
       jsonEx = readFile("tests/lbEx.json")
-      listenPayloadJson = parseJson(jsonEx)
+      jsonNode = parseJson(jsonEx)
+
+  test "jsony - ListenPayload":
+    let
+      listenPayloadJson = jsonNode["listenPayload"]
       listenPayload = newListenPayload(
         count = 1,
         latestListenTs = none(int64),
@@ -20,9 +24,6 @@ suite "ListenBrainz source":
             artistMbids = @["1ba347eb-58e8-45d6-b7e3-09873dc2506a"]))))],
         playingNow = some(true),
         userId = "test")
-
-  test "jsony - ListenPayload":
-    let
       payloadJson = listenPayloadJson["payload"]
       payloadObj = fromJson($payloadJson, ListenPayload)
     check listenPayload == payloadObj
