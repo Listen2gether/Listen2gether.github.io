@@ -1,5 +1,5 @@
-import karax / [karax, karaxdsl, vdom, kdom]
-import tools
+import karax/[karax, karaxdsl, vdom, kdom]
+import share
 
 proc onServiceToggleClick(ev: Event; n: VNode) =
  if getElementById("service_switch").checked:
@@ -9,7 +9,7 @@ proc onUsernameEnter(ev: Event; n: VNode) =
   if not getElementById("service_switch").checked:
     getElementById("token").style.display = "flex"
 
-proc makeMain(): Vnode =
+proc mainSection(): Vnode =
   result = buildHtml(main()):
     tdiv(id = "login"):
       tdiv(id = "username", class = "textbox"):
@@ -22,8 +22,8 @@ proc makeMain(): Vnode =
 
 proc createDom(): VNode =
   result = buildHtml(tdiv(class = "grid")):
-    makeHeader()
-    makeMain()
-    makeFooter()
+    headerSection()
+    mainSection()
+    footerSection()
 
 setRenderer createDom
