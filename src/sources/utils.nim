@@ -1,4 +1,4 @@
-import std/[options, strutils]
+import std/options
 import jsony
 
 
