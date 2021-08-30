@@ -148,7 +148,6 @@ proc getNowPlaying*(
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
     payload = fromJson($nowPlaying["payload"], ListenPayload)
-  echo nowPlaying
   if payload.count == 1:
     result = some(to(payload.listens[0]))
   else:
