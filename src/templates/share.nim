@@ -1,6 +1,6 @@
-import karax / [karaxdsl, vdom]
+import karax/[karaxdsl, vdom]
 
-proc headSection*(): Vnode =
+proc head*(): Vnode =
   result = buildHtml(head()):
     meta(charset="utf-8", name="viewport", content="width=device-width, initial-scale=1")
     title: text "Listen2gether"
