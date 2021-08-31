@@ -14,6 +14,7 @@ suite "Last.FM source":
       fmTrack = newFMTrack(
         artist = newFMObject(mbid = "", text = "Ryuichi Sakamoto"),
         album = newFMObject(mbid = "0f10b982-1be7-4eb9-94fe-0376ea99a980", text = "Esperanto"),
+        date = some(parseJson("""{"uts": "1630429609", "#text": "31 Aug 2021, 17:06"}""")),
         mbid = "",
         name = "A Wongga Dance Song",
         url = "https://www.last.fm/music/Ryuichi+Sakamoto/_/A+Wongga+Dance+Song",
