@@ -11,13 +11,13 @@ type
 
   ListenPayload* = object
     count*: int
-    latestListenTs*: Option[int]
+    latestListenTs*: Option[int64]
     listens*: seq[Listen]
     playingNow*: Option[bool]
     userId*: string
 
   Listen* = object
-    listenedAt*: Option[int]
+    listenedAt*: Option[int64]
     trackMetadata*: TrackMetadata
 
   TrackMetadata* = object
@@ -40,7 +40,7 @@ func newSubmissionPayload*(
 
 func newListenPayload*(
   count: int,
-  latestListenTs: Option[int] = none(int),
+  latestListenTs: Option[int64] = none(int64),
   listens: seq[Listen],
   playingNow: Option[bool] = none(bool),
   userId: string): ListenPayload =
@@ -53,7 +53,7 @@ func newListenPayload*(
 
 
 func newListen*(
-  listenedAt: Option[int] = none(int),
+  listenedAt: Option[int64] = none(int64),
   trackMetadata: TrackMetadata): Listen =
   ## Create new Listen object
   result.listenedAt = listenedAt
@@ -91,7 +91,7 @@ func newAdditionalInfo*(
 
 proc to*(
   track: Track,
-  listenedAt: Option[int]): Listen =
+  listenedAt: Option[int64]): Listen =
   ## Convert a `Track` object to a `Listen` object
   let
     additionalInfo = newAdditionalInfo(tracknumber = track.trackNumber,
