@@ -7,11 +7,12 @@ import ../types
 type
   FMTrack* = object
     artist*, album*: FMObject
+    date*: Option[JsonNode]
     mbid*, name*, url*: string
     attr*: Option[Attributes]
 
   FMObject* = object
-    mbid*, text*: string
+    text*, mbid*: string
 
   Attributes* = object
     nowplaying*: bool
@@ -39,22 +40,23 @@ proc parseHook*(s: string, i: var int, v: var bool) =
 
 func newFMTrack*(
   artist, album: FMObject,
+  date: Option[JsonNode] = none(JsonNode),
   mbid, name, url: string,
   attr: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
   result.artist = artist
   result.album = album
+  result.date = date
   result.mbid = mbid
   result.name = name
   result.url = url
   result.attr = attr
 
-
 func newFMObject*(
-  mbid, text: string): FMObject =
+  mbid, text: string = ""): FMObject =
   ## Create new `FMObject` object
-  result.mbid = mbid
   result.text = text
+  result.mbid = mbid
 
 
 func newAttributes*(
@@ -84,7 +86,8 @@ proc to*(fmTrack: FMTrack): Track =
                     releaseName = fmTrack.album.text,
                     recordingMbid = fmTrack.mbid,
                     releaseMbid = fmTrack.album.mbid,
-                    artistMbids = @[fmTrack.artist.mbid])
+                    artistMbids = @[fmTrack.artist.mbid],
+                    listenedAt = some(parseBiggestInt($get(fmTrack.date){"uts"})))
 
 
 proc to*(fmTracks: seq[FMTrack]): seq[Track] =
@@ -124,7 +127,7 @@ proc getRecentTracks*(
     playingNow = some(to(fromJson($tracks[0], FMTrack)))
     listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
   result = (playingNow, listenHistory)
-
+  
 
 proc updateUser*(
   fm: SyncLastFM | AsyncLastFM,
