@@ -31,7 +31,7 @@ suite "Last.FM source":
         releaseName = "Esperanto",
         recordingMbid = "",
         releaseMbid = "0f10b982-1be7-4eb9-94fe-0376ea99a980",
-        artistMbids = @[],
+        artistMbids = @[""],
         trackNumber = none(int),
         duration = none(int),
         listenedAt = some(parseBiggestInt("1630429609")))
