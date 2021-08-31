@@ -23,7 +23,7 @@ type
     trackName*, artistName*, releaseName*, recordingMbid*, releaseMbid*: string
     artistMbids*: seq[string]
     trackNumber*, duration*: Option[int]
-    listenedAt*: Option[int]
+    listenedAt*: Option[int64]
 
 
 func newServiceUser*(
@@ -54,7 +54,7 @@ func newTrack*(
   trackName, artistName, releaseName, recordingMbid, releaseMbid: string = "",
   artistMbids: seq[string] = @[],
   trackNumber, duration: Option[int] = none(int),
-  listenedAt: Option[int] = none(int)): Track =
+  listenedAt: Option[int64] = none(int64)): Track =
   ## Create new Track object
   result.trackName = trackName
   result.artistName = artistName
