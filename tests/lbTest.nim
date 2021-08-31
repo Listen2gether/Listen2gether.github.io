@@ -12,7 +12,7 @@ suite "ListenBrainz source":
       listenPayloadJson = jsonNode["listenPayload"]
       listenPayload = newListenPayload(
         count = 1,
-        latestListenTs = none(int),
+        latestListenTs = none(int64),
         listens = @[newListen(trackMetadata = newTrackMetadata(
           trackName = "Mais Que Amor",
           artistName = "Marcos Valle",
