@@ -87,7 +87,7 @@ proc to*(fmTrack: FMTrack): Track =
                     recordingMbid = fmTrack.mbid,
                     releaseMbid = fmTrack.album.mbid,
                     artistMbids = @[fmTrack.artist.mbid],
-                    listenedAt = some(parseBiggestInt($get(fmTrack.date){"uts"})))
+                    listenedAt = some(parseBiggestInt(getStr(get(fmTrack.date){"uts"}))))
 
 
 proc to*(fmTracks: seq[FMTrack]): seq[Track] =
@@ -127,7 +127,7 @@ proc getRecentTracks*(
     playingNow = some(to(fromJson($tracks[0], FMTrack)))
     listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
   result = (playingNow, listenHistory)
-  
+
 
 proc updateUser*(
   fm: SyncLastFM | AsyncLastFM,
