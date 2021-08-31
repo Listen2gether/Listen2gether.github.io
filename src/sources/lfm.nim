@@ -114,9 +114,9 @@ proc getRecentTracks*(
   let
     recentTracks = await fm.userRecentTracks(user = user.services[lastFmService].username, limit = limit)
     tracks = recentTracks["recenttracks"]["track"]
-    nowPlaying = $tracks[0]["@attr"]["nowplaying"]
+    nowPlaying = getBool(tracks[0]{"@attr"}{"nowplaying"})
   if tracks.len == limit:
-    if parseBool(nowPlaying):
+    if nowPlaying:
       playingNow = some(to(fromJson($tracks[0], FMTrack)))
     else:
       listenHistory = to(fromJson($tracks, seq[FMTrack]))
