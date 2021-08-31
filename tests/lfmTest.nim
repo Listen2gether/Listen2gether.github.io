@@ -1,6 +1,5 @@
-import std/unittest
+import std/[unittest, strutils]
 include ../src/sources/lfm
-import print
 
 suite "Last.FM source":
   setup:
@@ -8,7 +7,7 @@ suite "Last.FM source":
       jsonEx = readFile("tests/lfmEx.json")
       jsonNode = parseJson(jsonEx)
 
-  test "jsony - FMTrack":
+  test "jsony - json > FMTrack":
     let
       recentTracksJson = jsonNode["RecentTracks"]
       fmTrack = newFMTrack(
@@ -22,3 +21,20 @@ suite "Last.FM source":
       fmTrackJson = $recentTracksJson["recenttracks"]["track"][0]
       fmTrackObj = fmTrackJson.fromJson(FMTrack)
     check fmTrack == fmTrackObj
+
+  test "jsony - FMTrack > Track":
+    let
+      recentTracksJson = jsonNode["RecentTracks"]
+      track = newTrack(
+        trackName = "A Wongga Dance Song",
+        artistName = "Ryuichi Sakamoto",
+        releaseName = "Esperanto",
+        recordingMbid = "",
+        releaseMbid = "0f10b982-1be7-4eb9-94fe-0376ea99a980",
+        artistMbids = @[],
+        trackNumber = none(int),
+        duration = none(int),
+        listenedAt = some(parseBiggestInt("1630429609")))
+      fmTrackObj = fromJson($recentTracksJson["recenttracks"]["track"][0], FMTrack)
+      trackObj = to(fmTrackObj)
+    check track == trackObj
