@@ -7,6 +7,7 @@ proc head*(): Vnode =
     link(rel="icon", href="src/templates/assets/favicon_square.svg")
     link(rel="stylesheet", href="src/templates/style.css")
 
+
 proc headerSection*(): Vnode =
   result = buildHtml(header):
     a(class = "header", href = "/"):
