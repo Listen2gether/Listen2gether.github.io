@@ -12,7 +12,7 @@ type
     of listenBrainzService:
       token*: string
     of lastFmService:
-      apiKey*, apiSecret*, sessionKey*: string
+      sessionKey*: string
 
   User* = ref object
     services*: array[Service, ServiceUser]
@@ -27,8 +27,7 @@ type
 
 func newServiceUser*(
   service: Service,
-  username: string,
-  token, apiKey, apiSecret, sessionKey: string = ""): ServiceUser =
+  username, token, sessionKey: string = ""): ServiceUser =
   ## Create a new ServiceUser object
   result = ServiceUser(service: service)
   result.username = username
@@ -36,13 +35,11 @@ func newServiceUser*(
   of listenBrainzService:
     result.token = token
   of lastFmService:
-    result.apiKey = apiKey
-    result.apiSecret = apiSecret
     result.sessionKey = sessionKey
 
 
 func newUser*(
-  services: array[Service, ServiceUser],
+  services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
   listenHistory: seq[Track] = @[]): User =
   ## Create new User object
