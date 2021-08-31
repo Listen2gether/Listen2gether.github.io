@@ -81,13 +81,20 @@ func newScrobble*(
 
 proc to*(fmTrack: FMTrack): Track =
   ## Convert an `FMTrack` object to a `Track` object
+  var date: Option[int64]
+  if isSome(fmTrack.date):
+    let dateStr = getStr(get(fmTrack.date){"uts"})
+    if dateStr != "":
+      date = some(parseBiggestInt(dateStr))
+    else:
+      date = none(int64)
   result = newTrack(trackName = fmTrack.name,
                     artistName = fmTrack.artist.text,
                     releaseName = fmTrack.album.text,
                     recordingMbid = fmTrack.mbid,
                     releaseMbid = fmTrack.album.mbid,
                     artistMbids = @[fmTrack.artist.mbid],
-                    listenedAt = some(parseBiggestInt(getStr(get(fmTrack.date){"uts"}))))
+                    listenedAt = date)
 
 
 proc to*(fmTracks: seq[FMTrack]): seq[Track] =
@@ -117,12 +124,8 @@ proc getRecentTracks*(
   let
     recentTracks = await fm.userRecentTracks(user = user.services[lastFmService].username, limit = limit)
     tracks = recentTracks["recenttracks"]["track"]
-    nowPlaying = getBool(tracks[0]{"@attr"}{"nowplaying"})
   if tracks.len == limit:
-    if nowPlaying:
-      playingNow = some(to(fromJson($tracks[0], FMTrack)))
-    else:
-      listenHistory = to(fromJson($tracks, seq[FMTrack]))
+    listenHistory = to(fromJson($tracks, seq[FMTrack]))
   elif tracks.len == limit+1:
     playingNow = some(to(fromJson($tracks[0], FMTrack)))
     listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]))
