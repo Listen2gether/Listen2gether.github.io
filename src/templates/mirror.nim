@@ -4,14 +4,16 @@ import share
 import ../types
 
 proc mainSection(service: Service, user: User): Vnode =
-  var username: string
+  var username, userUrl: string
   case service:
     of listenBrainzService:
       username = user.services[listenBrainzService].username
+      userUrl = user.services[listenBrainzService].baseUrl & username
     of lastFmService:
       username = user.services[lastFmService].username
+      userUrl = user.services[lastFmService].baseUrl & username
   result = buildHtml(main()):
-    verbatim("<div id = 'mirror'><p>You are mirroring <a href='test'>" & username & "</a>!</p></div>")
+    verbatim("<div id = 'mirror'><p>You are mirroring <a href='" & userUrl & "'>" & username & "</a>!</p></div>")
     tdiv(class = "listens"):
       ul:
         if isSome(user.playingNow):
@@ -24,7 +26,7 @@ proc mainSection(service: Service, user: User): Vnode =
                 p(id = "artist-name"):
                   text get(user.playingNow).artistName
               span:
-                text "Playing Now"
+                text "Playing now"
         for track in user.listenHistory:
           li(class = "listen"):
             img(src = "/src/templates/assets/listened.svg")
