@@ -37,8 +37,8 @@ proc mainSection(service: Service, user: User): Vnode =
                   text track.trackName
                 p(id = "artist-name"):
                   text track.artistName
-              span:
-                text fromUnix(get(track.listenedAt)).format("HH:mm dd/MM/yy")
+              span(title = fromUnix(get(track.listenedAt)).format("dd/MM/yy")):
+                text fromUnix(get(track.listenedAt)).format("HH:mm")
 
 proc mirrorPage*(ctx: Context, service: Service, user: User): string =
   let
