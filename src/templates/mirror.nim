@@ -1,10 +1,11 @@
 import karax/[karaxdsl, vdom]
-import prologue
+import prologue, times
 import share
 import ../types
 
+
 proc mainSection(service: Service, user: User): Vnode =
-  var username, userUrl: string
+  var username, userUrl, time: string
   case service:
     of listenBrainzService:
       username = user.services[listenBrainzService].username
@@ -37,7 +38,7 @@ proc mainSection(service: Service, user: User): Vnode =
                 p(id = "artist-name"):
                   text track.artistName
               span:
-                text $get(track.listenedAt)
+                text fromUnix(get(track.listenedAt)).format("HH:mm dd/MM/yy")
 
 proc mirrorPage*(ctx: Context, service: Service, user: User): string =
   let
