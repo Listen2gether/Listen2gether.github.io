@@ -7,7 +7,7 @@ type
     lastFmService
 
   ServiceUser* = ref object
-    username*: string
+    username*, baseUrl*: string
     case service: Service
     of listenBrainzService:
       token*: string
@@ -28,14 +28,16 @@ type
 
 func newServiceUser*(
   service: Service,
-  username, token, sessionKey: string = ""): ServiceUser =
+  username, url, token, sessionKey: string = ""): ServiceUser =
   ## Create a new ServiceUser object
   result = ServiceUser(service: service)
   result.username = username
   case service:
   of listenBrainzService:
+    result.baseUrl = "https://listenbrainz.org/user/"
     result.token = token
   of lastFmService:
+    result.baseUrl = "https://last.fm/user/"
     result.sessionKey = sessionKey
 
 
