@@ -4,10 +4,21 @@ import share
 proc onServiceToggleClick(ev: Event; n: VNode) =
  if getElementById("service_switch").checked:
   getElementById("token").style.display = "none"
+  
 
 proc onUsernameEnter(ev: Event; n: VNode) =
-  if not getElementById("service_switch").checked:
-    getElementById("token").style.display = "flex"
+  # if not getElementById("service_switch").checked:
+  #   getElementById("token").style.display = "flex"
+  var service: string = ""
+  let
+    username = $getElementById("username_input").value
+    serviceSwitch = getElementById("service_switch").checked
+  if serviceSwitch:
+    service = "lastfm"
+  else:
+    service = "listenbrainz"
+  window.location.href = cstring("/mirror/" & service & "/" & username)
+  
 
 proc mainSection(): Vnode =
   result = buildHtml(main()):
