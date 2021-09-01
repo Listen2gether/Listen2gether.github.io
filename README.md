@@ -5,9 +5,9 @@
 
 ### TODO:
 - [ ] Create basic functionality for scrobble mirroring
-  - [x] Implement for ListenBrainz
-  - [x] Implement for Last.fm
-- [ ] Setup Karax
+  - [x] Implement for ListenBrainz source
+  - [x] Implement for Last.fm source
+- [x] Setup Karax
   - [x] Create home view (static)
-  - [ ] Create mirror view (generated)
+  - [x] Create mirror view (generated)
 - [ ] Overhaul Norm database models
