@@ -1,7 +1,6 @@
 import std/options
 import jsony
 
-
 proc camel2snake*(s: string): string =
   ## CanBeFun => can_be_fun
   ## https://forum.nim-lang.org/t/1701
@@ -15,7 +14,7 @@ proc camel2snake*(s: string): string =
       result.add(s[i])
 
 
-template dumpKey(s: var string, v: string) =
+template dumpKey*(s: var string, v: string) =
   const v2 = v.camel2snake().toJson() & ":"
   s.add v2
 
