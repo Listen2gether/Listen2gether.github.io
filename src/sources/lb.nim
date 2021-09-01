@@ -1,5 +1,6 @@
 import std/[asyncdispatch, json, strutils]
-include listenbrainz
+import listenbrainz
+import listenbrainz/core
 include utils
 import ../types
 
@@ -160,7 +161,7 @@ proc getNowPlaying*(
 proc getRecentTracks*(
   lb: SyncListenBrainz | AsyncListenBrainz,
   user: User,
-  count: int = 8): Future[seq[Track]] {.multisync.} =
+  count: int = 7): Future[seq[Track]] {.multisync.} =
   ## Return a ListenBrainz user's listen history
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)

@@ -1,5 +1,6 @@
-import std/strutils
-include lastfm
+import std/[asyncdispatch, strutils, json]
+import lastfm
+import lastfm/[track, user]
 include utils
 import ../types
 
@@ -116,7 +117,7 @@ proc to*(scrobble: Scrobble): Track =
 proc getRecentTracks*(
   fm: SyncLastFM | AsyncLastFM,
   user: User,
-  limit: int = 8): Future[(Option[Track], seq[Track])] {.multisync.} =
+  limit: int = 7): Future[(Option[Track], seq[Track])] {.multisync.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Track]

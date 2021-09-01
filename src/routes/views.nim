@@ -1,4 +1,4 @@
-import prologue
+import prologue, lastfm, listenbrainz
 import ../templates/mirror
 import ../sources/[lb, lfm]
 import ../types
