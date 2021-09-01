@@ -16,7 +16,7 @@ proc mainSection(service: Service, user: User): Vnode =
       ul:
         if isSome(user.playingNow):
           li(class = "listen"):
-            img(src = "src/templates/assets/listening.svg")
+            img(src = "/src/templates/assets/listening.svg")
             tdiv(id = "listen-details"):
               tdiv(id = "track-details"):
                 p(id = "track-name"):
@@ -27,7 +27,7 @@ proc mainSection(service: Service, user: User): Vnode =
                 text "Playing Now"
         for track in user.listenHistory:
           li(class = "listen"):
-            img(src = "src/templates/assets/listened.svg")
+            img(src = "/src/templates/assets/listened.svg")
             tdiv(id = "listen-details"):
               tdiv(id = "track-details"):
                 p(id = "track-name"):
@@ -38,11 +38,16 @@ proc mainSection(service: Service, user: User): Vnode =
                 text $get(track.listenedAt)
 
 proc mirrorPage*(ctx: Context, service: Service, user: User): string =
-  let vnode = buildHtml(html):
-    head()
-    body:
-      tdiv(class = "grid"):
-        headerSection()
-        mainSection(service, user)
-        footerSection()
+  let
+    head = head()
+    header = headerSection()
+    main = mainSection(service, user)
+    footer = footerSection()
+    vnode = buildHtml(html):
+      head
+      body:
+        tdiv(class = "grid"):
+          header
+          main
+          footer
   result = $vnode
