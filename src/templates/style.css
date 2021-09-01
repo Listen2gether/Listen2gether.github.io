@@ -198,6 +198,7 @@ ul {
 #listen-details > span {
   float: right;
   font-style: italic;
+  text-align: right;
 }
 
 #track-details > p {
