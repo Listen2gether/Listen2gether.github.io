@@ -5,7 +5,7 @@ import ../types
 
 
 proc mainSection(service: Service, user: User): Vnode =
-  var username, userUrl, time: string
+  var username, userUrl: string
   case service:
     of listenBrainzService:
       username = user.services[listenBrainzService].username
@@ -30,7 +30,7 @@ proc mainSection(service: Service, user: User): Vnode =
                 text "Playing now"
         for track in user.listenHistory:
           li(class = "listen"):
-            img(src = "/src/templates/assets/listened.svg")
+            img(src = "/src/templates/assets/pre-mirror-listen.svg")
             tdiv(id = "listen-details"):
               tdiv(id = "track-details"):
                 p(id = "track-name"):
