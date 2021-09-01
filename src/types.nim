@@ -17,7 +17,7 @@ type
   User* = ref object
     services*: array[Service, ServiceUser]
     playingNow*: Option[Track]
-    listenHistory*: seq[Track]
+    toMirror*, listenHistory*: seq[Track]
 
   Track* = object
     trackName*, artistName*, releaseName*, recordingMbid*, releaseMbid*: string
@@ -44,11 +44,12 @@ func newServiceUser*(
 func newUser*(
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
-  listenHistory: seq[Track] = @[]): User =
+  toMirror, listenHistory: seq[Track] = @[]): User =
   ## Create new User object
   new(result)
   result.services = services
   result.playingNow = playingNow
+  result.toMirror = toMirror
   result.listenHistory = listenHistory
 
 
