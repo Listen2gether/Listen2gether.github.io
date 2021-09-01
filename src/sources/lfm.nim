@@ -116,7 +116,7 @@ proc to*(scrobble: Scrobble): Track =
 proc getRecentTracks*(
   fm: SyncLastFM | AsyncLastFM,
   user: User,
-  limit: int = 10): Future[(Option[Track], seq[Track])] {.multisync.} =
+  limit: int = 8): Future[(Option[Track], seq[Track])] {.multisync.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Track]
