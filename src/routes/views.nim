@@ -24,5 +24,4 @@ proc mirror*(ctx: Context) {.async.} =
       let syncLastFM = newSyncLastFM()
       user.services[lastFmService].username = usernameParam
       syncLastFM.updateUser(user)
-  echo user.listenHistory
   resp htmlResponse(mirrorPage(ctx, service, user))
