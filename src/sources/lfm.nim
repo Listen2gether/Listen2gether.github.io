@@ -136,7 +136,7 @@ proc getRecentTracks*(
 proc updateUser*(
   fm: SyncLastFM | AsyncLastFM,
   user: User) {.multisync.} =
-  # Update a Last.FM user's `playingNow` and `listenHistory`
+  ## Update a Last.FM user's `playingNow` and `listenHistory`
   let tracks = await getRecentTracks(fm, user)
   user.playingNow = tracks[0]
   user.listenHistory = tracks[1]

@@ -175,7 +175,7 @@ proc getRecentTracks*(
 proc updateUser*(
   lb: SyncListenBrainz | AsyncListenBrainz,
   user: User) {.multisync.} =
-  # Update a ListenBrainz user's `playingNow` and `listenHistory`
+  ## Update a ListenBrainz user's `playingNow` and `listenHistory`
   user.playingNow = await getNowPlaying(lb, user)
   user.listenHistory = await getRecentTracks(lb, user)
 
