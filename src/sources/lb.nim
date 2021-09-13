@@ -1,8 +1,15 @@
-import std/[asyncdispatch, json, strutils]
-import listenbrainz
-import listenbrainz/core
-include utils
-import ../types
+when defined(js):
+  import std/[asyncjs, json, strutils, jsconsole]
+  import listenbrainz
+  import listenbrainz/core
+  include utils
+  import ../types
+else:
+  import std/[asyncdispatch, json, strutils]
+  import listenbrainz
+  import listenbrainz/core
+  include utils
+  import ../types
 
 
 type
@@ -15,7 +22,6 @@ type
     latestListenTs*: Option[int64]
     listens*: seq[Listen]
     playingNow*: Option[bool]
-    userId*: string
 
   Listen* = object
     listenedAt*: Option[int64]
@@ -31,6 +37,12 @@ type
     tags*, artistMbids*, workMbids*: seq[string]
 
 
+proc parseHook*(s: string, i: var int, v: var int64) =
+  var str: string
+  parseHook(s, i, str)
+  v = parseInt(str)
+
+
 func newSubmissionPayload*(
   listenType: string,
   payload: seq[Listen]): SubmissionPayload =
@@ -43,14 +55,12 @@ func newListenPayload*(
   count: int,
   latestListenTs: Option[int64] = none(int64),
   listens: seq[Listen],
-  playingNow: Option[bool] = none(bool),
-  userId: string): ListenPayload =
+  playingNow: Option[bool] = none(bool)): ListenPayload =
   ## Create new ListenPayload object
   result.count = count
   result.latestListenTs = latestListenTs
   result.listens = listens
   result.playingNow = playingNow
-  result.userId = userId
 
 
 func newListen*(
@@ -151,7 +161,10 @@ proc getNowPlaying*(
   ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
-    payload = fromJson($nowPlaying["payload"], ListenPayload)
+    payloadJson = nowPlaying["payload"]
+  when defined(js):
+    console.log($payloadJson)
+  let payload = fromJson($payloadJson, ListenPayload)
   if payload.count == 1:
     result = some(to(payload.listens[0]))
   else:
@@ -163,13 +176,16 @@ proc getRecentTracks*(
   user: User,
   count: int = 7): Future[seq[Track]] {.multisync.} =
   ## Return a ListenBrainz user's listen history
+  var
+    tracks: seq[Track]
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
-    payload = fromJson($recentListens["payload"], ListenPayload)
+    payloadJson = recentListens["payload"]
+    payload = fromJson($payloadJson, ListenPayload)
   if payload.count > 0:
     result = to(payload.listens)
   else:
-    result = @[]
+    result = tracks
 
 
 proc updateUser*(
