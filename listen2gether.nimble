@@ -9,7 +9,7 @@ bin           = @["listen2gether"]
 
 
 # Dependencies
-requires "nim >= 1.4.0"
+requires "nim >= 1.5.0"
 requires "listenbrainz#head"
 requires "lastfm#head"
 requires "norm"
