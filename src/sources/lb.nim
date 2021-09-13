@@ -161,10 +161,9 @@ proc getNowPlaying*(
   ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
-    payloadJson = nowPlaying["payload"]
   when defined(js):
-    console.log($payloadJson)
-  let payload = fromJson($payloadJson, ListenPayload)
+    console.log($nowPlaying["payload"])
+  let payload = fromJson($nowPlaying["payload"], ListenPayload)
   if payload.count == 1:
     result = some(to(payload.listens[0]))
   else:
@@ -176,12 +175,10 @@ proc getRecentTracks*(
   user: User,
   count: int = 7): Future[seq[Track]] {.multisync.} =
   ## Return a ListenBrainz user's listen history
-  var
-    tracks: seq[Track]
+  var tracks: seq[Track]
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
-    payloadJson = recentListens["payload"]
-    payload = fromJson($payloadJson, ListenPayload)
+    payload = fromJson($recentListens["payload"], ListenPayload)
   if payload.count > 0:
     result = to(payload.listens)
   else:
