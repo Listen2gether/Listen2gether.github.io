@@ -77,6 +77,7 @@ when defined(js):
     result = newStmtList()
     result.add generateJsasync(prc)
 
+
 proc camel2snake*(s: string): string =
   ## CanBeFun => can_be_fun
   ## https://forum.nim-lang.org/t/1701
