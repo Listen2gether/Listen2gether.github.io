@@ -1,5 +1,7 @@
-import std/unittest
-include ../src/sources/lb
+import std/[unittest, options, json]
+import jsony
+import ../src/sources/[lb, lbTypes, utils]
+
 
 suite "ListenBrainz source":   
   setup:
@@ -25,7 +27,9 @@ suite "ListenBrainz source":
         playingNow = some(true))
       payloadJson = listenPayloadJson["payload"]
       payloadObj = fromJson($payloadJson, ListenPayload)
+      objJson = toJson(payloadObj)
     check listenPayload == payloadObj
+    check objJson == $payloadJson
 
   test "jsony - ListenPayload 2":
     let
@@ -45,4 +49,6 @@ suite "ListenBrainz source":
         playingNow = some(true))
       payloadJson = listenPayloadJson["payload"]
       payloadObj = fromJson($payloadJson, ListenPayload)
+      objJson = toJson(payloadObj)
     check listenPayload == payloadObj
+    check objJson == $payloadJson
