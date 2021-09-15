@@ -13,9 +13,9 @@ requires "nim >= 1.5.0"
 requires "listenbrainz#head"
 requires "lastfm#head"
 requires "norm"
+requires "https://github.com/tandy-1000/karax/"
 requires "prologue"
 requires "jsony"
-requires "https://github.com/disruptek/frosty"
 
 task buildjs, "compile templates":
   withDir "src/templates":
