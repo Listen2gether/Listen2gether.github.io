@@ -1,9 +1,12 @@
 when defined(js):
   import std/[jsffi, macros, options]
   import jsony
+  import lbTypes
 else:
   import std/options
   import jsony
+  import lbTypes
+
 
 when defined(js):
   proc replaceReturn(node: var NimNode) =
@@ -101,7 +104,7 @@ proc dumpHook*[T](s: var string, v: Option[T]) =
     s.dumpHook(v.get())
 
 
-proc dumpHook*(s: var string, v: object) =
+proc dumpHook*(s: var string, v: SubmissionPayload | ListenPayload | Listen | TrackMetadata | AdditionalInfo) =
   s.add '{'
   var i = 0
   when compiles(for k, e in v.pairs: discard):

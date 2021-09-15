@@ -1,26 +1,9 @@
-import std/[asyncdispatch, strutils, json]
+import std/[asyncdispatch, strutils, json, options]
 import lastfm
 import lastfm/[track, user]
-include utils
+import lfmTypes
+import utils
 import ../types
-
-
-type
-  FMTrack* = object
-    artist*, album*: FMObject
-    date*: Option[JsonNode]
-    mbid*, name*, url*: string
-    attr*: Option[Attributes]
-
-  FMObject* = object
-    text*, mbid*: string
-
-  Attributes* = object
-    nowplaying*: bool
-
-  Scrobble* = object
-    track*, artist*, album*, mbid*, albumArtist*: string
-    trackNumber*, duration*: Option[int]
 
 
 proc renameHook*(v: var FMTrack, fieldName: var string) =
@@ -37,47 +20,6 @@ proc parseHook*(s: string, i: var int, v: var bool) =
   var str: string
   parseHook(s, i, str)
   v = parseBool(str)
-
-
-func newFMTrack*(
-  artist, album: FMObject,
-  date: Option[JsonNode] = none(JsonNode),
-  mbid, name, url: string,
-  attr: Option[Attributes] = none(Attributes)): FMTrack =
-  ## Create new `FMTrack` object
-  result.artist = artist
-  result.album = album
-  result.date = date
-  result.mbid = mbid
-  result.name = name
-  result.url = url
-  result.attr = attr
-
-func newFMObject*(
-  mbid, text: string = ""): FMObject =
-  ## Create new `FMObject` object
-  result.text = text
-  result.mbid = mbid
-
-
-func newAttributes*(
-  nowplaying: bool): Attributes =
-  ## Create new `Attributes` object
-  result.nowplaying = nowplaying
-
-
-func newScrobble*(
-  track, artist: string,
-  album, mbid, albumArtist: string = "",
-  trackNumber, duration: Option[int] = none(int)): Scrobble =
-  ## Create new `Scrobble` object
-  result.track = track
-  result.artist = artist
-  result.album = album
-  result.mbid = mbid
-  result.albumArtist = albumArtist
-  result.trackNumber = trackNumber
-  result.duration = duration
 
 
 proc to*(fmTrack: FMTrack): Track =
