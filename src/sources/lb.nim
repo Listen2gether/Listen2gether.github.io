@@ -1,18 +1,14 @@
 when defined(js):
+  import lbTypes, utils, ../types
   import std/[asyncjs, json, strutils, jsconsole, options]
-  # import karax/indexeddb
-  import listenbrainz, jsony
-  import listenbrainz/core
-  import lbTypes
-  import utils
-  import ../types
+  import pkg/[listenbrainz, jsony]
+  import pkg/listenbrainz/core
+  
 else:
+  import lbTypes, utils, ../types
   import std/[asyncdispatch, json, strutils, options]
-  import listenbrainz, jsony
-  import listenbrainz/core
-  import lbTypes
-  import utils
-  import ../types
+  import pkg/[listenbrainz, jsony]
+  import pkg/listenbrainz/core
 
 
 proc to*(
@@ -59,8 +55,8 @@ proc to*(
 
 
 proc validateLbToken*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
-  lbToken: string) {.multisync.} =
+  lb: AsyncListenBrainz,
+  lbToken: string) {.async.} =
   ## Validate a ListenBrainz token given a ListenBrainz object and token
   if lbToken != "":
     let result = await lb.validateToken(lbToken)
@@ -71,8 +67,8 @@ proc validateLbToken*(
 
 
 proc getNowPlaying*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
-  user: User): Future[Option[Track]] {.multisync.} =
+  lb: AsyncListenBrainz,
+  user: User): Future[Option[Track]] {.async.} =
   ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
@@ -86,9 +82,9 @@ proc getNowPlaying*(
 
 
 proc getRecentTracks*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
+  lb: AsyncListenBrainz,
   user: User,
-  count: int = 7): Future[seq[Track]] {.multisync.} =
+  count: int = 7): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   var tracks: seq[Track]
   let
@@ -101,8 +97,8 @@ proc getRecentTracks*(
 
 
 proc updateUser*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
-  user: User) {.multisync.} =
+  lb: AsyncListenBrainz,
+  user: User) {.async.} =
   ## Update a ListenBrainz user's `playingNow` and `listenHistory`
   user.playingNow = await getNowPlaying(lb, user)
   user.listenHistory = await getRecentTracks(lb, user)
@@ -145,9 +141,9 @@ proc updateUser*(
 
 
 proc listenTrack*(
-  lb: SyncListenBrainz | AsyncListenBrainz,
+  lb: AsyncListenBrainz,
   listenPayload: ListenPayload,
-  listenType: string): Future[JsonNode] {.multisync.} =
+  listenType: string): Future[JsonNode] {.async.} =
   ## Submit a listen to ListenBrainz
   let
     payload = to(listenPayload, listenType)

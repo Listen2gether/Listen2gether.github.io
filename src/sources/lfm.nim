@@ -57,9 +57,9 @@ proc to*(scrobble: Scrobble): Track =
 
 
 proc getRecentTracks*(
-  fm: SyncLastFM | AsyncLastFM,
+  fm: AsyncLastFM,
   user: User,
-  limit: int = 7): Future[(Option[Track], seq[Track])] {.multisync.} =
+  limit: int = 7): Future[(Option[Track], seq[Track])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Track]
@@ -76,8 +76,8 @@ proc getRecentTracks*(
 
 
 proc updateUser*(
-  fm: SyncLastFM | AsyncLastFM,
-  user: User) {.multisync.} =
+  fm: AsyncLastFM,
+  user: User) {.async.} =
   ## Update a Last.FM user's `playingNow` and `listenHistory`
   let tracks = await getRecentTracks(fm, user)
   user.playingNow = tracks[0]
@@ -85,8 +85,8 @@ proc updateUser*(
 
 
 proc setNowPlayingTrack*(
-  fm: SyncLastFM | AsyncLastFM,
-  scrobble: Scrobble): Future[JsonNode] {.multisync.} =
+  fm: AsyncLastFM,
+  scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Sets the current playing track on Last.FM
   result = await fm.setNowPlaying(track = scrobble.track,
                                   artist = scrobble.artist,
@@ -98,8 +98,8 @@ proc setNowPlayingTrack*(
 
 
 proc scrobbleTrack*(
-  fm: SyncLastFM | AsyncLastFM,
-  scrob: Scrobble): Future[JsonNode] {.multisync.} =
+  fm: AsyncLastFM,
+  scrob: Scrobble): Future[JsonNode] {.async.} =
   ## Scrobble a track to Last.FM
   result = await fm.scrobble(track = scrob.track,
                              artist = scrob.artist,
