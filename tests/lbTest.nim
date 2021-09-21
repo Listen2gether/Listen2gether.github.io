@@ -3,7 +3,7 @@ import jsony
 import ../src/sources/[lb, lbTypes, utils]
 
 
-suite "ListenBrainz source":   
+suite "ListenBrainz source":
   setup:
     let
       jsonEx = readFile("tests/lbEx.json")
