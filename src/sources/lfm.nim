@@ -1,42 +1,112 @@
-import std/[asyncdispatch, strutils, json, options]
-import lastfm
-import lastfm/[track, user]
-import lfmTypes
-import utils
+import std/[asyncdispatch, strutils, json]
+import pkg/lastfm
+import pkg/lastfm/[track, user]
+include utils
 import ../types
 
 
-proc renameHook*(v: var FMTrack, fieldName: var string) =
-  if fieldName == "@attr":
-    fieldName = "attr"
+type
+  FMTrack* = object
+    artist*, album*: JsonNode
+    date*: Option[JsonNode]
+    mbid*, name*, url*: Option[string]
+    `@attr`*: Option[Attributes]
+
+  Attributes* = object
+    nowplaying*: string
+
+  Scrobble* = object
+    track*, artist*: string
+    album*, mbid*, albumArtist*: Option[string]
+    trackNumber*, duration*: Option[int]
 
 
-proc renameHook*(v: var FMObject, fieldName: var string) =
-  if fieldName == "#text":
-    fieldName = "text"
+func newFMTrack*(
+  artist, album: JsonNode,
+  date: Option[JsonNode] = none(JsonNode),
+  mbid, name, url: Option[string] = none(string),
+  `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
+  ## Create new `FMTrack` object
+  result.artist = artist
+  result.album = album
+  result.date = date
+  result.mbid = mbid
+  result.name = name
+  result.url = url
+  result.`@attr` = `@attr`
 
 
-proc parseHook*(s: string, i: var int, v: var bool) =
-  var str: string
-  parseHook(s, i, str)
-  v = parseBool(str)
+func newAttributes*(
+  nowplaying: string): Attributes =
+  ## Create new `Attributes` object
+  result.nowplaying = nowplaying
+
+
+func newScrobble*(
+  track, artist: string,
+  album, mbid, albumArtist: Option[string] = none(string),
+  trackNumber, duration: Option[int] = none(int)): Scrobble =
+  ## Create new `Scrobble` object
+  result.track = track
+  result.artist = artist
+  result.album = album
+  result.mbid = mbid
+  result.albumArtist = albumArtist
+  result.trackNumber = trackNumber
+  result.duration = duration
+
+
+# proc renameHook*(v: var FMTrack, fieldName: var string) =
+#   if fieldName == "@attr":
+#     fieldName = "attr"
+
+
+# proc renameHook*(v: var FMObject, fieldName: var string) =
+#   if fieldName == "#text":
+#     fieldName = "text"
+
+
+# proc parseHook*(s: string, i: var int, v: var bool) =
+#   var str: string
+#   parseHook(s, i, str)
+#   v = parseBool(str)
+
+
+proc checkString(val: string): Option[string] =
+  if val.isEmptyOrWhitespace():
+    result = none(string)
+  else:
+    result = some(val)
+
+
+proc getVal(node: JsonNode, index: string): Option[string] =
+  let val = getStr(node{index})
+  result = checkString(val)
 
 
 proc to*(fmTrack: FMTrack): Track =
   ## Convert an `FMTrack` object to a `Track` object
-  var date: Option[int64]
+  var
+    date: Option[int64]
+    artistMbid: string
+    artistMbids: Option[seq[string]]
   if isSome(fmTrack.date):
     let dateStr = getStr(get(fmTrack.date){"uts"})
     if dateStr != "":
       date = some(parseBiggestInt(dateStr))
     else:
       date = none(int64)
-  result = newTrack(trackName = fmTrack.name,
-                    artistName = fmTrack.artist.text,
-                    releaseName = fmTrack.album.text,
-                    recordingMbid = fmTrack.mbid,
-                    releaseMbid = fmTrack.album.mbid,
-                    artistMbids = @[fmTrack.artist.mbid],
+  artistMbid = getStr(fmTrack.artist{"mbid"})
+  if artistMbid != "":
+    artistMbids = some(@[artistMbid])
+  else:
+    artistMbids = none(seq[string])
+  result = newTrack(trackName = get(fmTrack.name),
+                    artistName = get(getVal(fmTrack.artist, "#text")),
+                    releaseName = getVal(fmTrack.album, "#text"),
+                    recordingMbid = checkString(get(fmTrack.mbid)),
+                    releaseMbid = getVal(fmTrack.album, "mbid"),
+                    artistMbids = artistMbids,
                     listenedAt = date)
 
 
@@ -51,7 +121,7 @@ proc to*(scrobble: Scrobble): Track =
   result = newTrack(trackName = scrobble.track,
                     artistName = scrobble.artist,
                     releaseName = scrobble.album,
-                    artistMbids = @[scrobble.mbid],
+                    artistMbids = some(@[get(scrobble.mbid)]),
                     trackNumber = scrobble.trackNumber,
                     duration = scrobble.duration)
 
@@ -79,7 +149,7 @@ proc updateUser*(
   fm: AsyncLastFM,
   user: User) {.async.} =
   ## Update a Last.FM user's `playingNow` and `listenHistory`
-  let tracks = await getRecentTracks(fm, user)
+  let tracks = waitFor getRecentTracks(fm, user)
   user.playingNow = tracks[0]
   user.listenHistory = tracks[1]
 
@@ -90,9 +160,9 @@ proc setNowPlayingTrack*(
   ## Sets the current playing track on Last.FM
   result = await fm.setNowPlaying(track = scrobble.track,
                                   artist = scrobble.artist,
-                                  album = scrobble.album,
-                                  mbid = scrobble.mbid,
-                                  albumArtist = scrobble.albumArtist,
+                                  album = get(scrobble.album),
+                                  mbid = get(scrobble.mbid),
+                                  albumArtist = get(scrobble.albumArtist),
                                   trackNumber = scrobble.trackNumber,
                                   duration = scrobble.duration)
 
@@ -103,8 +173,8 @@ proc scrobbleTrack*(
   ## Scrobble a track to Last.FM
   result = await fm.scrobble(track = scrob.track,
                              artist = scrob.artist,
-                             album = scrob.album,
-                             mbid = scrob.mbid,
-                             albumArtist = scrob.albumArtist,
+                             album = get(scrob.album),
+                             mbid = get(scrob.mbid),
+                             albumArtist = get(scrob.albumArtist),
                              trackNumber = scrob.trackNumber,
                              duration = scrob.duration)

@@ -9,13 +9,14 @@ bin           = @["listen2gether"]
 
 
 # Dependencies
-requires "nim >= 1.5.0"
-requires "listenbrainz#head"
-requires "lastfm#head"
+requires "nim >= 1.4.0"
+requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
+requires "https://gitlab.com/tandy1000/lastfm-nim#head"
 requires "norm"
-requires "https://github.com/tandy-1000/karax/"
 requires "prologue"
 requires "jsony"
+requires "karax"
+requires "https://github.com/disruptek/frosty"
 
 task buildjs, "compile templates":
   withDir "src/templates":

@@ -20,8 +20,9 @@ type
     toMirror*, listenHistory*: seq[Track]
 
   Track* = object
-    trackName*, artistName*, releaseName*, recordingMbid*, releaseMbid*: string
-    artistMbids*: seq[string]
+    trackName*, artistName*: string
+    releaseName*, recordingMbid*, releaseMbid*: Option[string]
+    artistMbids*: Option[seq[string]]
     trackNumber*, duration*: Option[int]
     listenedAt*: Option[int64]
 
@@ -54,8 +55,9 @@ func newUser*(
 
 
 func newTrack*(
-  trackName, artistName, releaseName, recordingMbid, releaseMbid: string = "",
-  artistMbids: seq[string] = @[],
+  trackName, artistName: string,
+  releaseName, recordingMbid, releaseMbid: Option[string] = none(string),
+  artistMbids: Option[seq[string]] = none(seq[string]),
   trackNumber, duration: Option[int] = none(int),
   listenedAt: Option[int64] = none(int64)): Track =
   ## Create new Track object

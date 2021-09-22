@@ -1,7 +1,5 @@
 import std/options
 import pkg/jsony
-import lbTypes
-
 
 proc camel2snake*(s: string): string =
   ## CanBeFun => can_be_fun
@@ -26,7 +24,7 @@ proc dumpHook*[T](s: var string, v: Option[T]) =
     s.dumpHook(v.get())
 
 
-proc dumpHook*(s: var string, v: SubmissionPayload | ListenPayload | Listen | TrackMetadata | AdditionalInfo) =
+proc dumpHook*(s: var string, v: object) =
   s.add '{'
   var i = 0
   when compiles(for k, e in v.pairs: discard):

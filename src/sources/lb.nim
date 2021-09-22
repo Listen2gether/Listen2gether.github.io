@@ -1,15 +1,98 @@
 when defined(js):
-  import lbTypes, utils, ../types
-  import std/[asyncjs, json, strutils, jsconsole, options]
-  import pkg/[listenbrainz, jsony]
+  import std/[asyncjs, json, strutils]
+  import pkg/listenbrainz
   import pkg/listenbrainz/core
-  
+  include utils
+  import ../types
 else:
-  import lbTypes, utils, ../types
-  import std/[asyncdispatch, json, strutils, options]
-  import pkg/[listenbrainz, jsony]
+  import std/[asyncdispatch, json, strutils]
+  import pkg/listenbrainz
   import pkg/listenbrainz/core
+  include utils
+  import ../types
 
+
+type
+  SubmissionPayload* = object
+    listenType*: string
+    payload*: seq[Listen]
+
+  ListenPayload* = object
+    count*: int
+    latestListenTs*: Option[int64]
+    listens*: seq[Listen]
+    playingNow*: Option[bool]
+
+  Listen* = object
+    listenedAt*: Option[int64]
+    trackMetadata*: TrackMetadata
+
+  TrackMetadata* = object
+    trackName*, artistName*: string
+    releaseName*: Option[string]
+    additionalInfo*: Option[AdditionalInfo]
+
+  AdditionalInfo* = object
+    tracknumber*: Option[int]
+    trackMbid*, recordingMbid*, releaseGroupMbid*, releaseMbid*, isrc*, spotifyId*, listeningFrom*: Option[string]
+    tags*, artistMbids*, workMbids*: Option[seq[string]]
+
+
+func newSubmissionPayload*(
+  listenType: string,
+  payload: seq[Listen]): SubmissionPayload =
+  ## Create new SubmissionPayload object
+  result.listenType = listenType
+  result.payload = payload
+
+
+func newListenPayload*(
+  count: int,
+  latestListenTs: Option[int64] = none(int64),
+  listens: seq[Listen],
+  playingNow: Option[bool] = none(bool)): ListenPayload =
+  ## Create new ListenPayload object
+  result.count = count
+  result.latestListenTs = latestListenTs
+  result.listens = listens
+  result.playingNow = playingNow
+
+
+func newListen*(
+  listenedAt: Option[int64] = none(int64),
+  trackMetadata: TrackMetadata): Listen =
+  ## Create new Listen object
+  result.listenedAt = listenedAt
+  result.trackMetadata = trackMetadata
+
+
+func newTrackMetadata*(
+  trackName, artistName: string,
+  releaseName: Option[string] = none(string),
+  additionalInfo: Option[AdditionalInfo] = none(AdditionalInfo)): TrackMetadata =
+  ## Create new TrackMetadata object
+  result.trackName = trackName
+  result.artistName = artistName
+  result.releaseName = releaseName
+  result.additionalInfo = additionalInfo
+
+
+func newAdditionalInfo*(
+  tracknumber: Option[int] = none(int),
+  trackMbid, recordingMbid, releaseGroupMbid, releaseMbid, isrc, spotifyId, listeningFrom: Option[string] = none(string),
+  tags, artistMbids, workMbids: Option[seq[string]] = none(seq[string])): AdditionalInfo =
+  ## Create new Track object
+  result.tracknumber = tracknumber
+  result.trackMbid = trackMbid
+  result.recordingMbid = recordingMbid
+  result.releaseGroupMbid = releaseGroupMbid
+  result.releaseMbid = releaseMbid
+  result.isrc = isrc
+  result.spotifyId = spotifyId
+  result.listeningFrom = listeningFrom
+  result.tags = tags
+  result.artistMbids = artistMbids
+  result.workMbids = workMbids
 
 proc to*(
   track: Track,
@@ -72,9 +155,7 @@ proc getNowPlaying*(
   ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
-  when defined(js):
-    console.log($nowPlaying["payload"])
-  let payload = fromJson($nowPlaying["payload"], ListenPayload)
+    payload = fromJson($nowPlaying["payload"], ListenPayload)
   if payload.count == 1:
     result = some(to(payload.listens[0]))
   else:
@@ -86,58 +167,21 @@ proc getRecentTracks*(
   user: User,
   count: int = 7): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
-  var tracks: seq[Track]
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
     payload = fromJson($recentListens["payload"], ListenPayload)
   if payload.count > 0:
     result = to(payload.listens)
   else:
-    result = tracks
+    result = @[]
 
 
 proc updateUser*(
   lb: AsyncListenBrainz,
   user: User) {.async.} =
   ## Update a ListenBrainz user's `playingNow` and `listenHistory`
-  user.playingNow = await getNowPlaying(lb, user)
-  user.listenHistory = await getRecentTracks(lb, user)
-  # let
-  #   json = """{
-  #   "count": 1,
-  #   "latest_listen_ts": 1631565896,
-  #   "listens": [
-  #     {
-  #       "inserted_at": "Mon, 13 Sep 2021 21:05:00 GMT",
-  #       "listened_at": 1631565896,
-  #       "recording_msid": "37a9a609-922c-4309-9236-7fe619588a0a",
-  #       "track_metadata": {
-  #         "additional_info": {
-  #           "artist_mbids": [
-  #             "b2853652-db74-44b7-b4b3-ffb72af6b910"
-  #           ],
-  #           "artist_msid": "546c1e23-e080-42bb-9146-82dfeebf0de0",
-  #           "listening_from": "Lollypop",
-  #           "recording_mbid": "9b1db701-fd8d-4996-b40f-5b24c6a17e78",
-  #           "recording_msid": "37a9a609-922c-4309-9236-7fe619588a0a",
-  #           "release_mbid": "2e326aa2-c7fa-4766-94bf-365e946b256f",
-  #           "release_msid": "b5c45f6b-38d3-42f4-847d-ff49ae994a12",
-  #           "tracknumber": 7
-  #         },
-  #         "artist_name": "Casiopea",
-  #         "release_name": "Casiopea",
-  #         "track_name": "Dream Hill"
-  #       },
-  #       "user_name": "tandy1000"
-  #     }
-  #   ],
-  #   "user_id": "tandy1000"
-  # }"""
-  # # when defined(js):
-  # #   console.log(json)
-  # let listenPayload = fromJson(json, ListenPayload)
-  # user.playingNow = some(to(listenPayload.listens[0]))
-  # user.listenHistory = to(listenPayload.listens)  
+  user.playingNow = waitFor getNowPlaying(lb, user)
+  user.listenHistory = waitFor getRecentTracks(lb, user)
 
 
 proc listenTrack*(
