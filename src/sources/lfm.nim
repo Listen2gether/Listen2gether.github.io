@@ -56,22 +56,6 @@ func newScrobble*(
   result.duration = duration
 
 
-# proc renameHook*(v: var FMTrack, fieldName: var string) =
-#   if fieldName == "@attr":
-#     fieldName = "attr"
-
-
-# proc renameHook*(v: var FMObject, fieldName: var string) =
-#   if fieldName == "#text":
-#     fieldName = "text"
-
-
-# proc parseHook*(s: string, i: var int, v: var bool) =
-#   var str: string
-#   parseHook(s, i, str)
-#   v = parseBool(str)
-
-
 proc checkString(val: string): Option[string] =
   if val.isEmptyOrWhitespace():
     result = none(string)
