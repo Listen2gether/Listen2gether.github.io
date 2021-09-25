@@ -18,7 +18,7 @@ proc mirror*(ctx: Context) {.async, gcsafe.} =
       service = listenBrainzService
       let asyncListenBrainz = newAsyncListenBrainz()
       user.services[listenBrainzService].username = usernameParam
-      waitFor asyncListenBrainz.initUser(user)
+      waitFor asyncListenBrainz.updateUser(user, preMirror = true)
     of "lastfm":
       service = lastFmService
       let asyncLastFM = newAsyncLastFM()

@@ -184,21 +184,13 @@ proc getRecentTracks*(
     result = @[]
 
 
-proc initUser*(
-  lb: AsyncListenBrainz,
-  user: User) {.async.} =
-  ## Get a ListenBrainz user's `playingNow` and `listenHistory`
-  user.playingNow = waitFor getNowPlaying(lb, user)
-  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror = true)
-  insertUserTable(user, listenBrainzService)
-
-
 proc updateUser*(
   lb: AsyncListenBrainz,
-  user: User) {.async.} =
+  user: User,
+  preMirror: bool) {.async.} =
   ## Get a ListenBrainz user's `playingNow` and `listenHistory`
   user.playingNow = waitFor getNowPlaying(lb, user)
-  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror = false)
+  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror)
   updateUserTable(user, listenBrainzService)
 
 
