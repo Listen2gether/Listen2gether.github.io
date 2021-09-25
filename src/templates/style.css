@@ -172,6 +172,10 @@ ul {
   flex-grow: 1;
 }
 
+hr {
+  margin: 1.25em 1.5em;
+}
+
 .listen {
   display: flex;
   align-items: center;

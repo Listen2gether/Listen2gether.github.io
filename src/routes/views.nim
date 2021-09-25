@@ -18,10 +18,10 @@ proc mirror*(ctx: Context) {.async.} =
       service = listenBrainzService
       let asyncListenBrainz = newAsyncListenBrainz()
       user.services[listenBrainzService].username = usernameParam
-      asyncCheck asyncListenBrainz.updateUser(user)
+      waitFor asyncListenBrainz.initUser(user)
     of "lastfm":
       service = lastFmService
       let asyncLastFM = newAsyncLastFM()
       user.services[lastFmService].username = usernameParam
-      asyncCheck asyncLastFM.updateUser(user)
+      waitFor asyncLastFM.updateUser(user)
   resp htmlResponse(mirrorPage(ctx, service, user))

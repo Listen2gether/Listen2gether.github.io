@@ -5,7 +5,10 @@ import share, ../types
 
 
 proc mainSection(service: Service, user: User): Vnode =
-  var username, userUrl: string
+  var
+    username, userUrl: string
+    preMirrorSplit: bool = false
+    maxListens: int = 7
   case service:
     of listenBrainzService:
       username = user.services[listenBrainzService].username
@@ -19,7 +22,7 @@ proc mainSection(service: Service, user: User): Vnode =
       ul:
         if isSome(user.playingNow):
           li(class = "listen"):
-            img(src = "/src/templates/assets/listening.svg")
+            img(src = "/src/templates/assets/nowplaying.svg")
             tdiv(id = "listen-details"):
               tdiv(id = "track-details"):
                 p(id = "track-name"):
@@ -28,9 +31,21 @@ proc mainSection(service: Service, user: User): Vnode =
                   text get(user.playingNow).artistName
               span:
                 text "Playing now"
-        for track in user.listenHistory:
+          maxListens = 6
+        for idx, track in user.listenHistory[0..maxListens]:
+          if isSome(track.preMirror):
+            if get(track.preMirror) == true and preMirrorSplit == false:
+              if idx == 0:
+                preMirrorSplit = true
+              else:
+                hr()
+                preMirrorSplit = true
           li(class = "listen"):
-            img(src = "/src/templates/assets/pre-mirror-listen.svg")
+            if isSome(track.mirrored):
+              if get(track.mirrored):
+                img(src = "/src/templates/assets/mirrored.svg")
+              else:
+                img(src = "/src/templates/assets/pre-mirror.svg")
             tdiv(id = "listen-details"):
               tdiv(id = "track-details"):
                 p(id = "track-name"):
