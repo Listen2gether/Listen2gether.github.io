@@ -8,7 +8,7 @@ type
 
   ServiceUser* = ref object
     username*, baseUrl*: string
-    case service: Service
+    case service*: Service
     of listenBrainzService:
       token*: string
     of lastFmService:
