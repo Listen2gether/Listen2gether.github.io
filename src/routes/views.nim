@@ -6,7 +6,7 @@ import ../types
 proc home*(ctx: Context) {.async.} =
   resp readFile("src/templates/home.html")
 
-proc mirror*(ctx: Context) {.async.} =
+proc mirror*(ctx: Context) {.async, gcsafe.} =
   let
     serviceParam = ctx.getPathParams("service")
     usernameParam = ctx.getPathParams("username")
