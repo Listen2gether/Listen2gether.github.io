@@ -51,5 +51,8 @@ proc updateUserTable*(
   service: Service,
   db: DbConn = openDbConn()) =
   var userTable = selectUserTable(user, service, db)
-  userTable.user = user.toJson()
-  db.update(userTable)
+  if userTable == newUserTable():
+    insertUserTable(user, service, db)
+  else:
+    userTable.user = user.toJson()
+    db.update(userTable)
