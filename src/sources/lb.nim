@@ -8,8 +8,9 @@ else:
   import std/[asyncdispatch, json, strutils]
   import pkg/listenbrainz
   import pkg/listenbrainz/core
+  import pkg/norm/sqlite
   include utils
-  import ../types
+  import ".."/[types, models]
 
 
 type
@@ -112,7 +113,9 @@ proc to*(
                      trackMetadata = trackMetadata)
 
 
-proc to*(listen: Listen): Track =
+proc to*(
+  listen: Listen,
+  preMirror: Option[bool] = none(bool)): Track =
   ## Convert a `Listen` object to a `Track` object
   result = newTrack(trackName = listen.trackMetadata.trackName,
                     artistName = listen.trackMetadata.artistName,
@@ -121,13 +124,17 @@ proc to*(listen: Listen): Track =
                     releaseMbid = get(listen.trackMetadata.additionalInfo).releaseMbid,
                     artistMbids = get(listen.trackMetadata.additionalInfo).artistMbids,
                     trackNumber = get(listen.trackMetadata.additionalInfo).trackNumber,
-                    listenedAt = listen.listenedAt)
+                    listenedAt = listen.listenedAt,
+                    preMirror = preMirror,
+                    mirrored = some(false))
 
 
-proc to*(listens: seq[Listen]): seq[Track] =
+proc to*(
+  listens: seq[Listen],
+  preMirror: Option[bool] = none(bool)): seq[Track] =
   ## Convert a sequence of `Listen` objects to a sequence of `Track` objects
   for listen in listens:
-    result.add(to(listen))
+    result.add(to(listen, preMirror))
 
 
 proc to*(
@@ -165,23 +172,41 @@ proc getNowPlaying*(
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
   user: User,
-  count: int = 7): Future[seq[Track]] {.async.} =
+  preMirror: bool,
+  count: int = 8): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   let
     recentListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
     payload = fromJson($recentListens["payload"], ListenPayload)
   if payload.count > 0:
-    result = to(payload.listens)
+    result = to(payload.listens, some(preMirror))
   else:
     result = @[]
+
+
+proc initUser*(
+  lb: AsyncListenBrainz,
+  user: User) {.async.} =
+  ## Get a ListenBrainz user's `playingNow` and `listenHistory`
+  user.playingNow = waitFor getNowPlaying(lb, user)
+  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror = true)
+  insertUserTable(user, listenBrainzService)
 
 
 proc updateUser*(
   lb: AsyncListenBrainz,
   user: User) {.async.} =
-  ## Update a ListenBrainz user's `playingNow` and `listenHistory`
+  ## Get a ListenBrainz user's `playingNow` and `listenHistory`
   user.playingNow = waitFor getNowPlaying(lb, user)
-  user.listenHistory = waitFor getRecentTracks(lb, user)
+  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror = false)
+  updateUserTable(user, listenBrainzService)
+
+
+# index history by listenedAt
+# on init: get now playing and history set tracks as premirror
+# on update: get listens, add to history if greater than latestListenTS, set as mirrored only when submitted succesfully
+
+# def submitMirrorQueue*
 
 
 proc listenTrack*(
