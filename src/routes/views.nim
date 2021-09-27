@@ -23,5 +23,5 @@ proc mirror*(ctx: Context) {.async, gcsafe.} =
       service = lastFmService
       let asyncLastFM = newAsyncLastFM()
       user.services[lastFmService].username = usernameParam
-      waitFor asyncLastFM.updateUser(user)
+      waitFor asyncLastFM.updateUser(user, preMirror = true)
   resp htmlResponse(mirrorPage(ctx, service, user))

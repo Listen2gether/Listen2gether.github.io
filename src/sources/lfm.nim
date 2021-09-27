@@ -1,8 +1,16 @@
-import std/[asyncdispatch, strutils, json]
-import pkg/lastfm
-import pkg/lastfm/[track, user]
-include utils
-import ../types
+when defined(js):
+  import std/[asyncjs, json, strutils]
+  import pkg/listenbrainz
+  import pkg/listenbrainz/core
+  include utils
+  import ../types
+else:
+  import std/[asyncdispatch, strutils, json]
+  import pkg/lastfm
+  import pkg/lastfm/[track, user]
+  import pkg/norm/sqlite
+  include utils
+  import ".."/[types, models]
 
 
 type
@@ -131,11 +139,13 @@ proc getRecentTracks*(
 
 proc updateUser*(
   fm: AsyncLastFM,
-  user: User) {.async.} =
+  user: User,
+  preMirror: bool) {.async.} =
   ## Update a Last.FM user's `playingNow` and `listenHistory`
   let tracks = waitFor getRecentTracks(fm, user)
   user.playingNow = tracks[0]
   user.listenHistory = tracks[1]
+  updateUserTable(user, lastFmService)
 
 
 proc setNowPlayingTrack*(
