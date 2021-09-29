@@ -187,27 +187,25 @@ hr {
   padding: .8rem;
 }
 
-.listen > img {
+#listen-details {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+#listen-details > img {
   height: .8rem;
   margin-right: .8rem;
 }
 
-#listen-details {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-}
-
 #listen-details > span {
-  float: right;
   font-style: italic;
   text-align: right;
-  margin-left: 0.8rem;
+  margin-left: auto;
 }
 
 #track-details{
-  max-width: 15.8rem;
+  max-width: 16.6rem;
 }
 
 #track-details > p {

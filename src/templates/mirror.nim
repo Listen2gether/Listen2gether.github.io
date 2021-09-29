@@ -22,8 +22,8 @@ proc mainSection(service: Service, user: User): Vnode =
       ul:
         if isSome(user.playingNow):
           li(class = "listen"):
-            img(src = "/src/templates/assets/nowplaying.svg")
             tdiv(id = "listen-details"):
+              img(src = "/src/templates/assets/nowplaying.svg")
               tdiv(id = "track-details"):
                 p(id = "track-name"):
                   text get(user.playingNow).trackName
@@ -41,12 +41,12 @@ proc mainSection(service: Service, user: User): Vnode =
                 hr()
                 preMirrorSplit = true
           li(class = "listen"):
-            if isSome(track.mirrored):
-              if get(track.mirrored):
-                img(src = "/src/templates/assets/mirrored.svg")
-              else:
-                img(src = "/src/templates/assets/pre-mirror.svg")
             tdiv(id = "listen-details"):
+              if isSome(track.mirrored):
+                if get(track.mirrored):
+                  img(src = "/src/templates/assets/mirrored.svg")
+                else:
+                  img(src = "/src/templates/assets/pre-mirror.svg")
               tdiv(id = "track-details"):
                 p(id = "track-name"):
                   text track.trackName
