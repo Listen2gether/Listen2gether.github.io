@@ -203,6 +203,7 @@ hr {
   float: right;
   font-style: italic;
   text-align: right;
+  margin-left: 0.8rem;
 }
 
 #track-details > p {
