@@ -206,8 +206,15 @@ hr {
   margin-left: 0.8rem;
 }
 
+#track-details{
+  max-width: 15.8rem;
+}
+
 #track-details > p {
+  text-overflow: ellipsis;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 #listening, #listened {
