@@ -1,18 +1,18 @@
-import pkg/norm/[model, pragmas, sqlite]
+import pkg/norm/[model, sqlite]
 import pkg/jsony
 import types
 
-let DBLOCATION = "listen2gether.db"
+
+const DBLOCATION = "listen2gether.db"
 
 
 type
   UserTable = ref object of Model
-    userID* {.unique.}: string
-    user*: string
+    userID*, userJson*: string
 
 
-func newUserTable(userID = "", user = ""): UserTable =
-  UserTable(userID: userID, user: user)
+func newUserTable(userID, userJson = ""): UserTable =
+  UserTable(userID: userID, userJson: userJson)
 
 
 proc openDbConn*(dbLocation = DBLOCATION): DbConn =
@@ -23,27 +23,32 @@ proc createTables*(db: DbConn = openDbConn()) =
   db.createTables(newUserTable())
 
 
-proc insertUserTable*(
+proc insertUserTable(
   user: User,
   service: Service,
-  db: DbConn = openDbConn()) =
-  var userTable = newUserTable(user.services[service].baseUrl, user.toJson())
+  db: DbConn = openDbConn()): UserTable =
+  let userID = user.services[service].baseUrl & user.services[service].username
+  var userTable = newUserTable(userID, user.toJson())
   db.insert(userTable)
+  return userTable
 
 
 proc selectUserTable(
   user: User,
   service: Service,
   db: DbConn = openDbConn()): UserTable =
-  result = newUserTable()
-  db.select(result, "UserTable.userID = ?", user.services[service].baseUrl)
+  try:
+    result = newUserTable()
+    db.select(result, "UserTable.userID = ?", user.services[service].baseUrl)
+  except NotFoundError:
+    result = insertUserTable(user, service, db)
 
 
 proc selectUser*(
   user: User,
   service: Service): User =
   let userTable = selectUserTable(user, service)
-  result = fromJson(userTable.user, User)
+  result = fromJson(userTable.userJson, User)
 
 
 proc updateUserTable*(
@@ -52,7 +57,7 @@ proc updateUserTable*(
   db: DbConn = openDbConn()) =
   var userTable = selectUserTable(user, service, db)
   if userTable == newUserTable():
-    insertUserTable(user, service, db)
+    discard insertUserTable(user, service, db)
   else:
-    userTable.user = user.toJson()
+    userTable.userJson = user.toJson()
     db.update(userTable)
