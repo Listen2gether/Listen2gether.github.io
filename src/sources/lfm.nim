@@ -1,16 +1,15 @@
 when defined(js):
-  import std/[asyncjs, json, strutils]
-  import pkg/listenbrainz
-  import pkg/listenbrainz/core
-  include utils
-  import ../types
+  import std/asyncjs
 else:
-  import std/[asyncdispatch, strutils, json]
-  import pkg/lastfm
-  import pkg/lastfm/[track, user]
+  import std/asyncdispatch
   import pkg/norm/sqlite
-  include utils
-  import ".."/[types, models]
+  import ../models
+
+import std/[json, strutils]
+import pkg/lastfm
+import pkg/lastfm/[track, user]
+import ../types
+include utils
 
 
 type
