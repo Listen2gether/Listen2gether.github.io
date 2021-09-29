@@ -1,14 +1,14 @@
 when defined(js):
   import std/asyncjs
-  import ../types
 else:
   import std/asyncdispatch
   import pkg/norm/sqlite
-  import ".."/[types, models]
+  import ../models
 
 import std/[json, strutils]
 import pkg/listenbrainz
 import pkg/listenbrainz/core
+import ../types
 include utils
 
 
