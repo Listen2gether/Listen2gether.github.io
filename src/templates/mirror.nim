@@ -6,7 +6,7 @@ import share, ../types
 
 proc mainSection(service: Service, user: User): Vnode =
   var
-    username, userUrl: string
+    username, userUrl, trackName, artistName: string
     preMirrorSplit: bool = false
     maxListens: int = 7
   case service:
@@ -25,10 +25,12 @@ proc mainSection(service: Service, user: User): Vnode =
             tdiv(id = "listen-details"):
               img(src = "/src/templates/assets/nowplaying.svg")
               tdiv(id = "track-details"):
-                p(id = "track-name"):
-                  text get(user.playingNow).trackName
-                p(id = "artist-name"):
-                  text get(user.playingNow).artistName
+                trackName = get(user.playingNow).trackName
+                artistName = get(user.playingNow).artistName
+                p(title = trackName, id = "track-name"):
+                  text trackName
+                p(title = artistName, id = "artist-name"):
+                  text artistName
               span:
                 text "Playing now"
           maxListens = 6
@@ -48,11 +50,13 @@ proc mainSection(service: Service, user: User): Vnode =
                 else:
                   img(src = "/src/templates/assets/pre-mirror.svg")
               tdiv(id = "track-details"):
-                p(id = "track-name"):
-                  text track.trackName
-                p(id = "artist-name"):
-                  text track.artistName
-              span(title = fromUnix(get(track.listenedAt)).format("dd/MM/yy")):
+                trackName = track.trackName
+                artistName = track.artistName
+                p(title = trackName, id = "track-name"):
+                  text trackName
+                p(title = artistName, id = "artist-name"):
+                  text artistName
+              span(title = fromUnix(get(track.listenedAt)).format("HH:mm:ss dd/MM/yy")):
                 text fromUnix(get(track.listenedAt)).format("HH:mm")
 
 proc mirrorPage*(ctx: Context, service: Service, user: User): string =
