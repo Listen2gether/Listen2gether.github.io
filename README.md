@@ -5,9 +5,8 @@
 
 ### TODO:
 - [ ] Create basic functionality for scrobble mirroring
-  - [x] Implement for ListenBrainz source
-  - [x] Implement for Last.fm source
-- [x] Setup Karax
-  - [x] Create home view (static)
-  - [x] Create mirror view (generated)
-- [ ] Overhaul Norm database models
+- [ ] Refactor `listenbrainz-nim` to be more like `matrix-nim-sdk`
+- [ ] JavaScript backend support
+  - [x] `listenbrainz-nim`
+  - [ ] `lastfm-nim`
+
