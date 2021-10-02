@@ -1,4 +1,4 @@
-import prologue
+import pkg/prologue
 import views
 
 const urlPatterns* = @[

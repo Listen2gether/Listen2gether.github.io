@@ -2,7 +2,6 @@ when defined(js):
   import std/asyncjs
 else:
   import std/asyncdispatch
-  import pkg/norm/sqlite
   import ../models
 
 import std/[json, strutils]
