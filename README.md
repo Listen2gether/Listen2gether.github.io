@@ -7,7 +7,6 @@
 - [ ] Change to SPA architechture
 - [ ] Design and implement ListenBrainz token auth flow
 - [ ] Create basic functionality for scrobble mirroring
-- [ ] Move variables to `.env` file
 - [ ] [Last.fm](https://last.fm) support
   - [ ] JavaScript backend support for `lastfm-nim`
 

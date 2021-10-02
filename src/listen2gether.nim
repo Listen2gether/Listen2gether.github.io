@@ -2,9 +2,18 @@ import pkg/prologue
 import pkg/prologue/middlewares/staticfile
 import routes/urls, models
 
-let settings = newSettings(appName = "Listen2gether", port = Port(8080))
 createTables()
+
+let
+  env = loadPrologueEnv(".env")
+  settings = newSettings(
+    appName = env.getOrDefault("appName", "Listen2gether"),
+    debug = env.getOrDefault("debug", true),
+    port = Port(env.getOrDefault("port", 8080))
+  )
+
 var app = newApp(settings = settings)
-app.use(staticFileMiddleware("src/templates"))
+
+app.use(staticFileMiddleware(env.get("staticDir")))
 app.addRoute(urls.urlPatterns, "")
 app.run()
