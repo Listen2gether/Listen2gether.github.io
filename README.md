@@ -4,8 +4,10 @@
 ![Current state of the Figma UI](docs/UIdraft.png)
 
 ### TODO:
+- [ ] Redesign landing page
+  - [ ] Design and implement ListenBrainz token auth flow
+  - [ ] Store details in IndexedDB
 - [ ] Change to SPA architechture
-- [ ] Design and implement ListenBrainz token auth flow
 - [ ] Create basic functionality for scrobble mirroring
 - [ ] [Last.fm](https://last.fm) support
   - [ ] JavaScript backend support for `lastfm-nim`
