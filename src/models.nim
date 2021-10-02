@@ -1,4 +1,5 @@
 import pkg/norm/[model, sqlite]
+import karax/kbase
 import pkg/jsony
 import types
 
@@ -8,7 +9,7 @@ const DBLOCATION = "listen2gether.db"
 
 type
   UserTable = ref object of Model
-    userID*, userJson*: string
+    userID*, userJson*: kstring
 
 
 func newUserTable(userID, userJson = ""): UserTable =
