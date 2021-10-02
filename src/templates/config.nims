@@ -1,1 +1,0 @@
-setCommand "js"
