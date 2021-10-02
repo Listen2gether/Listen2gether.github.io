@@ -1,4 +1,4 @@
-import karax/[karax, karaxdsl, vdom, kdom]
+import pkg/karax/[karax, karaxdsl, vdom, kdom]
 import share
 
 proc onServiceToggleClick(ev: Event; n: VNode) =

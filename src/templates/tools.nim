@@ -1,4 +1,4 @@
-import karax / [karaxdsl, vdom]
+import pkg/karax/[karaxdsl, vdom]
 
 proc makeHeader*(): Vnode =
   result = buildHtml(header()):
