@@ -4,10 +4,10 @@
 ![Current state of the Figma UI](docs/UIdraft.png)
 
 ### TODO:
+- [ ] Change to SPA architechture
+- [ ] Design and implement ListenBrainz token auth flow
 - [ ] Create basic functionality for scrobble mirroring
-- [ ] JavaScript backend support
-  - [x] `listenbrainz-nim`
-  - [ ] `lastfm-nim`
 - [ ] Move variables to `.env` file
 - [ ] [Last.fm](https://last.fm) support
+  - [ ] JavaScript backend support for `lastfm-nim`
 
