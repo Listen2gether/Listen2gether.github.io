@@ -1,5 +1,6 @@
 import pkg/karax/[karaxdsl, vdom]
 
+
 proc head*(): Vnode =
   result = buildHtml(head):
     meta(charset="utf-8", name="viewport", content="width=device-width, initial-scale=1")
@@ -14,6 +15,7 @@ proc headerSection*(): Vnode =
       text "Listen"
       span: text "2"
       text "gether"
+
 
 proc footerSection*(): Vnode =
   result = buildHtml(footer):
