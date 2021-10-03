@@ -27,13 +27,13 @@ header {
   color: #000000;
 }
 
-header > a,
-header > a:visited {
+.header,
+.header:visited {
   color: #000000;
   text-decoration: none;
 }
 
-a > span {
+.header > span {
   color: #FF4545;
 }
 
@@ -41,29 +41,71 @@ main {
   border: 0.01rem solid #cccccc;
 }
 
-#login {
-    margin: 5% 0;
+.inner-grid {
+  display: grid;
+  /* grid-template-columns: 1fr 1fr; */
+  grid-template-columns: auto auto;
+  padding: 0 20%;
+  margin: 0 0 3.5em 0;
+}
+
+.col {
+  padding: 2.5% 2.5%;
+}
+
+#grid-2 {
+  align-content: center;
+  display: grid;
+}
+
+/* #grid-3, #grid-4 {
+  padding: 0 0 2.5% 0; 
+} */
+
+p {
+  margin: 0;
+}
+
+#title {
+  font: normal 3.5rem "Inter Medium", sans-serif;
+  margin: .75em 0 0 0;
+}
+
+#subtitle {
+  font: normal 1.8rem "Inter", sans-serif;
+  margin: 1.75em 0 0 0;
+}
+
+#body {
+  font: normal 1.5rem "Inter", sans-serif;
+  margin: 2.85rem 0 0 0;
+}
+
+#demo {
+  width: 37em;
+  margin: 4em auto auto auto;
+  border: 0.01rem solid #000000;
 }
 
 .textbox {
   display: flex;
   justify-content: space-between;
   max-width: 21em;
-  margin: auto;
+  margin: 3.5rem .5rem 0 .5rem;
   border: 0.01rem solid #000000;
-  border-radius: 2rem;
   box-sizing: border-box;
   box-shadow:
     0 0.05em 0.05em hsl(0deg 0% 0% / 0.15),
     0 0.1em 0.1em hsl(0deg 0% 0% / 0.2),
     0 0.2em 0.2em hsl(0deg 0% 0% / 0.15),
     0 0.4em 0.4em hsl(0deg 0% 0% / 0.1);
-  padding: 0.4rem 0.5rem 0.4rem 1rem;
-}
+  /* square */
+  border-radius: .5em;
+  padding: 0.4rem 0.6rem 0.4rem .6rem;
+  /* round
+  border-radius: 2rem;
+  padding: 0.4rem 0.5rem 0.4rem 1rem; */
 
-#token {
-  margin: 1em auto auto auto;
-  display: none;
 }
 
 input {
@@ -75,7 +117,6 @@ input {
   border: none;
   outline: none;
   font: normal 1rem Inter, sans-serif;
-  margin-right: 0.5em;
   flex-grow: 1;
 }
 
