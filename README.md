@@ -1,7 +1,7 @@
 ## Listen2gether
 ### Sync your listens on [ListenBrainz](https://listenbrainz.org) with other people.
 
-![Current state of the Figma UI](docs/UIdraft.png)
+![Current state of the Figma UI](docs/ui.png)
 
 ### TODO:
 - [ ] Redesign landing page
