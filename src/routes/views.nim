@@ -11,17 +11,20 @@ proc mirror*(ctx: Context) {.async, gcsafe.} =
     serviceParam = ctx.getPathParams("service")
     usernameParam = ctx.getPathParams("username")
   var
-    user: User = newUser()
+    clientUser, mirrorUser: User = newUser()
     service: Service
   case serviceParam:
     of "listenbrainz":
       service = listenBrainzService
-      let asyncListenBrainz = newAsyncListenBrainz()
-      user.services[listenBrainzService].username = usernameParam
-      waitFor asyncListenBrainz.updateUser(user, preMirror = true)
+      let
+        asyncListenBrainz = newAsyncListenBrainz()
+        tokenParam = ctx.getQueryParams("token")
+      mirrorUser.services[listenBrainzService].username = usernameParam
+      clientUser.services[listenBrainzService].token = tokenParam
+      waitFor asyncListenBrainz.updateUser(mirrorUser, preMirror = true)
     of "lastfm":
       service = lastFmService
       let asyncLastFM = newAsyncLastFM()
-      user.services[lastFmService].username = usernameParam
-      waitFor asyncLastFM.updateUser(user, preMirror = true)
-  resp htmlResponse(mirrorPage(ctx, service, user))
+      mirrorUser.services[lastFmService].username = usernameParam
+      waitFor asyncLastFM.updateUser(mirrorUser, preMirror = true)
+  resp htmlResponse(mirrorPage(ctx, service, mirrorUser))
