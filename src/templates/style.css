@@ -45,30 +45,56 @@ main {
   display: grid;
   /* grid-template-columns: 1fr 1fr; */
   grid-template-columns: auto auto;
+  align-items: center;
   padding: 0 20%;
-  margin: 0 0 3.5em 0;
+  margin: 2.85em 0;
 }
 
 .col {
-  padding: 2.5% 2.5%;
+  padding: 2em 1em;
+  margin: auto;
 }
-
-#grid-2 {
-  align-content: center;
-  display: grid;
-}
-
-/* #grid-3, #grid-4 {
-  padding: 0 0 2.5% 0; 
-} */
 
 p {
   margin: 0;
 }
 
+#login-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: auto 15%;
+}
+
+#token {
+  margin: 1.5em 0 4em 0;
+}
+
+#logo-grid {
+  display: flex;
+}
+
+.logo {
+  padding: 0 2.5rem;
+  height: 7em;
+}
+
+#demo-grid {
+  align-content: center;
+  display: grid;
+}
+
+#description-grid {
+  margin: auto;
+}
+
+#login-grid > p {
+  text-align: center;
+  font: normal 1.1rem Inter, sans-serif;
+}
+
 #title {
   font: normal 3.5rem "Inter Medium", sans-serif;
-  margin: .75em 0 0 0;
 }
 
 #subtitle {
@@ -78,20 +104,19 @@ p {
 
 #body {
   font: normal 1.5rem "Inter", sans-serif;
-  margin: 2.85rem 0 0 0;
 }
 
 #demo {
   width: 35em;
-  margin: 4em auto auto auto;
   border: 0.01rem solid #000000;
 }
 
 .textbox {
   display: flex;
+  flex-grow: 1;
   justify-content: space-between;
   max-width: 21em;
-  margin: 3.5rem .5rem 0 .5rem;
+  margin: 1.5rem 0 0 0;
   border: 0.01rem solid #000000;
   box-sizing: border-box;
   box-shadow:
