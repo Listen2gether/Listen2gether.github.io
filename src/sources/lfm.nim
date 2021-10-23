@@ -77,15 +77,15 @@ proc getVal(node: JsonNode, index: string): Option[string] =
 proc to*(fmTrack: FMTrack): Track =
   ## Convert an `FMTrack` object to a `Track` object
   var
-    date: Option[int64]
+    date: Option[int]
     artistMbid: string
     artistMbids: Option[seq[string]]
   if isSome(fmTrack.date):
     let dateStr = getStr(get(fmTrack.date){"uts"})
     if dateStr != "":
-      date = some(parseBiggestInt(dateStr))
+      date = some(parseInt(dateStr))
     else:
-      date = none(int64)
+      date = none(int)
   artistMbid = getStr(fmTrack.artist{"mbid"})
   if artistMbid != "":
     artistMbids = some(@[artistMbid])

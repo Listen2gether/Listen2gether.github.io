@@ -18,14 +18,14 @@ type
     services*: array[Service, ServiceUser]
     playingNow*: Option[Track]
     listenHistory*: seq[Track]
-    latestListenTs*: int64
+    latestListenTs*: int
 
   Track* = object
     trackName*, artistName*: string
     releaseName*, recordingMbid*, releaseMbid*: Option[string]
     artistMbids*: Option[seq[string]]
     trackNumber*, duration*: Option[int]
-    listenedAt*: Option[int64]
+    listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
 
@@ -60,7 +60,7 @@ func newTrack*(
   releaseName, recordingMbid, releaseMbid: Option[string] = none(string),
   artistMbids: Option[seq[string]] = none(seq[string]),
   trackNumber, duration: Option[int] = none(int),
-  listenedAt: Option[int64] = none(int64),
+  listenedAt: Option[int] = none(int),
   mirrored, preMirror: Option[bool] = none(bool)): Track =
   ## Create new Track object
   result.trackName = trackName
