@@ -1,0 +1,11 @@
+# ignore binary files
+*
+!/**/
+!*.*
+#
+nimcache/
+nimblecache/
+htmldocs/
+keys.json
+.vscode/
+*.db
