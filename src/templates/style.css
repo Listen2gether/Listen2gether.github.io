@@ -91,6 +91,7 @@ p {
 #login-grid > p {
   text-align: center;
   font: normal 1.1rem Inter, sans-serif;
+  margin: 3em 0 1em 0;
 }
 
 #title {
@@ -116,7 +117,7 @@ p {
   flex-grow: 1;
   justify-content: space-between;
   max-width: 21em;
-  margin: 1.5rem 0 0 0;
+  margin: 1.5rem 0 1rem 0;
   border: 0.01rem solid #000000;
   box-sizing: border-box;
   box-shadow:
