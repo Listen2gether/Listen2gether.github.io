@@ -1,7 +1,7 @@
 html,
 body {
   font: normal .9rem Inter, sans-serif;
-  color: #000000;
+  color: #111111;
   background: #ffffff;
   padding: 0;
   margin: 0;
@@ -142,7 +142,7 @@ input {
   background: none;
   border: none;
   outline: none;
-  font: normal 1rem Inter, sans-serif;
+  font: normal 1.1rem Inter, sans-serif;
   flex-grow: 1;
 }
 
