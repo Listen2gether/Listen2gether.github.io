@@ -5,6 +5,7 @@ body {
   background: #ffffff;
   padding: 0;
   margin: 0;
+  overflow-x: hidden;
 }
 
 *, ::after, ::before {
@@ -46,39 +47,25 @@ main {
 .container {
   display: flex;
   flex-direction: row;
-  margin: auto 40em;
+  margin: auto 25vw;
 }
 
 @media (max-width: 1368px) {
   .container {
-    margin: auto 20em;
+    margin: auto 15vw;
   }
 }
 
 @media (max-width: 1080px) {
   .container {
-    margin: auto 10em;
+    margin: auto 10vw;
   }
 }
 
-@media (max-width: 810px) {
+@media (max-width: 900px) {
   .container {
     flex-direction: column;
-    margin: auto 5em;
-  }
-}
-
-@media (max-width: 428px) {
-  .container {
-    flex-direction: column;
-    margin: auto 2em;
-  }
-}
-
-@media (max-width: 375px) {
-  .container {
-    flex-direction: column;
-    margin: auto 0em;
+    margin: auto 1vw;
   }
 }
 
