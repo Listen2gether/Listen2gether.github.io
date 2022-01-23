@@ -7,13 +7,14 @@ body {
   margin: 0;
 }
 
-.grid {
-  height: 100vh;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-template-columns: 100%;
-  position: relative;
-  margin: auto;
+*, ::after, ::before {
+  box-sizing: border-box;
+}
+
+#ROOT {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
@@ -39,59 +40,70 @@ header {
 
 main {
   border: 0.01rem solid #cccccc;
+  flex: 1 0 auto;
 }
 
-.inner-grid {
-  display: grid;
-  /* grid-template-columns: 1fr 1fr; */
-  grid-template-columns: auto auto;
-  align-items: center;
-  padding: 0 20%;
-  margin: 2.85em 0;
+.container {
+  display: flex;
+  flex-direction: row;
+  margin: auto 15%;
+}
+
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column;
+  }
 }
 
 .col {
   padding: 2em 1em;
-  margin: auto;
+  display: flex;
+  flex: 50%;
 }
 
 p {
   margin: 0;
 }
 
-#login-grid {
-  display: flex;
+#title-container {
+  flex-direction: column;
+}
+
+#login-container {
   justify-content: center;
   flex-wrap: wrap;
-  margin: auto 15%;
+  margin: auto;
+  flex-direction: column;
+  align-items: center;
 }
 
-#token {
+/* #token {
   margin: 1.5em 0 4em 0;
-}
+} */
 
-#logo-grid {
-  display: flex;
+#logo-container {
+  justify-content: space-evenly;
 }
 
 .logo {
-  padding: 0 2.5rem;
+  /* padding: 0 2.5rem; */
   height: 7em;
 }
 
-#demo-grid {
+#demo-container {
   align-content: center;
   display: grid;
 }
 
-#description-grid {
-  margin: auto;
+#description-container {
+  align-items: center;
 }
 
-#login-grid > p {
+#login-container > p {
   text-align: center;
   font: normal 1.1rem Inter, sans-serif;
-  margin: 3em 0 1em 0;
+  /* margin: 1em 0;
+  padding: 0 10em; */
 }
 
 #title {
@@ -116,6 +128,7 @@ p {
   display: flex;
   flex-grow: 1;
   justify-content: space-between;
+  width: 21em;
   max-width: 21em;
   margin: 1.5rem 0 1rem 0;
   border: 0.01rem solid #000000;
