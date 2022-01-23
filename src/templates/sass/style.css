@@ -46,12 +46,39 @@ main {
 .container {
   display: flex;
   flex-direction: row;
-  margin: auto 15%;
+  margin: auto 40em;
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1368px) {
+  .container {
+    margin: auto 20em;
+  }
+}
+
+@media (max-width: 1080px) {
+  .container {
+    margin: auto 10em;
+  }
+}
+
+@media (max-width: 810px) {
   .container {
     flex-direction: column;
+    margin: auto 5em;
+  }
+}
+
+@media (max-width: 428px) {
+  .container {
+    flex-direction: column;
+    margin: auto 2em;
+  }
+}
+
+@media (max-width: 375px) {
+  .container {
+    flex-direction: column;
+    margin: auto 0em;
   }
 }
 
