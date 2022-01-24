@@ -10,3 +10,4 @@ keys.json
 .vscode/
 *.db
 *.js
+public/css
