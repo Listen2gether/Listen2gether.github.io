@@ -24,5 +24,5 @@ task sass, "Generate css":
 task buildjs, "compile templates":
   exec "mkdir -p public/js"
   withDir "src/templates":
-    exec "nim js -d:release home.nim"
+    exec "nim js home.nim"
   exec "mv src/templates/home.js public/js"
