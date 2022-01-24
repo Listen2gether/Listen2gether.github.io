@@ -16,9 +16,13 @@ requires "norm"
 requires "prologue"
 requires "jsony"
 requires "karax"
-requires "https://github.com/disruptek/frosty"
+
+task scss, "Generate css":
+  exec "mkdir -p public/css"
+  exec "sass src/templates/sass/index.sass public/css/style.css"
 
 task buildjs, "compile templates":
+  exec "mkdir -p public/js"
   withDir "src/templates":
     exec "nim js home.nim"
-    exec "nim js mirror.nim"
+  exec "mv src/templates/home.js public/js"
