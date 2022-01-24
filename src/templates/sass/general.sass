@@ -1,9 +1,9 @@
-@import 'include/_variables'
+@use 'include/_variables' as v
 
 html, body
-  font: normal .9rem $body-font
-  color: $fg_color
-  background: $bg_color
+  font: normal .9rem v.$body-font
+  color: v.$fg_color
+  background: v.$bg_color
   padding: 0
   margin: 0
   overflow-x: hidden
@@ -18,10 +18,10 @@ html, body
 
 header
   padding: 2.5% 0% 1% 0%
-  border: 0.01rem solid $border
+  border: 0.01rem solid v.$border
   border-bottom: none
   box-sizing: border-box
-  font: normal 2.5rem $body-font
+  font: normal 2.5rem v.$body-font
   font-weight: 600
   text-align: center
   color: black
@@ -35,10 +35,10 @@ header
     text-decoration: none
 
   > span
-    color: $red
+    color: v.$red
 
 main
-  border: 0.01rem solid $border
+  border: 0.01rem solid v.$border
   flex: 1 0 auto
 
 .container
@@ -72,7 +72,7 @@ footer
   align-items: center
   justify-content: center
   padding: 1em 0
-  border: 0.01rem solid $border
+  border: 0.01rem solid v.$border
   border-top: none
   box-sizing: border-box
 

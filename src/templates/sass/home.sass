@@ -1,4 +1,4 @@
-@import 'include/_variables'
+@use 'include/_variables' as v
 
 #title-container
   flex-direction: column
@@ -25,17 +25,17 @@
 
 #login-container > p
   text-align: center
-  font: normal 1.1rem $body-font
+  font: normal 1.1rem v.$body-font
 
 #title
-  font: normal 3.5rem $header-font
+  font: normal 3.5rem v.$header-font
 
 #subtitle
-  font: normal 1.8rem $body-font
+  font: normal 1.8rem v.$body-font
   margin: 1.75em 0 0 0
 
 #body
-  font: normal 1.5rem $body-font
+  font: normal 1.5rem v.$body-font
 
 #demo
   width: 35em
@@ -67,7 +67,7 @@ input
   background: none
   border: none
   outline: none
-  font: normal 1.1rem $body-font
+  font: normal 1.1rem v.$body-font
   flex-grow: 1
 
 .switch
@@ -106,7 +106,7 @@ input
     width: 1.625em
     left: 0.2em
     bottom: 0.15em
-    background-color: $listenbrainz
+    background-color: v.$listenbrainz
     border: 0.01rem solid black
     border-radius: 50%
     -webkit-transition: 0.4s
@@ -118,7 +118,7 @@ input
 
   &:checked + .slider:before
     background-image: url(../assets/lastfm-logo.svg)
-    background-color: $red
+    background-color: v.$red
     -webkit-transform: translateX(1.55em)
     -ms-transform: translateX(1.55em)
     transform: translateX(1.55em)
