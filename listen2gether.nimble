@@ -17,7 +17,7 @@ requires "prologue"
 requires "jsony"
 requires "karax"
 
-task scss, "Generate css":
+task sass, "Generate css":
   exec "mkdir -p public/css"
   exec "sass src/templates/sass/index.sass public/css/style.css"
 
