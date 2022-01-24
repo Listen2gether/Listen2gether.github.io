@@ -2,14 +2,17 @@ import
   std/[options, times],
   pkg/prologue,
   pkg/karax/[karaxdsl, vdom],
-  share, ../types
+  share,
+  ../types
 
 
 proc mainSection(service: Service, user: User): Vnode =
+  ## Generates main section for Mirror page.
   var
     username, userUrl, trackName, artistName: string
     preMirrorSplit: bool = false
     maxListens: int = 7
+
   case service:
     of listenBrainzService:
       username = user.services[listenBrainzService].username
@@ -17,6 +20,7 @@ proc mainSection(service: Service, user: User): Vnode =
     of lastFmService:
       username = user.services[lastFmService].username
       userUrl = user.services[lastFmService].baseUrl & username
+
   result = buildHtml(main()):
     verbatim("<div id = 'mirror'><p>You are mirroring <a href='" & userUrl & "'>" & username & "</a>!</p></div>")
     tdiv(class = "listens"):
@@ -61,6 +65,7 @@ proc mainSection(service: Service, user: User): Vnode =
                 text fromUnix(get(track.listenedAt)).format("HH:mm")
 
 proc mirrorPage*(ctx: Context, service: Service, user: User): string =
+  ## Generates Mirror page.
   let
     head = head()
     header = headerSection()
