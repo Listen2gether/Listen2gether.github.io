@@ -2,3 +2,6 @@
 
 ### Sync your listens on [ListenBrainz](https://listenbrainz.org) with other people.
 
+
+### Requirements
+ - Dart Sass
