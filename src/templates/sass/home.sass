@@ -1,0 +1,135 @@
+@import 'include/_variables'
+
+#title-container
+  flex-direction: column
+
+#login-container
+  justify-content: center
+  flex-wrap: wrap
+  margin: auto
+  flex-direction: column
+  align-items: center
+
+/* #token {
+ *  margin: 1.5em 0 4em 0;
+ *}
+
+#logo-container
+  justify-content: space-evenly
+
+.logo
+  /* padding: 0 2.5rem;
+  height: 7em
+
+#demo-container
+  align-content: center
+  display: grid
+
+#description-container
+  align-items: center
+
+#login-container > p
+  text-align: center
+  font: normal 1.1rem $body-font
+
+  /* margin: 1em 0;
+   *padding: 0 10em;
+
+#title
+  font: normal 3.5rem $header-font
+
+#subtitle
+  font: normal 1.8rem $body-font
+  margin: 1.75em 0 0 0
+
+#body
+  font: normal 1.5rem $body-font
+
+#demo
+  width: 35em
+  border: 0.01rem solid #000000
+
+.textbox
+  display: flex
+  flex-grow: 1
+  justify-content: space-between
+  width: 21em
+  max-width: 21em
+  margin: 1.5rem 0 1rem 0
+  border: 0.01rem solid black
+  box-sizing: border-box
+  box-shadow: 0 0.05em 0.05em hsl(0deg 0% 0% / 0.15), 0 0.1em 0.1em hsl(0deg 0% 0% / 0.2), 0 0.2em 0.2em hsl(0deg 0% 0% / 0.15), 0 0.4em 0.4em hsl(0deg 0% 0% / 0.1)
+
+  /* square
+  border-radius: .5em
+  padding: 0.4rem 0.6rem 0.4rem .6rem
+
+  /* round
+   *border-radius: 2rem;
+   *padding: 0.4rem 0.5rem 0.4rem 1rem;
+
+input
+  min-width: 13em
+
+.textinput
+  background: none
+  border: none
+  outline: none
+  font: normal 1.1rem $body-font
+  flex-grow: 1
+
+.switch
+  position: relative
+  display: inline-block
+  width: 3.75em
+  height: 2.125em
+
+  input
+    opacity: 0
+    width: 0
+    height: 0
+
+.slider
+  position: absolute
+  cursor: pointer
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: white
+  border: 0.01rem solid black
+  border-radius: 2.125em
+  -webkit-transition: 0.4s
+  transition: 0.4s
+
+  &:before
+    position: absolute
+    display: block
+    content: ""
+    background-image: url(assets/listenbrainz-logo.svg)
+    background-size: 1.25em
+    background-position: 0.1875em
+    background-repeat: no-repeat
+    height: 1.625em
+    width: 1.625em
+    left: 0.2em
+    bottom: 0.15em
+    background-color: $listenbrainz
+    border: 0.01rem solid black
+    border-radius: 50%
+    -webkit-transition: 0.4s
+    transition: 0.4s
+
+input
+  &:focus + .slider
+    box-shadow: 0 0 0.0625em black
+
+  &:checked + .slider:before
+    background-image: url(assets/lastfm-logo.svg)
+    background-color: $red
+    -webkit-transform: translateX(1.55em)
+    -ms-transform: translateX(1.55em)
+    transform: translateX(1.55em)
+
+#token_input
+  padding: .3rem 0rem

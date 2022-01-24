@@ -1,0 +1,73 @@
+.mirror-grid
+  display: grid
+  grid-template-columns: 1fr 1.5fr
+  height: 100%
+
+#mirror
+  font-size: 1.25rem
+  text-align: center
+
+  > p
+    font-size: 1.1rem
+    margin: 1em 0 0
+
+    > a
+      font-style: italic
+
+.listens
+  display: flex
+  justify-content: center
+
+ul
+  list-style-type: none
+  padding: 0
+  margin: 0
+  min-width: 20em
+  max-width: 30em
+  flex-grow: 1
+
+hr
+  margin: 1.25em 1.5em
+
+.listen
+  display: flex
+  align-items: center
+  margin: 1em 1.25em
+  border: 0.01rem solid black
+  border-radius: .5em
+  box-sizing: border-box
+  box-shadow: 0 0.05em 0.05em hsl(0deg 0% 0% / 0.15), 0 0.1em 0.1em hsl(0deg 0% 0% / 0.2), 0 0.2em 0.2em hsl(0deg 0% 0% / 0.15), 0 0.4em 0.4em hsl(0deg 0% 0% / 0.1)
+  padding: .8rem
+
+#listen-details
+  display: flex
+  align-items: center
+  flex-grow: 1
+
+  >
+    img
+      height: .8rem
+      margin-right: .8rem
+
+    span
+      font-style: italic
+      text-align: right
+      margin-left: auto
+
+#track-details
+  max-width: 16.6rem
+
+  > p
+    text-overflow: ellipsis
+    margin: 0
+    white-space: nowrap
+    overflow: hidden
+
+#listening, #listened
+  width: 1em
+
+#track-name
+  padding-bottom: 2.5%
+
+#artist-name
+  font-size: .85rem

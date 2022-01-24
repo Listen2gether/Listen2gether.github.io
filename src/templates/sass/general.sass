@@ -1,0 +1,84 @@
+@import 'include/_variables'
+
+html, body
+  font: normal .9rem $body-font
+  color: $fg_color
+  background: $bg_color
+  padding: 0
+  margin: 0
+  overflow-x: hidden
+
+*, ::after, ::before
+  box-sizing: border-box
+
+#ROOT
+  display: flex
+  flex-direction: column
+  min-height: 100vh
+
+header
+  padding: 2.5% 0% 1% 0%
+  border: 0.01rem solid $border
+  border-bottom: none
+  box-sizing: border-box
+  font: normal 2.5rem $body-font
+  font-weight: 600
+  text-align: center
+  color: black
+
+.header
+  color: black
+  text-decoration: none
+
+  &:visited
+    color: black
+    text-decoration: none
+
+  > span
+    color: $red
+
+main
+  border: 0.01rem solid $border
+  flex: 1 0 auto
+
+.container
+  display: flex
+  flex-direction: row
+  margin: auto 25vw
+
+@media (max-width: 1368px)
+  .container
+    margin: auto 15vw
+
+@media (max-width: 1080px)
+  .container
+    margin: auto 10vw
+
+@media (max-width: 900px)
+  .container
+    flex-direction: column
+    margin: auto 1vw
+
+.col
+  padding: 2em 1em
+  display: flex
+  flex: 50%
+
+p
+  margin: 0
+
+footer
+  display: flex
+  align-items: center
+  justify-content: center
+  padding: 1em 0
+  border: 0.01rem solid $border
+  border-top: none
+  box-sizing: border-box
+
+.icon
+  display: block
+  height: 1rem
+
+#agpl
+  margin-right: .5rem
