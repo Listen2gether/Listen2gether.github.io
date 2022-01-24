@@ -1,7 +1,8 @@
-import std/[options, times]
-import pkg/prologue
-import pkg/karax/[karaxdsl, vdom]
-import share, ../types
+import
+  std/[options, times],
+  pkg/prologue,
+  pkg/karax/[karaxdsl, vdom],
+  share, ../types
 
 
 proc mainSection(service: Service, user: User): Vnode =

@@ -1,5 +1,6 @@
-import pkg/prologue
-import views
+import
+  pkg/prologue,
+  views
 
 const urlPatterns* = @[
   pattern("/", home),

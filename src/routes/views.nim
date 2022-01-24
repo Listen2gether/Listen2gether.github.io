@@ -1,7 +1,8 @@
-import pkg/[prologue, lastfm, listenbrainz]
-import ../templates/mirror
-import ../sources/[lb, lfm]
-import ../types
+import
+  pkg/[prologue, lastfm, listenbrainz],
+  ../templates/mirror,
+  ../sources/[lb, lfm],
+  ../types
 
 proc home*(ctx: Context) {.async.} =
   resp readFile("public/html/home.html")

@@ -1,13 +1,16 @@
 when defined(js):
   import std/asyncjs
 else:
-  import std/asyncdispatch
-  import ../models
+  import
+    std/asyncdispatch,
+    ../models
 
-import std/[json, strutils]
-import pkg/lastfm
-import pkg/lastfm/[track, user]
-import ../types
+import
+  std/[json, strutils],
+  pkg/lastfm,
+  pkg/lastfm/[track, user],
+  ../types
+
 include utils
 
 

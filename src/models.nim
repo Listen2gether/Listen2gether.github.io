@@ -1,7 +1,8 @@
-import pkg/norm/[model, sqlite]
-import karax/kbase
-import pkg/jsony
-import types
+import
+  pkg/norm/[model, sqlite],
+  karax/kbase,
+  pkg/jsony,
+  types
 
 
 const DBLOCATION = "listen2gether.db"

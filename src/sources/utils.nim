@@ -1,5 +1,6 @@
-import std/options
-import pkg/jsony
+import
+  std/options,
+  pkg/jsony
 
 proc camel2snake*(s: string): string =
   ## CanBeFun => can_be_fun

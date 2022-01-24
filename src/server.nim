@@ -1,6 +1,8 @@
-import pkg/prologue
-import pkg/prologue/middlewares/staticfile
-import routes/urls, models
+import
+  pkg/prologue,
+  pkg/prologue/middlewares/staticfile,
+  routes/urls,
+  models
 
 createTables()
 
