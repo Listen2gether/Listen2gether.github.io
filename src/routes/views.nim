@@ -4,7 +4,7 @@ import ../sources/[lb, lfm]
 import ../types
 
 proc home*(ctx: Context) {.async.} =
-  resp readFile("src/templates/home.html")
+  resp readFile("public/html/home.html")
 
 proc mirror*(ctx: Context) {.async, gcsafe.} =
   let
