@@ -1,6 +1,12 @@
 import
   pkg/karax/[karax, karaxdsl, vdom, kdom],
+  std/asyncjs,
+  pkg/listenbrainz,
+  pkg/listenbrainz/utils/api,
+  pkg/listenbrainz/core,
   share
+
+var lb = newAsyncListenBrainz()
 
 proc onServiceToggleClick(ev: Event; n: VNode) =
   ## Switches service toggle on click
@@ -9,23 +15,23 @@ proc onServiceToggleClick(ev: Event; n: VNode) =
   else:
     getElementById("token").style.display = "flex"
 
+proc validateLB(username, token: string) {.async.} =
+  let res = await lb.validateToken(token)
+  if res.valid:
+    window.location.href = cstring("/mirror/listenbrainz/" & username & "?token=" & token)
+
 proc onTokenEnter(ev: Event; n: VNode) =
   ## Routes to mirror page on token enter
-  var service: string = ""
   let
     username = $getElementById("username_input").value
     token = $getElementById("token_input").value
     serviceSwitch = getElementById("service_switch").checked
   if serviceSwitch:
-    service = "lastfm"
-    window.location.href = cstring("/mirror/" & service & "/" & username)
+    # window.location.href = cstring("/mirror/lastfm/" & username)
+    echo "not now!"
   else:
-    service = "listenbrainz"
-    # let lb = AsyncListenBrainz()
-    # if token != "":
-    #   let validToken = await lb.validateLbToken(token)
-    #   if validToken:
-    window.location.href = cstring("/mirror/" & service & "/" & username & "?token=" & token)
+    if token != "":
+      discard validateLB(username, token)
 
 proc mainSection(): Vnode =
   ## Generates main section for Home page.
@@ -73,7 +79,7 @@ proc mainSection(): Vnode =
         )
 
 proc createDom(): VNode =
-  result = buildHtml(tdiv()):
+  result = buildHtml(tdiv):
     headerSection()
     mainSection()
     footerSection()
