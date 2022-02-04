@@ -5,13 +5,13 @@ author        = "tandy-1000"
 description   = "Sync your listens on Last.fm and ListenBrainz with other people "
 license       = "AGPLv3.0"
 srcDir        = "src"
-bin           = @["listen2gether"]
+bin           = @["server"]
 
 
 # Dependencies
 requires "nim >= 1.7.1"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
-requires "https://gitlab.com/tandy1000/lastfm-nim#head"
+# requires "https://gitlab.com/tandy1000/lastfm-nim#head"
 requires "norm"
 requires "prologue"
 requires "jsony"
