@@ -1,7 +1,7 @@
 import
   pkg/[prologue, lastfm, listenbrainz],
   ../templates/mirror,
-  ../sources/[lb, lfm],
+  ../sources/lb,
   ../types
 
 proc home*(ctx: Context) {.async.} =
@@ -25,7 +25,7 @@ proc mirror*(ctx: Context) {.async, gcsafe.} =
       waitFor asyncListenBrainz.updateUser(mirrorUser, preMirror = true)
     of "lastfm":
       service = lastFmService
-      let asyncLastFM = newAsyncLastFM()
-      mirrorUser.services[lastFmService].username = usernameParam
-      waitFor asyncLastFM.updateUser(mirrorUser, preMirror = true)
+      # let asyncLastFM = newAsyncLastFM()
+      # mirrorUser.services[lastFmService].username = usernameParam
+      # waitFor asyncLastFM.updateUser(mirrorUser, preMirror = true)
   resp htmlResponse(mirrorPage(ctx, service, mirrorUser))
