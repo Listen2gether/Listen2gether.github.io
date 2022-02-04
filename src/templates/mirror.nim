@@ -74,7 +74,7 @@ proc mirrorPage*(ctx: Context, service: Service, user: User): string =
     vnode = buildHtml(html):
       head
       body:
-        tdiv(class = "grid"):
+        tdiv(id = "ROOT"):
           header
           main
           footer
