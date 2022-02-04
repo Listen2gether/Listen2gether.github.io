@@ -6,13 +6,12 @@ else:
     ../models
 
 import
-  std/[json, strutils],
   pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
   ../types
 
-include utils
+include pkg/listenbrainz/utils/tools
 
 proc to*(
   track: Track,
@@ -99,3 +98,9 @@ proc updateUser*(
   user.playingNow = waitFor getNowPlaying(lb, user)
   user.listenHistory = waitFor getRecentTracks(lb, user, preMirror)
   updateUserTable(user, listenBrainzService)
+
+# index history by listenedAt
+# on init: get now playing and history set tracks as premirror
+# on update: get listens, add to history if greater than latestListenTS, set as mirrored only when submitted succesfully
+
+# def submitMirrorQueue*

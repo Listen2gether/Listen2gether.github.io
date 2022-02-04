@@ -11,8 +11,6 @@ import
   pkg/lastfm/[track, user],
   ../types
 
-include utils
-
 
 type
   FMTrack* = object
