@@ -2,15 +2,17 @@ when defined(js):
   import std/asyncjs
 else:
   import
-    std/asyncdispatch,
-    ../models
+    std/asyncdispatch
 
 import
-  std/[json, strutils],
+  std/[json, strutils, options],
+  pkg/jsony,
   pkg/lastfm,
   pkg/lastfm/[track, user],
   ../types
 
+
+const userBaseUrl* = "https://last.fm/user/"
 
 type
   FMTrack* = object
@@ -136,15 +138,15 @@ proc getRecentTracks*(
   result = (playingNow, listenHistory)
 
 
-proc updateUser*(
-  fm: AsyncLastFM,
-  user: User,
-  preMirror: bool) {.async.} =
-  ## Update a Last.FM user's `playingNow` and `listenHistory`
-  let tracks = waitFor getRecentTracks(fm, user)
-  user.playingNow = tracks[0]
-  user.listenHistory = tracks[1]
-  updateUserTable(user, lastFmService)
+# proc updateUser*(
+#   fm: AsyncLastFM,
+#   user: User,
+#   preMirror: bool) {.async.} =
+#   ## Update a Last.FM user's `playingNow` and `listenHistory`
+#   let tracks = waitFor getRecentTracks(fm, user)
+#   user.playingNow = tracks[0]
+#   user.listenHistory = tracks[1]
+#   updateUserTable(user, lastFmService)
 
 
 proc setNowPlayingTrack*(

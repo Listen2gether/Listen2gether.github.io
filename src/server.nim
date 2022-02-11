@@ -1,10 +1,7 @@
 import
   pkg/prologue,
   pkg/prologue/middlewares/[staticfile, cors],
-  routes/urls,
-  models
-
-createTables()
+  routes/urls
 
 let
   env = loadPrologueEnv(".env")

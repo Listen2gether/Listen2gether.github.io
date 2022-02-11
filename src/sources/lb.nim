@@ -2,8 +2,7 @@ when defined(js):
   import std/asyncjs
 else:
   import
-    std/asyncdispatch,
-    ../models
+    std/asyncdispatch
 
 import
   pkg/listenbrainz,
@@ -12,6 +11,8 @@ import
   ../types
 
 include pkg/listenbrainz/utils/tools
+
+const userBaseUrl* = "https://listenbrainz.org/user/"
 
 proc to*(
   track: Track,
@@ -90,14 +91,14 @@ proc getRecentTracks*(
   else:
     result = @[]
 
-proc updateUser*(
-  lb: AsyncListenBrainz,
-  user: User,
-  preMirror: bool) {.async.} =
-  ## Get a ListenBrainz user's `playingNow` and `listenHistory`
-  user.playingNow = waitFor getNowPlaying(lb, user)
-  user.listenHistory = waitFor getRecentTracks(lb, user, preMirror)
-  updateUserTable(user, listenBrainzService)
+# proc updateUser*(
+#   lb: AsyncListenBrainz,
+#   user: User,
+#   preMirror: bool) {.async.} =
+#   ## Get a ListenBrainz user's `playingNow` and `listenHistory`
+#   user.playingNow = waitFor getNowPlaying(lb, user)
+#   user.listenHistory = waitFor getRecentTracks(lb, user, preMirror)
+#   updateUserTable(user, listenBrainzService)
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror

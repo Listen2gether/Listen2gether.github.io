@@ -2,6 +2,7 @@ import
   pkg/norm/[model, sqlite],
   karax/kbase,
   pkg/jsony,
+  sources/[lb, lfm],
   types
 
 
