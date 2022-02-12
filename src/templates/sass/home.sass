@@ -35,7 +35,7 @@
   margin: 1.75em 0 0 0
 
 #body
-  font: normal 1.5rem v.$body-font
+  font: normal 1.2rem v.$body-font
 
 #demo
   width: 35em
@@ -100,12 +100,12 @@ input
     content: ""
     background-image: url(../assets/listenbrainz-logo.svg)
     background-size: 1.25em
-    background-position: 0.1875em
+    background-position: center
     background-repeat: no-repeat
     height: 1.625em
     width: 1.625em
     left: 0.2em
-    bottom: 0.15em
+    bottom: 0.2em
     background-color: v.$listenbrainz
     border: 0.01rem solid v.$fg_color
     border-radius: 50%
@@ -119,9 +119,24 @@ input
   &:checked + .slider:before
     background-image: url(../assets/lastfm-logo.svg)
     background-color: v.$red
-    -webkit-transform: translateX(1.55em)
-    -ms-transform: translateX(1.55em)
-    transform: translateX(1.55em)
+    -webkit-transform: translateX(1.65em)
+    -ms-transform: translateX(1.65em)
+    transform: translateX(1.65em)
 
 #token_input
   padding: .3rem 0rem
+
+.service-logo
+  background-color: v.$listenbrainz
+  border: 0.01rem solid v.$fg_color
+  border-radius: 50%
+  height: 1.625em
+  width: 1.625em
+  margin-right: .5em
+  display: flex
+  align-items: center
+
+.user-icon
+  height: 1.625em
+  width: 1.625em
+  padding: .125em
