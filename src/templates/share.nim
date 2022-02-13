@@ -1,5 +1,11 @@
-import pkg/karax/[karaxdsl, vdom]
+import
+  std/[asyncjs, jsffi],
+  pkg/karax/[karaxdsl, vdom],
+  pkg/nodejs/jsindexeddb,
+  ../types
 
+proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
+  discard await put(db, "user".cstring, toJs user, dbOptions)
 
 proc head*(): Vnode =
   ## Produces HTML head to be used on all server side rendered pages.

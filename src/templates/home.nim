@@ -18,9 +18,6 @@ var
   globalSigninView = SigninView.loadingUsers
   storedUsers: Table[cstring, User]
 
-proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
-  discard await put(db, "user".cstring, toJs user, dbOptions)
-
 proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
   let objStore = await getAll(db, "user".cstring, dbOptions)
   storedUsers = collect:
@@ -31,8 +28,8 @@ proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
     globalSigninView = SigninView.newUser
   redraw()
 
-proc loadLbMirror(username, token: string) {.async.} =
-  window.location.href = cstring("/mirror/listenbrainz/" & username & "?token=" & token)
+proc loadMirror(service: Service, username, token: string) {.async.} =
+  pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username & "?token=" & token))
 
 proc validateLB(username, token: string) {.async.} =
   # let res = await lb.validateToken(token)
@@ -41,7 +38,7 @@ proc validateLB(username, token: string) {.async.} =
   if true:
     let user = newUser(services = [listenBrainzService: newServiceUser(listenBrainzService, username, token), lastFmService: newServiceUser(lastFmService)])
     discard storeUser(db, dbOptions, user)
-    discard loadLbMirror(username, token)
+    discard loadMirror(Service.listenBrainzService, username, token)
 
 proc onTokenEnter(ev: Event; n: VNode) =
   ## Routes to mirror page on token enter
@@ -77,6 +74,7 @@ proc loginModal: Vnode =
         input(`type` = "text", class = "textinput", id = "token_input", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
 
 proc renderStoredUsers: Vnode =
+  var secret: cstring
   result = buildHtml:
     tdiv:
       for userId, user in storedUsers.pairs:
@@ -86,12 +84,14 @@ proc renderStoredUsers: Vnode =
               tdiv(class = "service-logo"):
                 case serviceUser.service:
                 of listenBrainzService:
+                  secret = serviceUser.token
                   img(src = "/public/assets/listenbrainz-logo.svg",
                       id = "listenbrainz-logo",
                       class = "user-icon",
                       alt = "ListenBrainz.org logo"
                   )
                 of lastFmService:
+                  secret = serviceUser.sessionKey
                   img(src = "/public/assets/lastfm-logo.svg",
                       id = "lastfm-logo",
                       class = "user-icon",
@@ -100,7 +100,7 @@ proc renderStoredUsers: Vnode =
               text serviceUser.username
               proc onclick(ev: kdom.Event; n: VNode) =
                 let user = storedUsers[n.id]
-                # discard validate($user.homeserver, $user.token)
+                discard validateLB($serviceUser.username, $secret)
 
 proc returnModal: Vnode =
   result = buildHtml:
