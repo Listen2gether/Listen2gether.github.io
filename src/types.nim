@@ -1,4 +1,4 @@
-import std/options
+import std/[options, times]
 
 
 type
@@ -7,14 +7,15 @@ type
     lastFmService
 
   ServiceUser* = ref object
-    username*: string
+    username*: cstring
     case service*: Service
     of listenBrainzService:
-      token*: string
+      token*: cstring
     of lastFmService:
-      sessionKey*: string
+      sessionKey*: cstring
 
   User* = ref object
+    userId*: cstring
     services*: array[Service, ServiceUser]
     playingNow*: Option[Track]
     listenHistory*: seq[Track]
@@ -43,11 +44,13 @@ func newServiceUser*(
 
 
 func newUser*(
+  userId: string = $toUnix(getTime()),
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
   listenHistory: seq[Track] = @[]): User =
   ## Create new User object
   new(result)
+  result.userId = userId
   result.services = services
   result.playingNow = playingNow
   result.listenHistory = listenHistory

@@ -71,7 +71,7 @@ proc getNowPlaying*(
   user: User): Future[Option[Track]] {.async.} =
   ## Return a ListenBrainz user's now playing
   let
-    nowPlaying = await lb.getUserPlayingNow(user.services[listenBrainzService].username)
+    nowPlaying = await lb.getUserPlayingNow($user.services[listenBrainzService].username)
     payload = nowPlaying.payload
   if payload.count == 1:
     result = some(to(payload.listens[0]))
@@ -85,7 +85,7 @@ proc getRecentTracks*(
   count: int = 8): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   let
-    userListens = await lb.getUserListens(user.services[listenBrainzService].username, count = count)
+    userListens = await lb.getUserListens($user.services[listenBrainzService].username, count = count)
   if userListens.payload.count > 0:
     result = to(userListens.payload.listens, some(preMirror))
   else:

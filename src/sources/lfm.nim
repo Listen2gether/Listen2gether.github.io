@@ -128,7 +128,7 @@ proc getRecentTracks*(
     playingNow: Option[Track]
     listenHistory: seq[Track]
   let
-    recentTracks = await fm.userRecentTracks(user = user.services[lastFmService].username, limit = limit)
+    recentTracks = await fm.userRecentTracks(user = $user.services[lastFmService].username, limit = limit)
     tracks = recentTracks["recenttracks"]["track"]
   if tracks.len == limit:
     listenHistory = to(fromJson($tracks, seq[FMTrack]))
