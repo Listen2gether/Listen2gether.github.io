@@ -3,8 +3,8 @@ import std/[options, times]
 
 type
   Service* = enum
-    listenBrainzService,
-    lastFmService
+    listenBrainzService = "listenbrainz",
+    lastFmService = "lastfm"
 
   ServiceUser* = ref object
     username*: cstring
