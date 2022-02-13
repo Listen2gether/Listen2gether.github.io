@@ -68,12 +68,12 @@ proc loginModal: Vnode =
     tdiv(id = "login-container", class = "col"):
       p(id = "body"):
         text "Enter a username and select a service to start mirroring another user's listens."
-      tdiv(id = "username", class = "textbox"):
+      tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "textinput", id = "username_input", placeholder = "Enter username to mirror")
         label(class = "switch"):
           input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
           span(class = "slider")
-      tdiv(id = "token", class = "textbox"):
+      tdiv(id = "token", class = "row textbox"):
         input(`type` = "text", class = "textinput", id = "token_input", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
 
 proc renderStoredUsers: Vnode =
@@ -82,7 +82,7 @@ proc renderStoredUsers: Vnode =
       for userId, user in storedUsers.pairs:
         for serviceUser in user.services:
           if serviceUser.username != "":
-            button(id = kstring(userId), class = "textbox"):
+            button(id = kstring(userId), class = "row"):
               tdiv(class = "service-logo"):
                 case serviceUser.service:
                 of listenBrainzService:
@@ -107,7 +107,7 @@ proc returnModal: Vnode =
     tdiv(id = "login-container", class = "col"):
       p(id = "body"):
         text "Welcome back!"
-      tdiv(id = "username", class = "textbox"):
+      tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "textinput", id = "username_input", placeholder = "Enter username to mirror")
         label(class = "switch"):
           input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)

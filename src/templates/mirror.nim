@@ -3,8 +3,13 @@ import
   pkg/prologue,
   pkg/karax/[karaxdsl, vdom],
   share,
+  ../sources/[lb, lfm],
   ../types
 
+
+# poll every 30 seconds to get current track?
+# separate nim file that compiles to create js, triggers a page reload
+# proc
 
 proc mainSection(service: Service, user: User): Vnode =
   ## Generates main section for Mirror page.
@@ -15,18 +20,18 @@ proc mainSection(service: Service, user: User): Vnode =
 
   case service:
     of listenBrainzService:
-      username = user.services[listenBrainzService].username
-      userUrl = user.services[listenBrainzService].baseUrl & username
+      username = $user.services[listenBrainzService].username
+      userUrl = lb.userBaseUrl & username
     of lastFmService:
-      username = user.services[lastFmService].username
-      userUrl = user.services[lastFmService].baseUrl & username
+      username = $user.services[lastFmService].username
+      userUrl = lfm.userBaseUrl & username
 
   result = buildHtml(main()):
     verbatim("<div id = 'mirror'><p>You are mirroring <a href='" & userUrl & "'>" & username & "</a>!</p></div>")
     tdiv(class = "listens"):
       ul:
         if isSome(user.playingNow):
-          li(class = "listen"):
+          li(class = "row listen"):
             tdiv(id = "listen-details"):
               img(src = "/public/assets/nowplaying.svg")
               tdiv(id = "track-details"):
@@ -47,7 +52,7 @@ proc mainSection(service: Service, user: User): Vnode =
               else:
                 hr()
                 preMirrorSplit = true
-          li(class = "listen"):
+          li(class = "row listen"):
             tdiv(id = "listen-details"):
               if isSome(track.mirrored):
                 if get(track.mirrored):
