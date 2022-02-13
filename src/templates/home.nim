@@ -1,24 +1,47 @@
 import
-  pkg/karax/[karax, karaxdsl, vdom, kdom],
-  std/asyncjs,
+  pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
+  std/[asyncjs, jsffi, tables],
+  pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
-  pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
-  share
+  ../types, share
+from std/sugar import collect
 
-var lb = newAsyncListenBrainz()
+type
+  SigninView* = enum
+    loadingUsers, returningUser, newUser
 
-proc onServiceToggleClick(ev: Event; n: VNode) =
-  ## Switches service toggle on click
-  if getElementById("service_switch").checked:
-    getElementById("token").style.display = "none"
+var
+  db = newIndexedDB()
+  dbOptions = IDBOptions(keyPath: "userId")
+  lb = newAsyncListenBrainz()
+  globalSigninView = SigninView.loadingUsers
+  storedUsers: Table[cstring, User]
+
+proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
+  discard await put(db, "user".cstring, toJs user, dbOptions)
+
+proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
+  let objStore = await getAll(db, "user".cstring, dbOptions)
+  storedUsers = collect:
+    for user in to(objStore, seq[User]): {user.userId: user}
+  if storedUsers.len != 0:
+    globalSigninView = SigninView.returningUser
   else:
-    getElementById("token").style.display = "flex"
+    globalSigninView = SigninView.newUser
+  redraw()
+
+proc loadLbMirror(username, token: string) {.async.} =
+  window.location.href = cstring("/mirror/listenbrainz/" & username & "?token=" & token)
 
 proc validateLB(username, token: string) {.async.} =
-  let res = await lb.validateToken(token)
-  if res.valid:
-    window.location.href = cstring("/mirror/listenbrainz/" & username & "?token=" & token)
+  # let res = await lb.validateToken(token)
+  # if res.valid:
+  # use res.userName because that is the client's username
+  if true:
+    let user = newUser(services = [listenBrainzService: newServiceUser(listenBrainzService, username, token), lastFmService: newServiceUser(lastFmService)])
+    discard storeUser(db, dbOptions, user)
+    discard loadLbMirror(username, token)
 
 proc onTokenEnter(ev: Event; n: VNode) =
   ## Routes to mirror page on token enter
@@ -33,7 +56,72 @@ proc onTokenEnter(ev: Event; n: VNode) =
     if token != "":
       discard validateLB(username, token)
 
-proc mainSection(): Vnode =
+proc onServiceToggleClick(ev: Event; n: VNode) =
+  ## Switches service toggle on click
+  if getElementById("service_switch").checked:
+    getElementById("token").style.display = "none"
+  else:
+    getElementById("token").style.display = "flex"
+
+proc loginModal: Vnode =
+  result = buildHtml:
+    tdiv(id = "login-container", class = "col"):
+      p(id = "body"):
+        text "Enter a username and select a service to start mirroring another user's listens."
+      tdiv(id = "username", class = "textbox"):
+        input(`type` = "text", class = "textinput", id = "username_input", placeholder = "Enter username to mirror")
+        label(class = "switch"):
+          input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
+          span(class = "slider")
+      tdiv(id = "token", class = "textbox"):
+        input(`type` = "text", class = "textinput", id = "token_input", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
+
+proc renderStoredUsers: Vnode =
+  result = buildHtml:
+    tdiv:
+      for userId, user in storedUsers.pairs:
+        for serviceUser in user.services:
+          if serviceUser.username != "":
+            button(id = kstring(userId), class = "textbox"):
+              tdiv(class = "service-logo"):
+                case serviceUser.service:
+                of listenBrainzService:
+                  img(src = "/public/assets/listenbrainz-logo.svg",
+                      id = "listenbrainz-logo",
+                      class = "user-icon",
+                      alt = "ListenBrainz.org logo"
+                  )
+                of lastFmService:
+                  img(src = "/public/assets/lastfm-logo.svg",
+                      id = "lastfm-logo",
+                      class = "user-icon",
+                      alt = "last.fm logo"
+                  )
+              text serviceUser.username
+              proc onclick(ev: kdom.Event; n: VNode) =
+                let user = storedUsers[n.id]
+                # discard validate($user.homeserver, $user.token)
+
+proc returnModal: Vnode =
+  result = buildHtml:
+    tdiv(id = "login-container", class = "col"):
+      p(id = "body"):
+        text "Welcome back!"
+      tdiv(id = "username", class = "textbox"):
+        input(`type` = "text", class = "textinput", id = "username_input", placeholder = "Enter username to mirror")
+        label(class = "switch"):
+          input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
+          span(class = "slider")
+      renderStoredUsers()
+
+proc loadingModal: Vnode =
+  result = buildHtml:
+    tdiv(id = "login-container", class = "col"):
+      p(id = "body"):
+        text "Loading users..."
+      img(id = "spinner", src = "/public/assets/spinner.svg")
+
+proc mainSection: Vnode =
   ## Generates main section for Home page.
   result = buildHtml(main()):
     tdiv(class = "container"):
@@ -46,16 +134,13 @@ proc mainSection(): Vnode =
           text " is a website for listen parties."
         p(id = "subtitle"):
           text "Whether you're physically in the same room or not."
-      tdiv(id = "login-container", class = "col"):
-        p(id = "body"):
-          text "Enter a username and select a service to start mirroring another user's listens."
-        tdiv(id = "username", class = "textbox"):
-          input(`type` = "text", class = "textinput", id = "username_input", placeholder = "Enter username")
-          label(class = "switch"):
-            input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
-            span(class = "slider")
-        tdiv(id = "token", class = "textbox"):
-          input(`type` = "text", class = "textinput", id = "token_input", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
+      case globalSigninView:
+      of SigninView.loadingUsers:
+        loadingModal()
+      of SigninView.returningUser:
+        returnModal()
+      of SigninView.newUser:
+        loginModal()
     tdiv(class = "container"):
       tdiv(id = "description-container", class = "col"):
         p(id = "body"):
@@ -74,11 +159,13 @@ proc mainSection(): Vnode =
             src = "/public/assets/matrix-logo.svg",
             id = "matrix-logo",
             class = "logo",
-            alt = "Matrix.org logo",
+            alt = "Matrix.org logo"
           )
         )
 
 proc createDom(): VNode =
+  if storedUsers.len == 0:
+    discard getUsers(db, dbOptions)
   result = buildHtml(tdiv):
     headerSection()
     mainSection()
