@@ -3,6 +3,6 @@ import
   views
 
 const urlPatterns* = @[
-  pattern("/", home),
-  pattern("/mirror/{service}/{username}", mirror),
+  pattern("/", index),
+  # pattern("/mirror/{service}/{username}", mirror),
 ]
