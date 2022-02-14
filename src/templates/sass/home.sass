@@ -3,7 +3,7 @@
 #title-container
   flex-direction: column
 
-#login-container
+.login-container
   justify-content: center
   flex-wrap: wrap
   margin: auto
@@ -23,7 +23,7 @@
 #description-container
   align-items: center
 
-#login-container > p
+.login-container > p
   text-align: center
   font: normal 1.1rem v.$body-font
 
@@ -50,7 +50,7 @@
 input
   min-width: 13em
 
-.textinput
+.text-input
   background: none
   border: none
   outline: none
@@ -110,11 +110,37 @@ input
     -ms-transform: translateX(1.65em)
     transform: translateX(1.65em)
 
-#token_input
+#lastfm-auth > p
+  padding: 1em
+  font-style: italic
+
+#token-input
   padding: .3rem 0rem
 
+#service-modal-container
+  // margin-bottom: 1em
+  align-items: center
+  display: flex
+  flex-direction: column
+
+#service-modal
+  display: flex
+  justify-content: space-evenly
+
+.service-logo-button
+  height: 3em
+  padding: .5em
+  display: flex
+  align-items: center
+
+.login-button
+  margin: 0rem 0.5em 1rem 0.5em
+  font-size: 1.2em
+
 .service-logo
-  background-color: v.$listenbrainz
+  width: 2em
+
+.service-icon
   border: 0.01rem solid v.$fg_color
   border-radius: 50%
   height: 1.625em
@@ -122,6 +148,16 @@ input
   margin-right: .5em
   display: flex
   align-items: center
+
+#listenbrainz-icon
+  background-color: v.$listenbrainz
+
+#lastfm-icon
+  background-color: v.$lastfm
+
+#button-modal
+  display: flex
+  justify-content: space-evenly
 
 .user-icon
   height: 1.625em

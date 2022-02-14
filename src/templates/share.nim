@@ -4,8 +4,13 @@ import
   pkg/nodejs/jsindexeddb,
   ../types
 
-proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
-  discard await put(db, "user".cstring, toJs user, dbOptions)
+type
+  ServiceView* = enum
+    none, listenBrainzService, lastFmService
+  SigninView* = enum
+    loadingUsers, returningUser, newUser
+  ClientView* = enum
+    homeView, mirrorView
 
 proc head*(): Vnode =
   ## Produces HTML head to be used on all server side rendered pages.
@@ -22,6 +27,13 @@ proc headerSection*(): Vnode =
       text "Listen"
       span: text "2"
       text "gether"
+
+proc loadingModal*(message: cstring): Vnode =
+  result = buildHtml:
+    tdiv(class = "col login-container"):
+      p(id = "body"):
+        text message
+      img(id = "spinner", src = "/public/assets/spinner.svg")
 
 proc footerSection*(): Vnode =
   ## Produces footer section to be used on all pages.
