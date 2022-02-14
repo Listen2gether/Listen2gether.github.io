@@ -67,24 +67,37 @@ proc serviceToggle: Vnode =
   result = buildHtml:
     tdiv:
       label(class = "switch"):
-        input(`type` = "checkbox", id = "service_switch"):
-          proc oninput(ev: Event; n: VNode) =
-            ## Switches service toggle on click
-            if getElementById("service_switch").checked:
-              getElementById("token").style.display = "none"
-            else:
-              getElementById("token").style.display = "flex"
+        input(`type` = "checkbox", id = "service_switch")
+          # proc oninput(ev: Event; n: VNode) =
+          #   ## Switches service toggle on click
+          #   if getElementById("service_switch").checked:
+          #     getElementById("token").style.display = "none"
+          #   else:
+          #     getElementById("token").style.display = "flex"
         span(class = "slider")
+
+proc mirrorUserModal: Vnode =
+  result = buildHtml:
+    tdiv(id = "username", class = "row textbox"):
+      input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
+        proc onkeyupenter(ev: Event; n: VNode) =
+          ## Routes to mirror page on token enter
+          let
+            username = $getElementById("username_input").value
+            serviceSwitch = getElementById("service_switch").checked
+          if serviceSwitch:
+            echo "Last.fm users are not supported yet.."
+          else:
+            discard loadMirror(Service.listenBrainzService, username)
+      serviceToggle()
 
 proc returnModal*(): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
       p(id = "body"):
         text "Welcome back!"
-      tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror")
-        serviceToggle()
       renderStoredUsers(storedUsers)
+      mirrorUserModal()
 
 proc returnButton: Vnode =
   result = buildHtml:
@@ -168,18 +181,7 @@ proc loginModal: Vnode =
 
       p(id = "body"):
         text "Enter a username and select a service to start mirroring another user's listens."
-      tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
-          proc onkeyupenter(ev: Event; n: VNode) =
-            ## Routes to mirror page on token enter
-            let
-              username = $getElementById("username_input").value
-              serviceSwitch = getElementById("service_switch").checked
-            if serviceSwitch:
-              echo "Last.fm users are not supported yet.."
-            else:
-              discard loadMirror(Service.listenBrainzService, username)
-        serviceToggle()
+      mirrorUserModal()
 
 proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
   let objStore = await getAll(db, "user".cstring, dbOptions)
