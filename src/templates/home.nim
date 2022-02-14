@@ -15,6 +15,16 @@ var
   globalServiceView = ServiceView.none
   storedUsers: Table[cstring, User]
 
+proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
+  let objStore = await getAll(db, "user".cstring, dbOptions)
+  storedUsers = collect:
+    for user in to(objStore, seq[User]): {user.userId: user}
+  if storedUsers.len != 0:
+    globalSigninView = SigninView.returningUser
+  else:
+    globalSigninView = SigninView.newUser
+  redraw()
+
 proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
   discard await put(db, "user".cstring, toJs user, dbOptions)
 
@@ -182,16 +192,6 @@ proc loginModal: Vnode =
       p(id = "body"):
         text "Enter a username and select a service to start mirroring another user's listens."
       mirrorUserModal()
-
-proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
-  let objStore = await getAll(db, "user".cstring, dbOptions)
-  storedUsers = collect:
-    for user in to(objStore, seq[User]): {user.userId: user}
-  if storedUsers.len != 0:
-    globalSigninView = SigninView.returningUser
-  else:
-    globalSigninView = SigninView.newUser
-  redraw()
 
 proc homeMainSection*(): Vnode =
   ## Generates main section for Home page.
