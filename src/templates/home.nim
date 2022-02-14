@@ -15,41 +15,34 @@ var
   globalServiceView = ServiceView.none
   storedUsers: Table[cstring, User]
 
-proc onTokenEnter*(ev: Event; n: VNode) =
-  ## Routes to mirror page on token enter
-  let
-    username = $getElementById("username_input").value
-    token = $getElementById("token-input").value
-    serviceSwitch = getElementById("service_switch").checked
-  if serviceSwitch:
-    echo "Last.fm users are not supported yet.."
-  else:
-    if token != "":
-      echo "Token entered.."
-      # discard validateLB(username, token)
-
-proc onServiceToggleClick*(ev: Event; n: VNode) =
-  ## Switches service toggle on click
-  if getElementById("service_switch").checked:
-    getElementById("token").style.display = "none"
-  else:
-    getElementById("token").style.display = "flex"
-
 proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
   discard await put(db, "user".cstring, toJs user, dbOptions)
 
-proc loadMirror*(service: Service, username, token: string) {.async.} =
-  pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username & "?token=" & token))
+proc validateLBToken(token: string) {.async.} =
+  ## Validates a given ListenBrainz token and stores the user.
+  # let res = await lb.validateToken(token)
+  # if res.valid:
+  # use res.userName because that is the client's username
+  let username = "usertest"
+  if true:
+    let user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username, token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+    discard storeUser(db, dbOptions, user)
+
+proc loadMirror*(service: Service, username: string) {.async.} =
+  pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
 
 proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
-  var secret: cstring
+  var
+    secret: cstring
+    serviceIconId: cstring
   result = buildHtml:
     tdiv:
       for userId, user in storedUsers.pairs:
         for serviceUser in user.services:
           if serviceUser.username != "":
             button(id = kstring(userId), class = "row"):
-              tdiv(class = "service-icon"):
+              serviceIconId = $serviceUser.service & "-icon"
+              tdiv(id = kstring(serviceIconId), class = "service-icon"):
                 case serviceUser.service:
                 of Service.listenBrainzService:
                   secret = serviceUser.token
@@ -70,6 +63,19 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
                 let user = storedUsers[n.id]
                 # discard validateLB($serviceUser.username, $secret)
 
+proc serviceToggle: Vnode =
+  result = buildHtml:
+    tdiv:
+      label(class = "switch"):
+        input(`type` = "checkbox", id = "service_switch"):
+          proc oninput(ev: Event; n: VNode) =
+            ## Switches service toggle on click
+            if getElementById("service_switch").checked:
+              getElementById("token").style.display = "none"
+            else:
+              getElementById("token").style.display = "flex"
+        span(class = "slider")
+
 proc returnModal*(): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
@@ -77,9 +83,7 @@ proc returnModal*(): Vnode =
         text "Welcome back!"
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror")
-        label(class = "switch"):
-          input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
-          span(class = "slider")
+        serviceToggle()
       renderStoredUsers(storedUsers)
 
 proc returnButton: Vnode =
@@ -90,30 +94,34 @@ proc returnButton: Vnode =
         proc onclick(ev: kdom.Event; n: VNode) =
           globalServiceView = ServiceView.none
 
-proc submitButton: Vnode =
+proc onTokenEnter(ev: kdom.Event; n: VNode) =
+  if $n.id == "listenbrainz-token":
+    let token = $getElementById("listenbrainz-token").value
+    discard validateLBToken(token)
+
+proc submitButton(service: Service): Vnode =
+  let buttonId = $service & "-token"
   result = buildHtml:
     tdiv:
-      button(id = "submit", class = "row login-button"):
+      button(id = kstring(buttonId), class = "row login-button", onclick = onTokenEnter):
         text "🆗"
-        proc onclick(ev: kdom.Event; n: VNode) =
-          echo n.id
-
-proc buttonModal: Vnode =
-  result = buildHtml:
-    tdiv(id = "button-modal"):
-      submitButton()
-      returnButton()
 
 proc listenBrainzModal: Vnode =
   result = buildHtml:
-    tdiv(id = "listenbrainz-token", class = "row textbox"):
-      input(`type` = "text", class = "text-input", id = "token-input", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
+    tdiv(class = "row textbox"):
+      input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
 
 proc lastFmModal: Vnode =
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
       p(id = "body"):
         text "Last.fm users are not currently supported!"
+
+proc buttonModal(service: Service): Vnode =
+  result = buildHtml:
+    tdiv(id = "button-modal"):
+      submitButton(service)
+      returnButton()
 
 proc serviceModal: Vnode =
   result = buildHtml:
@@ -153,7 +161,7 @@ proc loginModal: Vnode =
           serviceModal()
         of ServiceView.listenBrainzService:
           listenBrainzModal()
-          buttonModal()
+          buttonModal(Service.listenBrainzService)
         of ServiceView.lastFmService:
           lastFmModal()
           returnButton()
@@ -161,10 +169,17 @@ proc loginModal: Vnode =
       p(id = "body"):
         text "Enter a username and select a service to start mirroring another user's listens."
       tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror")
-        label(class = "switch"):
-          input(`type` = "checkbox", id = "service_switch", oninput = onServiceToggleClick)
-          span(class = "slider")
+        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
+          proc onkeyupenter(ev: Event; n: VNode) =
+            ## Routes to mirror page on token enter
+            let
+              username = $getElementById("username_input").value
+              serviceSwitch = getElementById("service_switch").checked
+            if serviceSwitch:
+              echo "Last.fm users are not supported yet.."
+            else:
+              discard loadMirror(Service.listenBrainzService, username)
+        serviceToggle()
 
 proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
   let objStore = await getAll(db, "user".cstring, dbOptions)
