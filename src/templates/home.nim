@@ -13,7 +13,7 @@ var
   lb = newAsyncListenBrainz()
   globalSigninView = SigninView.loadingUsers
   globalServiceView = ServiceView.none
-  storedUsers: Table[cstring, User]
+  storedUsers: Table[cstring, User] = initTable[cstring, User]()
 
 proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
   let objStore = await getAll(db, "user".cstring, dbOptions)
@@ -40,6 +40,34 @@ proc validateLBToken(token: string) {.async.} =
 
 proc loadMirror*(service: Service, username: string) {.async.} =
   pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
+
+proc serviceToggle: Vnode =
+  result = buildHtml:
+    tdiv:
+      label(class = "switch"):
+        input(`type` = "checkbox", id = "service_switch")
+          # proc oninput(ev: Event; n: VNode) =
+          #   ## Switches service toggle on click
+          #   if getElementById("service_switch").checked:
+          #     getElementById("token").style.display = "none"
+          #   else:
+          #     getElementById("token").style.display = "flex"
+        span(class = "slider")
+
+proc mirrorUserModal: Vnode =
+  result = buildHtml:
+    tdiv(id = "username", class = "row textbox"):
+      input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
+        proc onkeyupenter(ev: Event; n: VNode) =
+          ## Routes to mirror page on token enter
+          let
+            username = $getElementById("username_input").value
+            serviceSwitch = getElementById("service_switch").checked
+          if serviceSwitch:
+            echo "Last.fm users are not supported yet.."
+          else:
+            discard loadMirror(Service.listenBrainzService, username)
+      serviceToggle()
 
 proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
   var
@@ -72,40 +100,18 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
               proc onclick(ev: kdom.Event; n: VNode) =
                 let user = storedUsers[n.id]
                 # discard validateLB($serviceUser.username, $secret)
-
-proc serviceToggle: Vnode =
-  result = buildHtml:
-    tdiv:
-      label(class = "switch"):
-        input(`type` = "checkbox", id = "service_switch")
-          # proc oninput(ev: Event; n: VNode) =
-          #   ## Switches service toggle on click
-          #   if getElementById("service_switch").checked:
-          #     getElementById("token").style.display = "none"
-          #   else:
-          #     getElementById("token").style.display = "flex"
-        span(class = "slider")
-
-proc mirrorUserModal: Vnode =
-  result = buildHtml:
-    tdiv(id = "username", class = "row textbox"):
-      input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
-        proc onkeyupenter(ev: Event; n: VNode) =
-          ## Routes to mirror page on token enter
-          let
-            username = $getElementById("username_input").value
-            serviceSwitch = getElementById("service_switch").checked
-          if serviceSwitch:
-            echo "Last.fm users are not supported yet.."
-          else:
-            discard loadMirror(Service.listenBrainzService, username)
-      serviceToggle()
+      # button(id = "new-user", class = "row"):
+      #   text "New user?"
 
 proc returnModal*(): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
       p(id = "body"):
         text "Welcome back!"
+      a(id = "link"):
+        text "Not you?"
+        proc onclick(ev: kdom.Event; n: VNode) =
+          globalSigninView = SigninView.newUser
       renderStoredUsers(storedUsers)
       mirrorUserModal()
 
@@ -195,8 +201,6 @@ proc loginModal: Vnode =
 
 proc homeMainSection*(): Vnode =
   ## Generates main section for Home page.
-  if storedUsers.len == 0:
-    discard getUsers(db, dbOptions)
   result = buildHtml(main()):
     tdiv(class = "container"):
       tdiv(id = "title-container", class = "col"):
@@ -210,8 +214,10 @@ proc homeMainSection*(): Vnode =
           text "Whether you're physically in the same room or not."
       case globalSigninView:
       of SigninView.loadingUsers:
+        discard getUsers(db, dbOptions)
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
+        discard getUsers(db, dbOptions)
         returnModal()
       of SigninView.newUser:
         loginModal()
