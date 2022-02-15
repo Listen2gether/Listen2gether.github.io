@@ -14,6 +14,7 @@ var
   globalSigninView = SigninView.loadingUsers
   globalServiceView = ServiceView.none
   storedUsers: Table[cstring, User] = initTable[cstring, User]()
+  selectedUser: User
 
 proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
   let objStore = await getAll(db, "user".cstring, dbOptions)
@@ -35,8 +36,9 @@ proc validateLBToken(token: string) {.async.} =
   # use res.userName because that is the client's username
   let username = "usertest"
   if true:
-    let user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username, token), Service.lastFmService: newServiceUser(Service.lastFmService)])
-    discard storeUser(db, dbOptions, user)
+    selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username, token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+    discard storeUser(db, dbOptions, selectedUser)
+    discard getUsers(db, dbOptions)
 
 proc loadMirror*(service: Service, username: string) {.async.} =
   pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
@@ -73,12 +75,17 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
   var
     secret: cstring
     serviceIconId: cstring
+    buttonClass: string
   result = buildHtml:
     tdiv:
       for userId, user in storedUsers.pairs:
+        buttonClass = "row"
+        if not selectedUser.isNil:
+          if selectedUser.userId == userId:
+            buttonClass = buttonClass & " selected"
         for serviceUser in user.services:
           if serviceUser.username != "":
-            button(id = kstring(userId), class = "row"):
+            button(id = kstring(userId), class = kstring(buttonClass)):
               serviceIconId = $serviceUser.service & "-icon"
               tdiv(id = kstring(serviceIconId), class = "service-icon"):
                 case serviceUser.service:
@@ -98,10 +105,9 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
                   )
               text serviceUser.username
               proc onclick(ev: kdom.Event; n: VNode) =
-                let user = storedUsers[n.id]
-                # discard validateLB($serviceUser.username, $secret)
-      # button(id = "new-user", class = "row"):
-      #   text "New user?"
+                # discard validateUser ..
+                selectedUser = storedUsers[n.id]
+                redraw()
 
 proc returnModal*(): Vnode =
   result = buildHtml:
@@ -217,7 +223,6 @@ proc homeMainSection*(): Vnode =
         discard getUsers(db, dbOptions)
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
-        discard getUsers(db, dbOptions)
         returnModal()
       of SigninView.newUser:
         loginModal()
