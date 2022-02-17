@@ -91,14 +91,14 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
                 case serviceUser.service:
                 of Service.listenBrainzService:
                   secret = serviceUser.token
-                  img(src = "/website/assets/listenbrainz-logo.svg",
+                  img(src = "/assets/listenbrainz-logo.svg",
                       id = "listenbrainz-logo",
                       class = "user-icon",
                       alt = "ListenBrainz.org logo"
                   )
                 of Service.lastFmService:
                   secret = serviceUser.sessionKey
-                  img(src = "/website/assets/lastfm-logo.svg",
+                  img(src = "/assets/lastfm-logo.svg",
                       id = "lastfm-logo",
                       class = "user-icon",
                       alt = "last.fm logo"
@@ -166,13 +166,13 @@ proc serviceModal: Vnode =
           tdiv(class = "service-logo-button"):
             case service:
             of Service.listenBrainzService:
-              img(src = "/website/assets/listenbrainz-logo.svg",
+              img(src = "/assets/listenbrainz-logo.svg",
                   id = "listenbrainz-logo",
                   class = "service-logo",
                   alt = "ListenBrainz.org logo"
               )
             of Service.lastFmService:
-              img(src = "/website/assets/lastfm-logo.svg",
+              img(src = "/assets/lastfm-logo.svg",
                   id = "lastfm-logo",
                   class = "service-logo",
                   alt = "last.fm logo"
@@ -233,7 +233,7 @@ proc homeMainSection*(): Vnode =
       tdiv(id = "logo-container", class = "col"):
         a(href = "https://listenbrainz.org/",
           img(
-            src = "/website/assets/listenbrainz-logo.svg",
+            src = "/assets/listenbrainz-logo.svg",
             id = "listenbrainz-logo",
             class = "logo",
             alt = "ListenBrainz.org logo"
@@ -241,7 +241,7 @@ proc homeMainSection*(): Vnode =
         )
         a(href = "https://matrix.org/",
           img(
-            src = "/website/assets/matrix-logo.svg",
+            src = "/assets/matrix-logo.svg",
             id = "matrix-logo",
             class = "logo",
             alt = "Matrix.org logo"
