@@ -3,6 +3,8 @@
 Sync your listens on [ListenBrainz](https://listenbrainz.org) with other people.
 
 
+Currently deployed at https://listen2gether.github.io/website/.
+
 
 ### How to compile
 
