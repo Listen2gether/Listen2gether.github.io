@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, jsffi, tables],
+  std/[asyncjs, jsffi, tables, options],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
@@ -31,12 +31,9 @@ proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
 
 proc validateLBToken(token: string) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
-  # let res = await lb.validateToken(token)
-  # if res.valid:
-  # use res.userName because that is the client's username
-  let username = "usertest"
-  if true:
-    selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username, token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+  let res = await lb.validateToken(token)
+  if res.valid:
+    selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     discard storeUser(db, dbOptions, selectedUser)
     discard getUsers(db, dbOptions)
 
