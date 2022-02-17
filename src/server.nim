@@ -14,6 +14,6 @@ let
 var app = newApp(settings = settings)
 
 app.use(staticFileMiddleware(env.get("staticDir")))
-app.use(CorsMiddleware(allowOrigins = @[env.get("allowOrigins")], allowMethods = @[env.get("allowMethods")]))
+app.use(CorsMiddleware(allowOrigins = @[env.get("allowOrigins")], allowMethods = @[env.get("allowMethods")], allowHeaders = @[env.get("allowHeaders")]))
 app.addRoute(urls.urlPatterns, "")
 app.run()
