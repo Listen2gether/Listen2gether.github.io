@@ -58,11 +58,11 @@ proc mirrorUserModal: Vnode =
   result = buildHtml:
     tdiv(id = "mirror-modal"):
       tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
+        input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror"):
           proc onkeyupenter(ev: Event; n: VNode) =
             ## Routes to mirror page on token enter
             let
-              username = $getElementById("username_input").value
+              username = $getElementById("username-input").value
               serviceSwitch = getElementById("service_switch").checked
             if serviceSwitch:
               echo "Last.fm users are not supported yet.."
