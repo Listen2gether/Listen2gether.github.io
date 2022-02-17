@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, jsffi, tables, options],
+  std/[asyncjs, jsffi, tables, strutils, options],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
@@ -9,6 +9,7 @@ from std/sugar import collect
 
 var
   db = newIndexedDB()
+  dbStore: cstring = "user"
   dbOptions = IDBOptions(keyPath: "userId")
   lb = newAsyncListenBrainz()
   globalSigninView = SigninView.loadingUsers
@@ -16,8 +17,8 @@ var
   storedUsers: Table[cstring, User] = initTable[cstring, User]()
   selectedUser: User
 
-proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
-  let objStore = await getAll(db, "user".cstring, dbOptions)
+proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} =
+  let objStore = await getAll(db, dbStore, dbOptions)
   storedUsers = collect:
     for user in to(objStore, seq[User]): {user.userId: user}
   if storedUsers.len != 0:
@@ -26,17 +27,18 @@ proc getUsers(db: IndexedDB, dbOptions: IDBOptions) {.async.} =
     globalSigninView = SigninView.newUser
   redraw()
 
-proc storeUser*(db: IndexedDB, dbOptions: IDBOptions, user: User) {.async.} =
-  discard await put(db, "user".cstring, toJs user, dbOptions)
+proc storeUser(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions, user: User) {.async.} =
+  discard await put(db, dbStore, toJs user, dbOptions)
 
-proc validateLBToken(token: string) {.async.} =
+proc validateLBToken(token: string, store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   let res = await lb.validateToken(token)
   if res.valid:
     lb = newAsyncListenBrainz(token)
     selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
-    discard storeUser(db, dbOptions, selectedUser)
-    discard getUsers(db, dbOptions)
+    if store:
+      discard storeUser(db, dbStore, dbOptions, selectedUser)
+      discard getUsers(db, dbStore, dbOptions)
 
 proc loadMirror*(service: Service, username: string) {.async.} =
   pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
@@ -88,8 +90,8 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
             buttonClass = buttonClass & " selected"
         for serviceUser in user.services:
           if serviceUser.username != "":
-            button(id = kstring(userId), class = kstring(buttonClass)):
-              serviceIconId = $serviceUser.service & "-icon"
+            button(id = kstring(userId), title = kstring($serviceUser.service), class = kstring(buttonClass)):
+              serviceIconId = cstring($serviceUser.service & "-icon")
               tdiv(id = kstring(serviceIconId), class = "service-icon"):
                 case serviceUser.service:
                 of Service.listenBrainzService:
@@ -108,8 +110,11 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
                   )
               text serviceUser.username
               proc onclick(ev: kdom.Event; n: VNode) =
-                # discard validateUser ..
-                selectedUser = storedUsers[n.id]
+                let
+                  userId = n.id
+                  service = parseEnum[Service]($n.getAttr("title"))
+                selectedUser = storedUsers[userId]
+                discard validateLBToken($selectedUser.services[service].token, store = false)
                 redraw()
 
 proc returnModal*(): Vnode =
@@ -223,7 +228,7 @@ proc homeMainSection*(): Vnode =
           text "Whether you're physically in the same room or not."
       case globalSigninView:
       of SigninView.loadingUsers:
-        discard getUsers(db, dbOptions)
+        discard getUsers(db, dbStore, dbOptions)
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
         returnModal()
