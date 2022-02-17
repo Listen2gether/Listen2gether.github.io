@@ -56,18 +56,23 @@ proc serviceToggle: Vnode =
 
 proc mirrorUserModal: Vnode =
   result = buildHtml:
-    tdiv(id = "username", class = "row textbox"):
-      input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
-        proc onkeyupenter(ev: Event; n: VNode) =
-          ## Routes to mirror page on token enter
-          let
-            username = $getElementById("username_input").value
-            serviceSwitch = getElementById("service_switch").checked
-          if serviceSwitch:
-            echo "Last.fm users are not supported yet.."
-          else:
-            discard loadMirror(Service.listenBrainzService, username)
-      serviceToggle()
+    tdiv(id = "mirror-modal"):
+      tdiv(id = "username", class = "row textbox"):
+        input(`type` = "text", class = "text-input", id = "username_input", placeholder = "Enter username to mirror"):
+          proc onkeyupenter(ev: Event; n: VNode) =
+            ## Routes to mirror page on token enter
+            let
+              username = $getElementById("username_input").value
+              serviceSwitch = getElementById("service_switch").checked
+            if serviceSwitch:
+              echo "Last.fm users are not supported yet.."
+            else:
+              discard loadMirror(Service.listenBrainzService, username)
+        serviceToggle()
+      button(id = "mirror-button", class = "row login-button"):
+        text "Start mirroring!"
+        proc onclick(ev: kdom.Event; n: VNode) =
+          echo "mirroring..."
 
 proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
   var
