@@ -12,8 +12,8 @@ bin           = @["server"]
 requires "nim >= 1.7.1"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 # requires "https://gitlab.com/tandy1000/lastfm-nim#head"
-requires "norm"
-requires "prologue"
+when not defined(js):
+  requires "prologue"
 requires "jsony"
 requires "karax"
 

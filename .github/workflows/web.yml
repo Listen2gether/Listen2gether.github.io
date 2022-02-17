@@ -28,7 +28,7 @@ jobs:
         run: npm install -g sass
 
       - name: Install dependencies
-        run: nimble install -y --depsOnly
+        run: nimble install -d:js -y --depsOnly
 
       - name: Build Sass
         run: nimble sass
