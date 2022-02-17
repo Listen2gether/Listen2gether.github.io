@@ -33,6 +33,7 @@ proc validateLBToken(token: string) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   let res = await lb.validateToken(token)
   if res.valid:
+    lb = newAsyncListenBrainz(token)
     selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     discard storeUser(db, dbOptions, selectedUser)
     discard getUsers(db, dbOptions)
