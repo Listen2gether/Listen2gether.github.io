@@ -33,7 +33,7 @@ proc mainSection(service: Service, user: User): Vnode =
         if isSome(user.playingNow):
           li(class = "row listen"):
             tdiv(id = "listen-details"):
-              img(src = "/assets/nowplaying.svg")
+              img(src = "/website/assets/nowplaying.svg")
               tdiv(id = "track-details"):
                 trackName = get(user.playingNow).trackName
                 artistName = get(user.playingNow).artistName
@@ -56,9 +56,9 @@ proc mainSection(service: Service, user: User): Vnode =
             tdiv(id = "listen-details"):
               if isSome(track.mirrored):
                 if get(track.mirrored):
-                  img(src = "/assets/mirrored.svg")
+                  img(src = "/website/assets/mirrored.svg")
                 else:
-                  img(src = "/assets/pre-mirror.svg")
+                  img(src = "/website/assets/pre-mirror.svg")
               tdiv(id = "track-details"):
                 trackName = track.trackName
                 artistName = track.artistName
