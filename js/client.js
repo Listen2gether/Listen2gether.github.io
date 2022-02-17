@@ -3607,7 +3607,7 @@ function loadingModal_637534283(message_637534284) {
     add_687866571(tmp_637534286, tmp_637534287);
     var tmp_637534288 = tree_687866634(76, []);
     tmp_637534288.id = "spinner";
-    setAttr_687866497(tmp_637534288, "src", "/public/assets/spinner.svg");
+    setAttr_687866497(tmp_637534288, "src", "/website/assets/spinner.svg");
     add_687866571(tmp_637534286, tmp_637534288);
     result_637534285 = tmp_637534286;
 
@@ -3724,7 +3724,7 @@ function HEX3Aanonymous_620758976(ev_620758977, n_620758978) {
                         if (ConstSet2[Temporary8.service]===undefined) { raiseFieldError2(makeNimstrLit("field \'token\' is not accessible for type \'ServiceUser\' using \'service = "), reprDiscriminant(Temporary8.service, NTI2332033027)); }
                         secret_620758608 = Temporary8.token;
                         var tmp_620758614 = tree_687866634(76, []);
-                        setAttr_687866497(tmp_620758614, "src", "/public/assets/listenbrainz-logo.svg");
+                        setAttr_687866497(tmp_620758614, "src", "/website/assets/listenbrainz-logo.svg");
                         tmp_620758614.id = "listenbrainz-logo";
                         tmp_620758614.class = "user-icon";
                         setAttr_687866497(tmp_620758614, "alt", "ListenBrainz.org logo");
@@ -3735,7 +3735,7 @@ function HEX3Aanonymous_620758976(ev_620758977, n_620758978) {
                         if (ConstSet3[Temporary9.service]===undefined) { raiseFieldError2(makeNimstrLit("field \'sessionKey\' is not accessible for type \'ServiceUser\' using \'service = "), reprDiscriminant(Temporary9.service, NTI2332033027)); }
                         secret_620758608 = Temporary9.sessionKey;
                         var tmp_620758615 = tree_687866634(76, []);
-                        setAttr_687866497(tmp_620758615, "src", "/public/assets/lastfm-logo.svg");
+                        setAttr_687866497(tmp_620758615, "src", "/website/assets/lastfm-logo.svg");
                         tmp_620758615.id = "lastfm-logo";
                         tmp_620758615.class = "user-icon";
                         setAttr_687866497(tmp_620758615, "alt", "last.fm logo");
@@ -3909,7 +3909,7 @@ function HEX3Aanonymous_620759180(ev_620759181, n_620759182) {
               switch (service_620759176) {
               case 0:
                 var tmp_620759151 = tree_687866634(76, []);
-                setAttr_687866497(tmp_620759151, "src", "/public/assets/listenbrainz-logo.svg");
+                setAttr_687866497(tmp_620759151, "src", "/website/assets/listenbrainz-logo.svg");
                 tmp_620759151.id = "listenbrainz-logo";
                 tmp_620759151.class = "service-logo";
                 setAttr_687866497(tmp_620759151, "alt", "ListenBrainz.org logo");
@@ -3917,7 +3917,7 @@ function HEX3Aanonymous_620759180(ev_620759181, n_620759182) {
                 break;
               case 1:
                 var tmp_620759152 = tree_687866634(76, []);
-                setAttr_687866497(tmp_620759152, "src", "/public/assets/lastfm-logo.svg");
+                setAttr_687866497(tmp_620759152, "src", "/website/assets/lastfm-logo.svg");
                 tmp_620759152.id = "lastfm-logo";
                 tmp_620759152.class = "service-logo";
                 setAttr_687866497(tmp_620759152, "alt", "last.fm logo");
@@ -4329,7 +4329,7 @@ function homeMainSection_620759191() {
     var tmp_620759204 = tree_687866634(45, []);
     setAttr_687866497(tmp_620759204, "href", "https://listenbrainz.org/");
     var tmp_620759205 = tree_687866634(76, []);
-    setAttr_687866497(tmp_620759205, "src", "/public/assets/listenbrainz-logo.svg");
+    setAttr_687866497(tmp_620759205, "src", "/website/assets/listenbrainz-logo.svg");
     tmp_620759205.id = "listenbrainz-logo";
     tmp_620759205.class = "logo";
     setAttr_687866497(tmp_620759205, "alt", "ListenBrainz.org logo");
@@ -4338,7 +4338,7 @@ function homeMainSection_620759191() {
     var tmp_620759206 = tree_687866634(45, []);
     setAttr_687866497(tmp_620759206, "href", "https://matrix.org/");
     var tmp_620759207 = tree_687866634(76, []);
-    setAttr_687866497(tmp_620759207, "src", "/public/assets/matrix-logo.svg");
+    setAttr_687866497(tmp_620759207, "src", "/website/assets/matrix-logo.svg");
     tmp_620759207.id = "matrix-logo";
     tmp_620759207.class = "logo";
     setAttr_687866497(tmp_620759207, "alt", "Matrix.org logo");
@@ -4359,7 +4359,7 @@ function footerSection_637534289() {
     var tmp_637534292 = tree_687866634(45, []);
     setAttr_687866497(tmp_637534292, "href", "https://www.gnu.org/licenses/agpl-3.0.html");
     var tmp_637534293 = tree_687866634(76, []);
-    setAttr_687866497(tmp_637534293, "src", "/public/assets/agpl.svg");
+    setAttr_687866497(tmp_637534293, "src", "/website/assets/agpl.svg");
     tmp_637534293.id = "agpl";
     tmp_637534293.class = "icon";
     setAttr_687866497(tmp_637534293, "alt", "GNU AGPL icon");
@@ -4368,7 +4368,7 @@ function footerSection_637534289() {
     var tmp_637534294 = tree_687866634(45, []);
     setAttr_687866497(tmp_637534294, "href", "https://github.com/Listen2gether/website");
     var tmp_637534295 = tree_687866634(76, []);
-    setAttr_687866497(tmp_637534295, "src", "/public/assets/github-logo.svg");
+    setAttr_687866497(tmp_637534295, "src", "/website/assets/github-logo.svg");
     tmp_637534295.class = "icon";
     setAttr_687866497(tmp_637534295, "alt", "GitHub Repository");
     add_687866571(tmp_637534294, tmp_637534295);
