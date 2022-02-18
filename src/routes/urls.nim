@@ -4,5 +4,4 @@ import
 
 const urlPatterns* = @[
   pattern("/", index),
-  # pattern("/mirror/{service}/{username}", mirror),
 ]
