@@ -4,7 +4,7 @@ import
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
-  ../types, share
+  ../types, ../sources/lb, share
 from std/sugar import collect
 
 
@@ -12,7 +12,7 @@ var
   db: IndexedDB = newIndexedDB()
   dbStore: cstring = "user"
   dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
-  lb: AsyncListenBrainz = newAsyncListenBrainz()
+  lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   globalServiceView: ServiceView = ServiceView.none
   globalSigninView: SigninView = SigninView.loadingUsers
   storedUsers: Table[cstring, User] = initTable[cstring, User]()
@@ -36,9 +36,9 @@ proc storeUser(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions, user: Use
 
 proc validateLBToken(token: string, store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
-  let res = await lb.validateToken(token)
+  let res = await lbClient.validateToken(token)
   if res.valid:
-    lb = newAsyncListenBrainz(token)
+    lbClient = newAsyncListenBrainz(token)
     clientUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if store:
       discard storeUser(db, dbStore, dbOptions, clientUser)
@@ -64,30 +64,48 @@ proc serviceToggle: Vnode =
         input(`type` = "checkbox", id = "service_switch")
         span(class = "slider")
 
+proc validateLBUser(username: string) {.async.} =
+  ## Validates and gets now playing for user.
+  try:
+    let
+      res = await lbClient.getUserPlayingNow(username)
+      payload = res.payload
+      user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)], latestListenTs = payload.latestListenTs)
+    if payload.count == 1:
+      user.playingNow = some to payload.listens[0]
+    discard storeUser(db, dbStore, dbOptions, user)
+  except:
+    echo "not valid!"
+
+proc onMirror(ev: kdom.Event; n: VNode) =
+  ## Routes to mirror page on token enter
+  let
+    username = $getElementById("username-input").value
+    serviceSwitch = getElementById("service_switch").checked
+  if serviceSwitch:
+    echo "Last.fm users are not supported yet.."
+  else:
+    if clientUser.services[Service.listenBrainzService].username == username:
+      echo "enter a different user!"
+    else:
+      discard validateLBUser(username)
+      if mirrorUser.isNil:
+        echo "enter a valid user!"
+      else:
+        discard loadMirror(Service.listenBrainzService, username)
+
 proc mirrorUserModal: Vnode =
   result = buildHtml:
     tdiv(id = "mirror-modal"):
       tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror"):
-          proc onkeyupenter(ev: Event; n: VNode) =
-            ## Routes to mirror page on token enter
-            let
-              username = $getElementById("username-input").value
-              serviceSwitch = getElementById("service_switch").checked
-            if serviceSwitch:
-              echo "Last.fm users are not supported yet.."
-            else:
-              discard loadMirror(Service.listenBrainzService, username)
+        input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirror)
         serviceToggle()
-      button(id = "mirror-button", class = "row login-button"):
+      button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
-        proc onclick(ev: kdom.Event; n: VNode) =
-          echo "mirroring..."
 
-proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: User, mirrorUser: User): Vnode =
+proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: var User): Vnode =
   var
-    secret: cstring
-    serviceIconId: cstring
+    secret, serviceIconId: cstring
     buttonClass: string
   result = buildHtml:
     tdiv:
@@ -197,7 +215,7 @@ proc returnModal: Vnode =
         text "Not you?"
         proc onclick(ev: kdom.Event; n: VNode) =
           globalSigninView = SigninView.newUser
-      renderStoredUsers()
+      renderStoredUsers(storedUsers, clientUser)
       mirrorUserModal()
 
 proc loginModal: Vnode =
