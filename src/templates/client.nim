@@ -11,7 +11,7 @@ var
   db: IndexedDB = newIndexedDB()
   dbStore: cstring = "user"
   dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
-  lb: AsyncListenBrainz = newAsyncListenBrainz()
+  lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   globalView: ClientView = ClientView.homeView
 
 proc home*: Vnode =
