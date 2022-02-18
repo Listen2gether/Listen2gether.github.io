@@ -8,18 +8,30 @@ import
 from std/sugar import collect
 
 var
-  db = newIndexedDB()
-  dbOptions = IDBOptions(keyPath: "userId")
-  lb = newAsyncListenBrainz()
-  globalView = ClientView.homeView
-  storedUsers: Table[cstring, User]
+  db: IndexedDB = newIndexedDB()
+  dbStore: cstring = "user"
+  dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
+  lb: AsyncListenBrainz = newAsyncListenBrainz()
+  globalView: ClientView = ClientView.homeView
+
+proc home*: Vnode =
+  ## Generates main section for Home page.
+  result = buildHtml:
+    main:
+      signinSection()
+      descriptionSection()
+
+proc mirror*: Vnode =
+  result = buildHtml:
+    main:
+      echo "test"
 
 proc createDom(): VNode =
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
     of homeView:
-      homeMainSection()
+      home()
     of mirrorView:
       echo "oi"
     footerSection()

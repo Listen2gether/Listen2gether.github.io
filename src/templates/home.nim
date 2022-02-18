@@ -7,17 +7,20 @@ import
   ../types, share
 from std/sugar import collect
 
+
 var
-  db = newIndexedDB()
+  db: IndexedDB = newIndexedDB()
   dbStore: cstring = "user"
-  dbOptions = IDBOptions(keyPath: "userId")
-  lb = newAsyncListenBrainz()
-  globalSigninView = SigninView.loadingUsers
-  globalServiceView = ServiceView.none
+  dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
+  lb: AsyncListenBrainz = newAsyncListenBrainz()
+  globalServiceView: ServiceView = ServiceView.none
+  globalSigninView: SigninView = SigninView.loadingUsers
   storedUsers: Table[cstring, User] = initTable[cstring, User]()
-  selectedUser: User
+  clientUser, mirrorUser: User
+
 
 proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} =
+  ## Gets users from IndexedDB, stores them in `storedUsers`, and sets the `GlobalSignInView` if there are any existing users.
   let objStore = await getAll(db, dbStore, dbOptions)
   storedUsers = collect:
     for user in to(objStore, seq[User]): {user.userId: user}
@@ -28,6 +31,7 @@ proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} 
   redraw()
 
 proc storeUser(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions, user: User) {.async.} =
+  ## Stores a user in a given store in IndexedDB.
   discard await put(db, dbStore, toJs user, dbOptions)
 
 proc validateLBToken(token: string, store = true) {.async.} =
@@ -35,12 +39,22 @@ proc validateLBToken(token: string, store = true) {.async.} =
   let res = await lb.validateToken(token)
   if res.valid:
     lb = newAsyncListenBrainz(token)
-    selectedUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+    clientUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if store:
-      discard storeUser(db, dbStore, dbOptions, selectedUser)
+      discard storeUser(db, dbStore, dbOptions, clientUser)
       discard getUsers(db, dbStore, dbOptions)
+  else:
+    echo "unsuccessful"
+    if store:
+      echo "token not valid!"
+      echo "try again"
+    else:
+      echo "token no longer valid!"
+      echo "removing token"
 
-proc loadMirror*(service: Service, username: string) {.async.} =
+
+proc loadMirror(service: Service, username: string) {.async.} =
+  ## Sets the window url and sends information to the mirror view.
   pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
 
 proc serviceToggle: Vnode =
@@ -48,12 +62,6 @@ proc serviceToggle: Vnode =
     tdiv:
       label(class = "switch"):
         input(`type` = "checkbox", id = "service_switch")
-          # proc oninput(ev: Event; n: VNode) =
-          #   ## Switches service toggle on click
-          #   if getElementById("service_switch").checked:
-          #     getElementById("token").style.display = "none"
-          #   else:
-          #     getElementById("token").style.display = "flex"
         span(class = "slider")
 
 proc mirrorUserModal: Vnode =
@@ -76,7 +84,7 @@ proc mirrorUserModal: Vnode =
         proc onclick(ev: kdom.Event; n: VNode) =
           echo "mirroring..."
 
-proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
+proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: User, mirrorUser: User): Vnode =
   var
     secret: cstring
     serviceIconId: cstring
@@ -85,8 +93,8 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
     tdiv:
       for userId, user in storedUsers.pairs:
         buttonClass = "row"
-        if not selectedUser.isNil:
-          if selectedUser.userId == userId:
+        if not clientUser.isNil:
+          if clientUser.userId == userId:
             buttonClass = buttonClass & " selected"
         for serviceUser in user.services:
           if serviceUser.username != "":
@@ -113,21 +121,9 @@ proc renderStoredUsers*(storedUsers: Table[cstring, User]): Vnode =
                 let
                   userId = n.id
                   service = parseEnum[Service]($n.getAttr("title"))
-                selectedUser = storedUsers[userId]
-                discard validateLBToken($selectedUser.services[service].token, store = false)
+                clientUser = storedUsers[userId]
+                discard validateLBToken($clientUser.services[service].token, store = false)
                 redraw()
-
-proc returnModal*(): Vnode =
-  result = buildHtml:
-    tdiv(class = "col login-container"):
-      p(id = "body"):
-        text "Welcome back!"
-      a(id = "link"):
-        text "Not you?"
-        proc onclick(ev: kdom.Event; n: VNode) =
-          globalSigninView = SigninView.newUser
-      renderStoredUsers(storedUsers)
-      mirrorUserModal()
 
 proc returnButton: Vnode =
   result = buildHtml:
@@ -186,12 +182,23 @@ proc serviceModal: Vnode =
                   alt = "last.fm logo"
               )
           proc onclick(ev: kdom.Event; n: VNode) =
-            let id = $n.id
-            case id:
-            of "listenbrainz":
+            case parseEnum[Service]($n.id):
+            of Service.listenBrainzService:
               globalServiceView = ServiceView.listenBrainzService
-            of "lastfm":
+            of Service.lastFmService:
               globalServiceView = ServiceView.lastFmService
+
+proc returnModal: Vnode =
+  result = buildHtml:
+    tdiv(class = "col login-container"):
+      p(id = "body"):
+        text "Welcome back!"
+      a(id = "link"):
+        text "Not you?"
+        proc onclick(ev: kdom.Event; n: VNode) =
+          globalSigninView = SigninView.newUser
+      renderStoredUsers()
+      mirrorUserModal()
 
 proc loginModal: Vnode =
   result = buildHtml:
@@ -213,9 +220,8 @@ proc loginModal: Vnode =
         text "Enter a username and select a service to start mirroring another user's listens."
       mirrorUserModal()
 
-proc homeMainSection*(): Vnode =
-  ## Generates main section for Home page.
-  result = buildHtml(main()):
+proc signinSection*: Vnode =
+  result = buildHtml:
     tdiv(class = "container"):
       tdiv(id = "title-container", class = "col"):
         p(id = "title"):
@@ -234,6 +240,9 @@ proc homeMainSection*(): Vnode =
         returnModal()
       of SigninView.newUser:
         loginModal()
+
+proc descriptionSection*: Vnode =
+  result = buildHtml:
     tdiv(class = "container"):
       tdiv(id = "description-container", class = "col"):
         p(id = "body"):
