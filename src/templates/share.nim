@@ -12,14 +12,6 @@ type
   ClientView* = enum
     homeView, mirrorView
 
-proc head*(): Vnode =
-  ## Produces HTML head to be used on all server side rendered pages.
-  result = buildHtml(head):
-    meta(charset="utf-8", name="viewport", content="width=device-width, initial-scale=1")
-    title: text "Listen2gether"
-    link(rel="icon", href="/assets/favicon_square.svg")
-    link(rel="stylesheet", href="/css/style.css")
-
 proc headerSection*(): Vnode =
   ## Produces header section to be used on all pages.
   result = buildHtml(header):
