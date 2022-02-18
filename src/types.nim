@@ -47,13 +47,15 @@ func newUser*(
   userId: string = $toUnix(getTime()),
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
-  listenHistory: seq[Track] = @[]): User =
+  listenHistory: seq[Track] = @[],
+  latestListenTs: int = 0): User =
   ## Create new User object
   new(result)
   result.userId = userId
   result.services = services
   result.playingNow = playingNow
   result.listenHistory = listenHistory
+  result.latestListenTs = latestListenTs
 
 
 func newTrack*(
