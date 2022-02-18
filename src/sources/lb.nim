@@ -59,24 +59,6 @@ proc to*(
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
-proc validateLbToken*(
-  lb: AsyncListenBrainz,
-  lbToken: string): Future[bool] {.async.} =
-  ## Validate a ListenBrainz token given a ListenBrainz object and token
-  let req = await lb.validateToken(lbToken)
-  result = req.valid
-
-proc getNowPlaying*(
-  lb: AsyncListenBrainz,
-  user: User): Future[Option[Track]] {.async.} =
-  ## Return a ListenBrainz user's now playing
-  let
-    nowPlaying = await lb.getUserPlayingNow($user.services[listenBrainzService].username)
-    payload = nowPlaying.payload
-  if payload.count == 1:
-    result = some(to(payload.listens[0]))
-  else:
-    result = none(Track)
 
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
@@ -88,8 +70,6 @@ proc getRecentTracks*(
     userListens = await lb.getUserListens($user.services[listenBrainzService].username, count = count)
   if userListens.payload.count > 0:
     result = to(userListens.payload.listens, some(preMirror))
-  else:
-    result = @[]
 
 # proc updateUser*(
 #   lb: AsyncListenBrainz,
