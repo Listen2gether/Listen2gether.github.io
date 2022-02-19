@@ -7,13 +7,11 @@ import
   ../types, ../sources/lb, share
 from std/sugar import collect
 
-
 type
   ServiceView* = enum
     none, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser
-
 
 var
   db: IndexedDB = newIndexedDB()
@@ -24,7 +22,7 @@ var
   globalSigninView: SigninView = SigninView.loadingUsers
   storedUsers: Table[cstring, User] = initTable[cstring, User]()
   clientUser, mirrorUser: User
-
+  clientErrorMessage, mirrorErrorMessage: string
 
 proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} =
   ## Gets users from IndexedDB, stores them in `storedUsers`, and sets the `GlobalSignInView` if there are any existing users.
@@ -43,6 +41,7 @@ proc storeUser(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions, user: Use
 
 proc validateLBToken(token: string, store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
+  lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken(token)
   if res.valid:
     lbClient = newAsyncListenBrainz(token)
@@ -51,14 +50,12 @@ proc validateLBToken(token: string, store = true) {.async.} =
       discard storeUser(db, dbStore, dbOptions, clientUser)
       discard getUsers(db, dbStore, dbOptions)
   else:
-    echo "unsuccessful"
     if store:
-      echo "token not valid!"
-      echo "try again"
+      clientErrorMessage = "Please enter a valid token!"
+      redraw()
     else:
-      echo "token no longer valid!"
-      echo "removing token"
-
+      clientErrorMessage = "Token no longer valid!"
+      redraw()
 
 proc loadMirror(service: Service, username: string) {.async.} =
   ## Sets the window url and sends information to the mirror view.
@@ -92,14 +89,20 @@ proc onMirror(ev: kdom.Event; n: VNode) =
   if serviceSwitch:
     echo "Last.fm users are not supported yet.."
   else:
-    if clientUser.services[Service.listenBrainzService].username == username:
-      echo "enter a different user!"
+    if clientUser.services[Service.listenBrainzService].username == cstring(username):
+      mirrorErrorMessage = "Enter a different user!"
     else:
       discard validateLBUser(username)
       if mirrorUser.isNil:
-        echo "enter a valid user!"
+        mirrorErrorMessage = "Enter a valid user!"
       else:
         discard loadMirror(Service.listenBrainzService, username)
+
+proc errorMessage(message: string): Vnode =
+  result = buildHtml:
+    tdiv(class = "error-message"):
+      p(id = "error"):
+        text message
 
 proc mirrorUserModal: Vnode =
   result = buildHtml:
@@ -109,13 +112,14 @@ proc mirrorUserModal: Vnode =
         serviceToggle()
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
+      errorMessage(mirrorErrorMessage)
 
 proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: var User): Vnode =
   var
     secret, serviceIconId: cstring
     buttonClass: string
   result = buildHtml:
-    tdiv:
+    tdiv(id = "stored-users"):
       for userId, user in storedUsers.pairs:
         buttonClass = "row"
         if not clientUser.isNil:
@@ -172,13 +176,14 @@ proc submitButton(service: Service): Vnode =
 
 proc listenBrainzModal: Vnode =
   result = buildHtml:
-    tdiv(class = "row textbox"):
-      input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
+    tdiv:
+      tdiv(class = "row textbox"):
+        input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
 proc lastFmModal: Vnode =
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
-      p(id = "body"):
+      p(class = "body"):
         text "Last.fm users are not currently supported!"
 
 proc buttonModal(service: Service): Vnode =
@@ -216,7 +221,7 @@ proc serviceModal: Vnode =
 proc returnModal: Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
-      p(id = "body"):
+      p(class = "body"):
         text "Welcome back!"
       a(id = "link"):
         text "Not you?"
@@ -228,20 +233,21 @@ proc returnModal: Vnode =
 proc loginModal: Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
-      p(id = "body"):
+      p(class = "body"):
         text "Login to your service:"
       tdiv(id = "service-modal-container"):
         case globalServiceView:
         of ServiceView.none:
           serviceModal()
         of ServiceView.listenBrainzService:
+          errorMessage(clientErrorMessage)
           listenBrainzModal()
           buttonModal(Service.listenBrainzService)
         of ServiceView.lastFmService:
           lastFmModal()
           returnButton()
 
-      p(id = "body"):
+      p(class = "body"):
         text "Enter a username and select a service to start mirroring another user's listens."
       mirrorUserModal()
 
@@ -270,7 +276,7 @@ proc descriptionSection*: Vnode =
   result = buildHtml:
     tdiv(class = "container"):
       tdiv(id = "description-container", class = "col"):
-        p(id = "body"):
+        p(class = "body"):
           text "Virtual listen parties are powered by ListenBrainz and a Matrix chatroom."
       tdiv(id = "logo-container", class = "col"):
         a(href = "https://listenbrainz.org/",
