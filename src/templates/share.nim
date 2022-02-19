@@ -5,10 +5,6 @@ import
   ../types
 
 type
-  ServiceView* = enum
-    none, listenBrainzService, lastFmService
-  SigninView* = enum
-    loadingUsers, returningUser, newUser
   ClientView* = enum
     homeView, mirrorView
 

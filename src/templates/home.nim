@@ -8,6 +8,13 @@ import
 from std/sugar import collect
 
 
+type
+  ServiceView* = enum
+    none, listenBrainzService, lastFmService
+  SigninView* = enum
+    loadingUsers, returningUser, newUser
+
+
 var
   db: IndexedDB = newIndexedDB()
   dbStore: cstring = "user"
@@ -151,7 +158,7 @@ proc returnButton: Vnode =
         proc onclick(ev: kdom.Event; n: VNode) =
           globalServiceView = ServiceView.none
 
-proc onTokenEnter(ev: kdom.Event; n: VNode) =
+proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = $getElementById("listenbrainz-token").value
     discard validateLBToken(token)
@@ -160,13 +167,13 @@ proc submitButton(service: Service): Vnode =
   let buttonId = $service & "-token"
   result = buildHtml:
     tdiv:
-      button(id = kstring(buttonId), class = "row login-button", onclick = onTokenEnter):
+      button(id = kstring(buttonId), class = "row login-button", onclick = onLBTokenEnter):
         text "🆗"
 
 proc listenBrainzModal: Vnode =
   result = buildHtml:
     tdiv(class = "row textbox"):
-      input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onTokenEnter)
+      input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
 proc lastFmModal: Vnode =
   result = buildHtml:
