@@ -79,24 +79,32 @@ proc validateLBUser(username: string) {.async.} =
       user.playingNow = some to payload.listens[0]
     discard storeUser(db, dbStore, dbOptions, user)
   except:
-    echo "not valid!"
+    mirrorErrorMessage = "Please enter a valid user!"
+    redraw()
 
 proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   let
     username = $getElementById("username-input").value
     serviceSwitch = getElementById("service_switch").checked
-  if serviceSwitch:
-    echo "Last.fm users are not supported yet.."
+  if clientUser.isNil:
+    clientErrorMessage = "Please login before trying to mirror!"
+    redraw()
   else:
-    if clientUser.services[Service.listenBrainzService].username == cstring(username):
-      mirrorErrorMessage = "Enter a different user!"
+    if serviceSwitch:
+      mirrorErrorMessage = "Last.fm users are not supported yet.."
+      redraw()
     else:
-      discard validateLBUser(username)
-      if mirrorUser.isNil:
-        mirrorErrorMessage = "Enter a valid user!"
+      if clientUser.services[Service.listenBrainzService].username == cstring(username):
+        mirrorErrorMessage = "Please enter a different user!"
+        redraw()
       else:
-        discard loadMirror(Service.listenBrainzService, username)
+        discard validateLBUser(username)
+        if mirrorUser.isNil:
+          mirrorErrorMessage = "Please enter a valid user!"
+          redraw()
+        else:
+          discard loadMirror(Service.listenBrainzService, username)
 
 proc errorMessage(message: string): Vnode =
   result = buildHtml:
@@ -110,9 +118,9 @@ proc mirrorUserModal: Vnode =
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirror)
         serviceToggle()
+      errorMessage(mirrorErrorMessage)
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
-      errorMessage(mirrorErrorMessage)
 
 proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: var User): Vnode =
   var
@@ -228,6 +236,7 @@ proc returnModal: Vnode =
         proc onclick(ev: kdom.Event; n: VNode) =
           globalSigninView = SigninView.newUser
       renderStoredUsers(storedUsers, clientUser)
+      errorMessage(clientErrorMessage)
       mirrorUserModal()
 
 proc loginModal: Vnode =
