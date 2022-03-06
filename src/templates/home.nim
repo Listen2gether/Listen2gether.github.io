@@ -26,7 +26,7 @@ var
   clientUser, mirrorUser: User
   clientErrorMessage, mirrorErrorMessage: string
 
-proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} =
+proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Gets users from IndexedDB, stores them in `storedClientUsers`, and sets the `GlobalSignInView` if there are any existing users.
   let objStore = await getAll(db, dbStore, dbOptions)
   storedClientUsers = collect:
@@ -37,7 +37,7 @@ proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} 
     globalSigninView = SigninView.newUser
   redraw()
 
-proc storeUser(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions, user: User) {.async.} =
+proc storeUser(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
   discard await put(db, dbStore, toJs user, dbOptions)
 
@@ -49,8 +49,8 @@ proc validateLBToken(token: string, store = true) {.async.} =
     lbClient = newAsyncListenBrainz(token)
     clientUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if store:
-      discard storeUser(db, clientUserDbStore, dbOptions, clientUser)
-      discard getUsers(db, clientUserDbStore, dbOptions)
+      discard storeUser(db, clientUserDbStore, clientUser)
+      discard getUsers(db, clientUserDbStore)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
@@ -80,7 +80,7 @@ proc validateLBUser(username: string) {.async.} =
       user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)], latestListenTs = toUnix(getTime()))
     if payload.count == 1:
       user.playingNow = some to payload.listens[0]
-    discard storeUser(db, mirrorUserDbStore, dbOptions, user)
+    discard storeUser(db, mirrorUserDbStore, user)
   except:
     mirrorErrorMessage = "Please enter a valid user!"
     redraw()
@@ -277,7 +277,7 @@ proc signinSection*: Vnode =
           text "Whether you're physically in the same room or not."
       case globalSigninView:
       of SigninView.loadingUsers:
-        discard getUsers(db, clientUserDbStore, dbOptions)
+        discard getUsers(db, clientUserDbStore)
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
         returnModal()
