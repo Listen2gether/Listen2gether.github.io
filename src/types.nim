@@ -19,7 +19,7 @@ type
     services*: array[Service, ServiceUser]
     playingNow*: Option[Track]
     listenHistory*: seq[Track]
-    latestListenTs*: int
+    latestListenTs*: int64
 
   Track* = object
     trackName*, artistName*: string
@@ -48,7 +48,7 @@ func newUser*(
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
   listenHistory: seq[Track] = @[],
-  latestListenTs: int = 0): User =
+  latestListenTs: int64 = 0): User =
   ## Create new User object
   new(result)
   result.userId = userId

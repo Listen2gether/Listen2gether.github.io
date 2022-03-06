@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, jsffi, tables, strutils, options],
+  std/[asyncjs, jsffi, tables, strutils, options, times],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
@@ -74,7 +74,7 @@ proc validateLBUser(username: string) {.async.} =
     let
       res = await lbClient.getUserPlayingNow(username)
       payload = res.payload
-      user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)], latestListenTs = payload.latestListenTs)
+      user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)], latestListenTs = toUnix(getTime()))
     if payload.count == 1:
       user.playingNow = some to payload.listens[0]
     discard storeUser(db, dbStore, dbOptions, user)
