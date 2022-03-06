@@ -10,6 +10,7 @@ bin           = @["server"]
 
 # Dependencies
 requires "nim >= 1.7.1"
+requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 # requires "https://gitlab.com/tandy1000/lastfm-nim#head"
 when defined(c):
