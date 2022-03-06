@@ -15,21 +15,23 @@ type
 
 var
   db: IndexedDB = newIndexedDB()
-  dbStore: cstring = "user"
+  clientUserDbStore: cstring = "clientUser"
+  mirrorUserDbStore: cstring = "mirrorUser"
   dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
   lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   globalServiceView: ServiceView = ServiceView.none
   globalSigninView: SigninView = SigninView.loadingUsers
-  storedUsers: Table[cstring, User] = initTable[cstring, User]()
+  storedClientUsers: Table[cstring, User] = initTable[cstring, User]()
+  storedMirrorUsers: Table[cstring, User] = initTable[cstring, User]()
   clientUser, mirrorUser: User
   clientErrorMessage, mirrorErrorMessage: string
 
 proc getUsers(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions) {.async.} =
-  ## Gets users from IndexedDB, stores them in `storedUsers`, and sets the `GlobalSignInView` if there are any existing users.
+  ## Gets users from IndexedDB, stores them in `storedClientUsers`, and sets the `GlobalSignInView` if there are any existing users.
   let objStore = await getAll(db, dbStore, dbOptions)
-  storedUsers = collect:
+  storedClientUsers = collect:
     for user in to(objStore, seq[User]): {user.userId: user}
-  if storedUsers.len != 0:
+  if storedClientUsers.len != 0:
     globalSigninView = SigninView.returningUser
   else:
     globalSigninView = SigninView.newUser
@@ -47,8 +49,8 @@ proc validateLBToken(token: string, store = true) {.async.} =
     lbClient = newAsyncListenBrainz(token)
     clientUser = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if store:
-      discard storeUser(db, dbStore, dbOptions, clientUser)
-      discard getUsers(db, dbStore, dbOptions)
+      discard storeUser(db, clientUserDbStore, dbOptions, clientUser)
+      discard getUsers(db, clientUserDbStore, dbOptions)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
@@ -72,12 +74,13 @@ proc validateLBUser(username: string) {.async.} =
   ## Validates and gets now playing for user.
   try:
     let
-      res = await lbClient.getUserPlayingNow(username)
+      c = newAsyncListenBrainz()
+      res = await c.getUserPlayingNow(username)
       payload = res.payload
       user = newUser(services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)], latestListenTs = toUnix(getTime()))
     if payload.count == 1:
       user.playingNow = some to payload.listens[0]
-    discard storeUser(db, dbStore, dbOptions, user)
+    discard storeUser(db, mirrorUserDbStore, dbOptions, user)
   except:
     mirrorErrorMessage = "Please enter a valid user!"
     redraw()
@@ -122,13 +125,13 @@ proc mirrorUserModal: Vnode =
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
 
-proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: var User): Vnode =
+proc renderstoredClientUsers(storedClientUsers: Table[cstring, User], clientUser: var User): Vnode =
   var
     secret, serviceIconId: cstring
     buttonClass: string
   result = buildHtml:
     tdiv(id = "stored-users"):
-      for userId, user in storedUsers.pairs:
+      for userId, user in storedClientUsers.pairs:
         buttonClass = "row"
         if not clientUser.isNil:
           if clientUser.userId == userId:
@@ -158,7 +161,7 @@ proc renderStoredUsers(storedUsers: Table[cstring, User], clientUser: var User):
                 let
                   userId = n.id
                   service = parseEnum[Service]($n.getAttr("title"))
-                clientUser = storedUsers[userId]
+                clientUser = storedClientUsers[userId]
                 discard validateLBToken($clientUser.services[service].token, store = false)
                 redraw()
 
@@ -235,7 +238,7 @@ proc returnModal: Vnode =
         text "Not you?"
         proc onclick(ev: kdom.Event; n: VNode) =
           globalSigninView = SigninView.newUser
-      renderStoredUsers(storedUsers, clientUser)
+      renderstoredClientUsers(storedClientUsers, clientUser)
       errorMessage(clientErrorMessage)
       mirrorUserModal()
 
@@ -274,7 +277,7 @@ proc signinSection*: Vnode =
           text "Whether you're physically in the same room or not."
       case globalSigninView:
       of SigninView.loadingUsers:
-        discard getUsers(db, dbStore, dbOptions)
+        discard getUsers(db, clientUserDbStore, dbOptions)
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
         returnModal()
