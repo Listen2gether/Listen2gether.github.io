@@ -22,17 +22,16 @@ type
     latestListenTs*: int64
 
   Track* = object
-    trackName*, artistName*: string
-    releaseName*, recordingMbid*, releaseMbid*: Option[string]
-    artistMbids*: Option[seq[string]]
-    trackNumber*, duration*: Option[int]
-    listenedAt*: Option[int]
+    trackName*, artistName*: cstring
+    releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
+    artistMbids*: Option[seq[cstring]]
+    trackNumber*, duration*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
 
 func newServiceUser*(
   service: Service,
-  username, token, sessionKey: string = ""): ServiceUser =
+  username, token, sessionKey: cstring = ""): ServiceUser =
   ## Create a new ServiceUser object
   result = ServiceUser(service: service)
   result.username = username
@@ -44,7 +43,7 @@ func newServiceUser*(
 
 
 func newUser*(
-  userId: string = $toUnix(getTime()),
+  userId: cstring = $toUnix(getTime()),
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
   playingNow: Option[Track] = none(Track),
   listenHistory: seq[Track] = @[],
@@ -59,9 +58,9 @@ func newUser*(
 
 
 func newTrack*(
-  trackName, artistName: string,
-  releaseName, recordingMbid, releaseMbid: Option[string] = none(string),
-  artistMbids: Option[seq[string]] = none(seq[string]),
+  trackName, artistName: cstring,
+  releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
+  artistMbids: Option[seq[cstring]] = none(seq[cstring]),
   trackNumber, duration: Option[int] = none(int),
   listenedAt: Option[int] = none(int),
   mirrored, preMirror: Option[bool] = none(bool)): Track =

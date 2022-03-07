@@ -14,20 +14,30 @@ include pkg/listenbrainz/utils/tools
 
 const userBaseUrl* = "https://listenbrainz.org/user/"
 
+proc to*(val: Option[seq[cstring]]): Option[seq[string]] =
+  ## Convert `Option[seq[cstring]]` to `Option[seq[string]]`
+  for item in val.get():
+    result.get().add $item
+
+proc to*(val: Option[seq[string]]): Option[seq[cstring]] =
+  ## Convert `Option[seq[string]]` to `Option[seq[cstring]]`
+  for item in val.get():
+    result.get().add cstring item
+
 proc to*(
   track: Track,
   listenedAt: Option[int]): APIListen =
   ## Convert a `Track` object to a `Listen` object
   let
     additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
-                                    trackMbid: track.recordingMbid,
-                                    recordingMbid: track.recordingMbid,
-                                    releaseMbid: track.releaseMbid,
-                                    artistMbids: track.artistMbids)
-    trackMetadata = TrackMetadata(trackName: track.trackName,
-                                  artistName: track.artistName,
-                                  releaseName: track.releaseName,
-                                  additionalInfo: some(additionalInfo))
+                                    trackMbid: some $track.recordingMbid,
+                                    recordingMbid: some $track.recordingMbid,
+                                    releaseMbid: some $track.releaseMbid,
+                                    artistMbids: to track.artistMbids)
+    trackMetadata = TrackMetadata(trackName: $track.trackName,
+                                  artistName: $track.artistName,
+                                  releaseName: some $track.releaseName,
+                                  additionalInfo: some additionalInfo)
   result = APIListen(listenedAt: listenedAt,
                      trackMetadata: trackMetadata)
 
@@ -35,16 +45,16 @@ proc to*(
   listen: APIListen,
   preMirror: Option[bool] = none(bool)): Track =
   ## Convert a `Listen` object to a `Track` object
-  result = newTrack(trackName = listen.trackMetadata.trackName,
-                    artistName = listen.trackMetadata.artistName,
-                    releaseName = listen.trackMetadata.releaseName,
-                    recordingMbid = get(listen.trackMetadata.additionalInfo).recordingMbid,
-                    releaseMbid = get(listen.trackMetadata.additionalInfo).releaseMbid,
-                    artistMbids = get(listen.trackMetadata.additionalInfo).artistMbids,
+  result = newTrack(trackName = cstring listen.trackMetadata.trackName,
+                    artistName = cstring listen.trackMetadata.artistName,
+                    releaseName = some cstring get listen.trackMetadata.releaseName,
+                    recordingMbid = some cstring get get(listen.trackMetadata.additionalInfo).recordingMbid,
+                    releaseMbid = some cstring get get(listen.trackMetadata.additionalInfo).releaseMbid,
+                    artistMbids = to get(listen.trackMetadata.additionalInfo).artistMbids,
                     trackNumber = get(listen.trackMetadata.additionalInfo).trackNumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
-                    mirrored = some(false))
+                    mirrored = some false)
 
 proc to*(
   listens: seq[APIListen],
@@ -70,15 +80,6 @@ proc getRecentTracks*(
     userListens = await lb.getUserListens($user.services[listenBrainzService].username, count = count)
   if userListens.payload.count > 0:
     result = to(userListens.payload.listens, some(preMirror))
-
-# proc updateUser*(
-#   lb: AsyncListenBrainz,
-#   user: User,
-#   preMirror: bool) {.async.} =
-#   ## Get a ListenBrainz user's `playingNow` and `listenHistory`
-#   user.playingNow = waitFor getNowPlaying(lb, user)
-#   user.listenHistory = waitFor getRecentTracks(lb, user, preMirror)
-#   updateUserTable(user, listenBrainzService)
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror
