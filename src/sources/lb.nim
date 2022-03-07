@@ -16,13 +16,27 @@ const userBaseUrl* = "https://listenbrainz.org/user/"
 
 proc to*(val: Option[seq[cstring]]): Option[seq[string]] =
   ## Convert `Option[seq[cstring]]` to `Option[seq[string]]`
-  for item in val.get():
-    result.get().add $item
+  if isSome val:
+    for item in val.get():
+      result.get().add $item
+  else:
+    result = none seq[string]
 
 proc to*(val: Option[seq[string]]): Option[seq[cstring]] =
   ## Convert `Option[seq[string]]` to `Option[seq[cstring]]`
-  for item in val.get():
-    result.get().add cstring item
+  if isSome val:
+    for item in val.get():
+      result.get().add cstring item
+  else:
+    result = none seq[cstring]
+
+proc to*(val: Option[string]): Option[cstring] =
+  ## Convert `Option[string]` to `Option[cstring]`
+  if isSome val:
+    result = some cstring get val
+  else:
+    result = none cstring
+
 
 proc to*(
   track: Track,
@@ -41,17 +55,18 @@ proc to*(
   result = APIListen(listenedAt: listenedAt,
                      trackMetadata: trackMetadata)
 
+
 proc to*(
   listen: APIListen,
   preMirror: Option[bool] = none(bool)): Track =
   ## Convert a `Listen` object to a `Track` object
   result = newTrack(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
-                    releaseName = some cstring get listen.trackMetadata.releaseName,
-                    recordingMbid = some cstring get get(listen.trackMetadata.additionalInfo).recordingMbid,
-                    releaseMbid = some cstring get get(listen.trackMetadata.additionalInfo).releaseMbid,
-                    artistMbids = to get(listen.trackMetadata.additionalInfo).artistMbids,
-                    trackNumber = get(listen.trackMetadata.additionalInfo).trackNumber,
+                    releaseName = to listen.trackMetadata.releaseName,
+                    recordingMbid = to get(listen.trackMetadata.additionalInfo).recordingMbid,
+                    releaseMbid = to get(listen.trackMetadata.additionalInfo).releaseMbid,
+                    artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
+                    trackNumber = get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
                     mirrored = some false)
@@ -61,7 +76,7 @@ proc to*(
   preMirror: Option[bool] = none(bool)): seq[Track] =
   ## Convert a sequence of `Listen` objects to a sequence of `Track` objects
   for listen in listens:
-    result.add(to(listen, preMirror))
+    result.add to(listen, preMirror)
 
 proc to*(
   userListens: UserListens,
