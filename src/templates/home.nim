@@ -167,9 +167,12 @@ proc renderUsers(storedUsers: Table[cstring, User], clientUser: var User, mirror
                 let
                   userId = n.id
                   service = parseEnum[Service]($n.getAttr("title"))
-                clientUser = storedUsers[userId]
-                if not mirror:
-                  discard validateLBToken($clientUser.services[service].token, store = false)
+                if clientUser.isNil():
+                  clientUser = storedUsers[userId]
+                  if not mirror:
+                    discard validateLBToken($clientUser.services[service].token, store = false)
+                else:
+                  clientUser = nil
                 redraw()
 
 proc mirrorUserModal: Vnode =
