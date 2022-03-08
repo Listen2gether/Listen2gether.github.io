@@ -101,7 +101,11 @@ button:hover {
 }
 
 .error-message {
-  padding-top: 0.5em;
+  padding-bottom: 1rem;
+}
+
+.error-message:empty {
+  display: none;
 }
 
 #error {
@@ -161,9 +165,8 @@ footer {
   align-items: center;
 }
 
-.login-container > p {
+#modal-text {
   text-align: center;
-  font: normal 1.1rem Inter, sans-serif;
   margin-bottom: 0.25rem;
 }
 
