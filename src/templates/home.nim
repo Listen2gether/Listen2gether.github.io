@@ -5,7 +5,7 @@ import
   pkg/listenbrainz,
   pkg/listenbrainz/core,
   ../types, ../sources/lb, share
-from std/sugar import collect
+
 
 type
   ServiceView* = enum
@@ -14,34 +14,26 @@ type
     loadingUsers, returningUser, newUser
 
 var
-  db: IndexedDB = newIndexedDB()
-  clientUserDbStore: cstring = "clientUser"
-  mirrorUserDbStore: cstring = "mirrorUser"
-  dbOptions: IDBOptions = IDBOptions(keyPath: "userId")
   lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   globalServiceView: ServiceView = ServiceView.none
   globalSigninView: SigninView = SigninView.loadingUsers
   storedClientUsers: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers: Table[cstring, User] = initTable[cstring, User]()
-  clientUser, mirrorUser: User
   clientErrorMessage, mirrorErrorMessage: string
 
-proc getClientUsers(db: IndexedDB, dbStore = clientUserDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
+
+proc getClientUsers(db: IndexedDB, dbStore = clientUsersDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `GlobalSignInView` if there are any existing users.
-  let objStore = await getAll(db, dbStore, dbOptions)
-  storedClientUsers = collect:
-    for user in to(objStore, seq[User]): {user.userId: user}
+  storedClientUsers = await db.getUsers(dbStore, dbOptions)
   if storedClientUsers.len != 0:
     globalSigninView = SigninView.returningUser
   else:
     globalSigninView = SigninView.newUser
   redraw()
 
-proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUserDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
+proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Gets mirror users from IndexedDB.
-  let objStore = await getAll(db, dbStore, dbOptions)
-  storedMirrorUsers = collect:
-    for user in to(objStore, seq[User]): {user.userId: user}
+  storedMirrorUsers = await db.getUsers(dbStore, dbOptions)
 
 proc storeUser(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
@@ -55,7 +47,7 @@ proc validateLBToken(token: string, userId: cstring = "", store = true) {.async.
     lbClient = newAsyncListenBrainz(token)
     if store:
       clientUser = newUser(userId = cstring res.userName.get(), services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, cstring res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
-      discard storeUser(db, clientUserDbStore, clientUser)
+      discard storeUser(db, clientUsersDbStore, clientUser)
       discard db.getClientUsers()
   else:
     if store:
@@ -64,7 +56,7 @@ proc validateLBToken(token: string, userId: cstring = "", store = true) {.async.
     else:
       clientErrorMessage = "Token no longer valid!"
       clientUser = nil
-      discard db.delete(clientUserDbStore, userId, dbOptions)
+      discard db.delete(clientUsersDbStore, userId, dbOptions)
       redraw()
 
 proc loadMirror(service: Service, username: cstring) {.async.} =
@@ -92,7 +84,7 @@ proc validateLBUser(username: string) {.async.} =
       user.playingNow = some to payload.listens[0]
       user.latestListenTs = toUnix getTime()
     mirrorUser = user
-    discard storeUser(db, mirrorUserDbStore, mirrorUser)
+    discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
   except:
     mirrorErrorMessage = "Please enter a valid user!"
