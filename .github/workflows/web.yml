@@ -2,9 +2,9 @@ name: Web deployment
 on:
   push:
     paths:
-      - ".github/workflows/*"
-      - "src/*"
-      - "public/*"
+      - ".github/workflows/**"
+      - "src/**"
+      - "public/**"
       - "listen2gether.nimble"
 
 jobs:
