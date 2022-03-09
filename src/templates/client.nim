@@ -1,9 +1,10 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, jsffi, tables],
+  std/[asyncjs, jsffi, tables, strutils],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
+  ../sources/[lb],
   ../types, home, share
 from std/sugar import collect
 
@@ -21,19 +22,33 @@ proc home*: Vnode =
       signinSection()
       descriptionSection()
 
-proc mirror*: Vnode =
+proc mirror*(service: Service, username: cstring): Vnode =
   result = buildHtml:
     main:
-      echo "test"
+      tdiv(id = "mirror"):
+        p:
+          text "You are mirroring "
+          a(href = lb.userBaseurl & $username):
+            text username & "!"
+
 
 proc createDom(): VNode =
+  var
+    service: Service
+    username: cstring
+  let urlPath = ($window.location.pathname).split("/")
+  if urlPath.len == 4:
+    service = parseEnum[Service]($urlPath[2])
+    username = urlPath[3]
+    globalView = ClientView.mirrorView
+
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
     of homeView:
       home()
     of mirrorView:
-      echo "oi"
+      mirror(service, username)
     footerSection()
 
 setRenderer createDom
