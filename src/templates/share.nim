@@ -1,12 +1,25 @@
 import
-  std/[asyncjs, jsffi],
+  std/[asyncjs, jsffi, tables],
   pkg/karax/[karaxdsl, vdom],
   pkg/nodejs/jsindexeddb,
   ../types
+from std/sugar import collect
 
 type
   ClientView* = enum
     homeView, mirrorView
+
+var
+  db*: IndexedDB = newIndexedDB()
+  clientUsersDbStore*: cstring = "clientUsers"
+  mirrorUsersDbStore*: cstring = "mirrorUsers"
+  dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
+  clientUser*, mirrorUser*: User
+
+proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions): Future[Table[cstring, User]] {.async.} =
+  let objStore = await getAll(db, dbStore, dbOptions)
+  result = collect:
+    for user in to(objStore, seq[User]): {user.userId: user}
 
 proc headerSection*(): Vnode =
   ## Produces header section to be used on all pages.
