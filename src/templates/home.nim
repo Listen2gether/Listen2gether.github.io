@@ -47,15 +47,14 @@ proc storeUser(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOption
   ## Stores a user in a given store in IndexedDB.
   discard await put(db, dbStore, toJs user, dbOptions)
 
-proc validateLBToken(token: string, store = true) {.async.} =
+proc validateLBToken(token: string, userId: cstring = "", store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken(token)
   if res.valid:
     lbClient = newAsyncListenBrainz(token)
-    let userId = $Service.listenBrainzService & ":" & res.userName.get()
-    clientUser = newUser(userId = cstring userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, cstring res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if store:
+      clientUser = newUser(userId = cstring res.userName.get(), services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, cstring res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
       discard storeUser(db, clientUserDbStore, clientUser)
       discard db.getClientUsers()
   else:
@@ -64,11 +63,14 @@ proc validateLBToken(token: string, store = true) {.async.} =
       redraw()
     else:
       clientErrorMessage = "Token no longer valid!"
+      clientUser = nil
+      discard db.delete(clientUserDbStore, userId, dbOptions)
       redraw()
 
-proc loadMirror(service: Service, username: string) {.async.} =
+proc loadMirror(service: Service, username: cstring) {.async.} =
   ## Sets the window url and sends information to the mirror view.
-  pushState(dom.window.history, 0, cstring"", cstring("/mirror/" & $service & "/" & username))
+  let url = "/mirror/" & $service & "/" & $username
+  pushState(dom.window.history, 0, cstring "", cstring url)
 
 proc serviceToggle: Vnode =
   result = buildHtml:
@@ -84,7 +86,7 @@ proc validateLBUser(username: string) {.async.} =
       c = newAsyncListenBrainz()
       res = await c.getUserPlayingNow username
       payload = res.payload
-      userId = $Service.listenBrainzService & ":" & payload.userId
+      userId = payload.userId
       user = newUser(userId = cstring userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = cstring payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if payload.count == 1:
       user.playingNow = some to payload.listens[0]
@@ -92,7 +94,6 @@ proc validateLBUser(username: string) {.async.} =
     mirrorUser = user
     discard storeUser(db, mirrorUserDbStore, mirrorUser)
     mirrorErrorMessage = ""
-    redraw()
   except:
     mirrorErrorMessage = "Please enter a valid user!"
     redraw()
@@ -101,28 +102,38 @@ proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   var username = getElementById("username-input").value
   let serviceSwitch = getElementById("service_switch").checked
-  if clientUser.isNull:
+
+  ## client user nil error
+  if clientUser.isNil:
     clientErrorMessage = "Please login before trying to mirror!"
     redraw()
   else:
     clientErrorMessage = ""
     redraw()
-  if mirrorUser.isNull and username == "":
+
+  ## mirror user nil error
+  if mirrorUser.isNil and username == "":
     mirrorErrorMessage = "Please choose a user!"
     redraw()
   else:
-    if username == "":
-      username = mirrorUser.services[Service.listenBrainzService].username
-    if serviceSwitch:
-      mirrorErrorMessage = "Last.fm users are not supported yet.."
-      redraw()
-    else:
+    mirrorErrorMessage = ""
+    redraw()
+
+  if not mirrorUser.isNil and username == "":
+    username = mirrorUser.services[Service.listenBrainzService].username
+
+  if serviceSwitch:
+    mirrorErrorMessage = "Last.fm users are not supported yet.."
+    redraw()
+  else:
+    if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
       if clientUser.services[Service.listenBrainzService].username == username:
         mirrorErrorMessage = "Please enter a different user!"
         redraw()
       else:
         discard validateLBUser($username)
-        # discard loadMirror(Service.listenBrainzService, username)
+        discard loadMirror(Service.listenBrainzService, username)
+        redraw()
 
 proc errorMessage(message: string): Vnode =
   result = buildHtml:
@@ -131,7 +142,7 @@ proc errorMessage(message: string): Vnode =
         p(id = "error"):
           text message
 
-proc renderUsers(storedUsers: Table[cstring, User], clientUser: var User, mirror = false): Vnode =
+proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirror = false): Vnode =
   var
     secret, serviceIconId: cstring
     buttonClass: string
@@ -139,14 +150,13 @@ proc renderUsers(storedUsers: Table[cstring, User], clientUser: var User, mirror
     tdiv(id = "stored-users"):
       for userId, user in storedUsers.pairs:
         buttonClass = "row"
-        if not clientUser.isNil:
-          if clientUser.userId == userId:
-            buttonClass = buttonClass & " selected"
+        if not currentUser.isNil and currentUser.userId == userId:
+          buttonClass = buttonClass & " selected"
         for serviceUser in user.services:
           if serviceUser.username != "":
-            button(id = kstring(userId), title = kstring($serviceUser.service), class = kstring(buttonClass)):
+            button(id = kstring userId, title = kstring $serviceUser.service, class = kstring buttonClass):
               serviceIconId = cstring($serviceUser.service & "-icon")
-              tdiv(id = kstring(serviceIconId), class = "service-icon"):
+              tdiv(id = kstring serviceIconId, class = "service-icon"):
                 case serviceUser.service:
                 of Service.listenBrainzService:
                   secret = serviceUser.token
@@ -167,12 +177,12 @@ proc renderUsers(storedUsers: Table[cstring, User], clientUser: var User, mirror
                 let
                   userId = n.id
                   service = parseEnum[Service]($n.getAttr("title"))
-                if clientUser.isNil():
-                  clientUser = storedUsers[userId]
+                if currentUser.isNil:
+                  currentUser = storedUsers[userId]
                   if not mirror:
-                    discard validateLBToken($clientUser.services[service].token, store = false)
+                    discard validateLBToken($currentUser.services[service].token, userId = currentUser.userId, store = false)
                 else:
-                  clientUser = nil
+                  currentUser = nil
                 redraw()
 
 proc mirrorUserModal: Vnode =
@@ -186,7 +196,7 @@ proc mirrorUserModal: Vnode =
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirror)
         serviceToggle()
-      errorMessage(mirrorErrorMessage)
+      errorMessage mirrorErrorMessage
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
 
@@ -201,7 +211,7 @@ proc returnButton: Vnode =
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = $getElementById("listenbrainz-token").value
-    discard validateLBToken(token)
+    discard validateLBToken token
 
 proc submitButton(service: Service): Vnode =
   let buttonId = $service & "-token"
@@ -225,7 +235,7 @@ proc lastFmModal: Vnode =
 proc buttonModal(service: Service): Vnode =
   result = buildHtml:
     tdiv(id = "button-modal"):
-      submitButton(service)
+      submitButton service
       returnButton()
 
 proc serviceModal: Vnode =
