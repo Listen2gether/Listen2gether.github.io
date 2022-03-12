@@ -59,17 +59,17 @@ proc validateLBToken(token: string, userId: cstring = "", store = true) {.async.
       discard db.delete(clientUsersDbStore, userId, dbOptions)
       redraw()
 
-proc loadMirror(service: Service, username: cstring) {.async.} =
-  ## Sets the window url and sends information to the mirror view.
-  let url = "/mirror/" & $service & "/" & $username
-  pushState(dom.window.history, 0, cstring "", cstring url)
-
 proc serviceToggle: Vnode =
   result = buildHtml:
     tdiv:
       label(class = "switch"):
         input(`type` = "checkbox", id = "service_switch")
         span(class = "slider")
+
+proc loadMirror(service: Service, username: cstring) =
+  ## Sets the window url and sends information to the mirror view.
+  let url = "/mirror/" & $service & "/" & $username
+  pushState(dom.window.history, 0, cstring "", cstring url)
 
 proc validateLBUser(username: string) {.async.} =
   ## Validates and gets now playing for user.
@@ -86,6 +86,8 @@ proc validateLBUser(username: string) {.async.} =
     mirrorUser = user
     discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
+    loadMirror(Service.listenBrainzService, username)
+    redraw()
   except:
     mirrorErrorMessage = "Please enter a valid user!"
     redraw()
@@ -124,8 +126,6 @@ proc onMirror(ev: kdom.Event; n: VNode) =
         redraw()
       else:
         discard validateLBUser($username)
-        discard loadMirror(Service.listenBrainzService, username)
-        redraw()
 
 proc errorMessage(message: string): Vnode =
   result = buildHtml:
