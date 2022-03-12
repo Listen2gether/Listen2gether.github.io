@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, karaxdsl, vdom, kdom],
-  std/strutils,
+  std/[strutils, uri, sequtils, tables],
   ../types,
   home, mirror, share
 
@@ -23,11 +23,12 @@ proc createDom(): VNode =
   var
     service: Service
     username: cstring
-  let urlPath = ($window.location.pathname).split("/")
-  if urlPath.len == 4:
-    service = parseEnum[Service]($urlPath[2])
-    username = cstring urlPath[3]
-    globalView = ClientView.mirrorView
+  if ($window.location.pathname) == "/mirror":
+    let params = toTable toSeq decodeQuery(($window.location.search).split("?")[1])
+    if "username" in params and "service" in params:
+      username = cstring params["username"]
+      service = parseEnum[Service]($params["service"])
+      globalView = ClientView.mirrorView
 
   result = buildHtml(tdiv):
     headerSection()

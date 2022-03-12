@@ -68,7 +68,7 @@ proc serviceToggle: Vnode =
 
 proc loadMirror(service: Service, username: cstring) =
   ## Sets the window url and sends information to the mirror view.
-  let url = "/mirror/" & $service & "/" & $username
+  let url = "/mirror?service=" & $service & "&username=" & $username
   pushState(dom.window.history, 0, cstring "", cstring url)
 
 proc validateLBUser(username: string) {.async.} =
