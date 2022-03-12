@@ -16,7 +16,7 @@ proc home*: Vnode =
 
 proc mirror*(user: User, service: Service): Vnode =
   result = buildHtml:
-    tdiv:
+    main:
       mainSection(user, service)
 
 proc createDom(): VNode =

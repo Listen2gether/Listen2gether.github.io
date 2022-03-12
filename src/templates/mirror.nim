@@ -4,11 +4,6 @@ import
   ../sources/[lb],
   ../types, share
 
-
-# poll every 30 seconds to get current track?
-# separate nim file that compiles to create js, triggers a page reload
-
-
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 6): Vnode =
   var
     trackName, artistName: cstring
@@ -72,7 +67,7 @@ proc mainSection*(user: User, service: Service): Vnode =
     # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
-    main:
+    tdiv:
       tdiv(id = "mirror"):
         p:
           text "You are mirroring "
