@@ -1,11 +1,10 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, jsffi, tables, strutils, options, times],
+  std/[asyncjs, tables, strutils, options, times],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
   ../types, ../sources/lb, share
-
 
 type
   ServiceView* = enum
@@ -14,41 +13,32 @@ type
     loadingUsers, returningUser, newUser
 
 var
-  lbClient: AsyncListenBrainz = newAsyncListenBrainz()
-  globalServiceView: ServiceView = ServiceView.none
-  globalSigninView: SigninView = SigninView.loadingUsers
-  storedClientUsers: Table[cstring, User] = initTable[cstring, User]()
-  storedMirrorUsers: Table[cstring, User] = initTable[cstring, User]()
-  clientErrorMessage, mirrorErrorMessage: string
+  homeServiceView: ServiceView = ServiceView.none
+  homeSigninView: SigninView = SigninView.loadingUsers
 
-
-proc getClientUsers(db: IndexedDB, dbStore = clientUsersDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
-  ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `GlobalSignInView` if there are any existing users.
-  storedClientUsers = await db.getUsers(dbStore, dbOptions)
+proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
+  ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
+  storedClientUsers = await db.getUsers(dbStore)
   if storedClientUsers.len != 0:
-    globalSigninView = SigninView.returningUser
+    view = SigninView.returningUser
   else:
-    globalSigninView = SigninView.newUser
+    view = SigninView.newUser
   redraw()
 
-proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore, dbOptions: IDBOptions = dbOptions) {.async.} =
+proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   ## Gets mirror users from IndexedDB.
-  storedMirrorUsers = await db.getUsers(dbStore, dbOptions)
+  storedMirrorUsers = await db.getUsers(dbStore)
 
-proc storeUser(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
-  ## Stores a user in a given store in IndexedDB.
-  discard await put(db, dbStore, toJs user, dbOptions)
-
-proc validateLBToken(token: string, userId: cstring = "", store = true) {.async.} =
+proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   lbClient = newAsyncListenBrainz()
-  let res = await lbClient.validateToken(token)
+  let res = await lbClient.validateToken($token)
   if res.valid:
-    lbClient = newAsyncListenBrainz(token)
+    lbClient = newAsyncListenBrainz($token)
     if store:
       clientUser = newUser(userId = cstring res.userName.get(), services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, cstring res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
       discard storeUser(db, clientUsersDbStore, clientUser)
-      discard db.getClientUsers()
+      discard db.getClientUsers(homeSigninView)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
@@ -127,7 +117,7 @@ proc onMirror(ev: kdom.Event; n: VNode) =
       else:
         discard validateLBUser($username)
 
-proc errorMessage(message: string): Vnode =
+proc errorMessage*(message: string): Vnode =
   result = buildHtml:
     tdiv(class = "error-message"):
       if message != "":
@@ -172,7 +162,7 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirro
                 if currentUser.isNil:
                   currentUser = storedUsers[userId]
                   if not mirror:
-                    discard validateLBToken($currentUser.services[service].token, userId = currentUser.userId, store = false)
+                    discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
                 else:
                   currentUser = nil
                 redraw()
@@ -192,17 +182,17 @@ proc mirrorUserModal: Vnode =
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
 
-proc returnButton: Vnode =
+proc returnButton*(view: var ServiceView): Vnode =
   result = buildHtml:
     tdiv:
       button(id = "return", class = "row login-button"):
         text "🔙"
         proc onclick(ev: kdom.Event; n: VNode) =
-          globalServiceView = ServiceView.none
+          view = ServiceView.none
 
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
-    let token = $getElementById("listenbrainz-token").value
+    let token = getElementById("listenbrainz-token").value
     discard validateLBToken token
 
 proc submitButton(service: Service): Vnode =
@@ -212,25 +202,25 @@ proc submitButton(service: Service): Vnode =
       button(id = kstring(buttonId), class = "row login-button", onclick = onLBTokenEnter):
         text "🆗"
 
-proc listenBrainzModal: Vnode =
+proc listenBrainzModal*: Vnode =
   result = buildHtml:
     tdiv:
       tdiv(class = "row textbox"):
         input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
-proc lastFmModal: Vnode =
+proc lastFmModal*: Vnode =
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
       p(class = "body"):
         text "Last.fm users are not currently supported!"
 
-proc buttonModal(service: Service): Vnode =
+proc buttonModal*(service: Service, view: var ServiceView): Vnode =
   result = buildHtml:
     tdiv(id = "button-modal"):
       submitButton service
-      returnButton()
+      returnButton(view)
 
-proc serviceModal: Vnode =
+proc serviceModal*(view: var ServiceView): Vnode =
   result = buildHtml:
     tdiv(id = "service-modal"):
       for service in Service:
@@ -252,11 +242,11 @@ proc serviceModal: Vnode =
           proc onclick(ev: kdom.Event; n: VNode) =
             case parseEnum[Service]($n.id):
             of Service.listenBrainzService:
-              globalServiceView = ServiceView.listenBrainzService
+              view = ServiceView.listenBrainzService
             of Service.lastFmService:
-              globalServiceView = ServiceView.lastFmService
+              view = ServiceView.lastFmService
 
-proc returnModal: Vnode =
+proc returnModal*(view: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
       p(id = "modal-text", class = "body"):
@@ -264,74 +254,93 @@ proc returnModal: Vnode =
       a(id = "link"):
         text "Not you?"
         proc onclick(ev: kdom.Event; n: VNode) =
-          globalSigninView = SigninView.newUser
+          view = SigninView.newUser
       renderUsers(storedClientUsers, clientUser)
       errorMessage(clientErrorMessage)
-      mirrorUserModal()
+      if mirror:
+        mirrorUserModal()
 
-proc loginModal: Vnode =
+proc loginModal*(view: var ServiceView, mirror: bool): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):
       p(id = "modal-text", class = "body"):
         text "Login to your service:"
       tdiv(id = "service-modal-container"):
-        case globalServiceView:
+        case view:
         of ServiceView.none:
-          serviceModal()
+          serviceModal(view)
         of ServiceView.listenBrainzService:
           errorMessage(clientErrorMessage)
           listenBrainzModal()
-          buttonModal(Service.listenBrainzService)
+          buttonModal(Service.listenBrainzService, view)
         of ServiceView.lastFmService:
           lastFmModal()
-          returnButton()
+          returnButton(view)
 
-      p(id = "modal-text", class = "body"):
-        text "Enter a username and select a service to start mirroring another user's listens."
-      mirrorUserModal()
+      if mirror:
+        p(id = "modal-text", class = "body"):
+          text "Enter a username and select a service to start mirroring another user's listens."
+        mirrorUserModal()
+
+proc titleCol: Vnode =
+  result = buildHtml:
+    tdiv(id = "title-container", class = "col"):
+      p(id = "title"):
+        a(class = "header", href = "/"):
+          text "Listen"
+          span: text "2"
+          text "gether"
+        text " is a website for listen parties."
+      p(id = "subtitle"):
+        text "Whether you're physically in the same room or not."
+
+proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror = true): Vnode =
+  result = buildHtml:
+    tdiv:
+      case signinView:
+      of SigninView.loadingUsers:
+        discard db.getClientUsers(signinView)
+        discard db.getMirrorUsers()
+        loadingModal(cstring "Loading users...")
+      of SigninView.returningUser:
+        returnModal(signinView, mirror)
+      of SigninView.newUser:
+        loginModal(serviceView, mirror)
+
+proc descriptionCol: Vnode =
+  result = buildHtml:
+    tdiv(id = "description-container", class = "col"):
+      p(class = "body"):
+        text "Virtual listen parties are powered by ListenBrainz and a Matrix chatroom."
+
+proc logoCol: Vnode =
+  result = buildHtml:
+    tdiv(id = "logo-container", class = "col"):
+      a(href = "https://listenbrainz.org/",
+        img(
+          src = "/assets/listenbrainz-logo.svg",
+          id = "listenbrainz-logo",
+          class = "logo",
+          alt = "ListenBrainz.org logo"
+        )
+      )
+      a(href = "https://matrix.org/",
+        img(
+          src = "/assets/matrix-logo.svg",
+          id = "matrix-logo",
+          class = "logo",
+          alt = "Matrix.org logo"
+        )
+      )
 
 proc signinSection*: Vnode =
   result = buildHtml:
     tdiv(class = "container"):
-      tdiv(id = "title-container", class = "col"):
-        p(id = "title"):
-          a(class = "header", href = "/"):
-            text "Listen"
-            span: text "2"
-            text "gether"
-          text " is a website for listen parties."
-        p(id = "subtitle"):
-          text "Whether you're physically in the same room or not."
-      case globalSigninView:
-      of SigninView.loadingUsers:
-        discard db.getClientUsers()
-        discard db.getMirrorUsers()
-        loadingModal(cstring "Loading users...")
-      of SigninView.returningUser:
-        returnModal()
-      of SigninView.newUser:
-        loginModal()
+      titleCol()
+      signinCol(homeSigninView, homeServiceView)
 
 proc descriptionSection*: Vnode =
   result = buildHtml:
     tdiv(class = "container"):
-      tdiv(id = "description-container", class = "col"):
-        p(class = "body"):
-          text "Virtual listen parties are powered by ListenBrainz and a Matrix chatroom."
-      tdiv(id = "logo-container", class = "col"):
-        a(href = "https://listenbrainz.org/",
-          img(
-            src = "/assets/listenbrainz-logo.svg",
-            id = "listenbrainz-logo",
-            class = "logo",
-            alt = "ListenBrainz.org logo"
-          )
-        )
-        a(href = "https://matrix.org/",
-          img(
-            src = "/assets/matrix-logo.svg",
-            id = "matrix-logo",
-            class = "logo",
-            alt = "Matrix.org logo"
-          )
-        )
+      descriptionCol()
+      logoCol()
