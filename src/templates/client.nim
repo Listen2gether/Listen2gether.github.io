@@ -4,17 +4,21 @@ import
   ../types,
   home, mirror, share
 
+type
+  ClientView* = enum
+    homeView, mirrorView
+
 var
   globalView: ClientView = ClientView.homeView
 
-proc home*: Vnode =
+proc home: Vnode =
   ## Generates main section for Home page.
   result = buildHtml:
     main:
       signinSection()
       descriptionSection()
 
-proc mirror*(user: User, service: Service): Vnode =
+proc mirror(user: User, service: Service): Vnode =
   result = buildHtml:
     main:
       mainSection(user, service)
@@ -28,6 +32,8 @@ proc createDom(): VNode =
     if "username" in params and "service" in params:
       username = cstring params["username"]
       service = parseEnum[Service]($params["service"])
+      if mirrorUser.isNil:
+        discard getMirrorUser(username)
       globalView = ClientView.mirrorView
 
   result = buildHtml(tdiv):
