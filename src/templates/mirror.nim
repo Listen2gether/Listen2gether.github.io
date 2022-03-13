@@ -1,6 +1,6 @@
 import
   std/[times, options, asyncjs, tables],
-  pkg/karax/[karaxdsl, vdom],
+  pkg/karax/[karax, karaxdsl, vdom],
   ../sources/[lb],
   ../types, home, share
 
@@ -22,7 +22,7 @@ proc getMirrorUser*(username: cstring) {.async.} =
   else:
     mirrorUser = await lbClient.initUser(username)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
-
+    redraw()
 
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 6): Vnode =
   var
@@ -45,33 +45,34 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
                   text artistName
               span:
                 text "Playing now"
-        for idx, track in listenHistory[0..maxListens]:
-          if isSome(track.preMirror):
-            if get(track.preMirror) == true and preMirrorSplit == false:
-              if idx == 0:
-                preMirrorSplit = true
-              else:
-                hr()
-                preMirrorSplit = true
-          li(class = "row listen"):
-            tdiv(id = "listen-details"):
-              if isSome(track.mirrored):
-                if get(track.mirrored):
-                  img(src = "/assets/mirrored.svg")
+        if listenHistory.len > 0:
+          for idx, track in listenHistory[0..maxListens]:
+            if isSome(track.preMirror):
+              if get(track.preMirror) == true and preMirrorSplit == false:
+                if idx == 0:
+                  preMirrorSplit = true
                 else:
-                  img(src = "/assets/pre-mirror.svg")
-              tdiv(id = "track-details"):
-                trackName = track.trackName
-                artistName = track.artistName
-                p(title = trackName, id = "track-name"):
-                  text trackName
-                p(title = artistName, id = "artist-name"):
-                  text artistName
-              let
-                date = cstring fromUnix(get(track.listenedAt)).format("HH:mm:ss dd/MM/yy")
-                time = fromUnix(get(track.listenedAt)).format("HH:mm")
-              span(title = date):
-                text time
+                  hr()
+                  preMirrorSplit = true
+            li(class = "row listen"):
+              tdiv(id = "listen-details"):
+                if isSome(track.mirrored):
+                  if get(track.mirrored):
+                    img(src = "/assets/mirrored.svg")
+                  else:
+                    img(src = "/assets/pre-mirror.svg")
+                tdiv(id = "track-details"):
+                  trackName = track.trackName
+                  artistName = track.artistName
+                  p(title = trackName, id = "track-name"):
+                    text trackName
+                  p(title = artistName, id = "artist-name"):
+                    text artistName
+                let
+                  date = cstring fromUnix(get(track.listenedAt)).format("HH:mm:ss dd/MM/yy")
+                  time = fromUnix(get(track.listenedAt)).format("HH:mm")
+                span(title = date):
+                  text time
 
 proc mainSection*(user: User, service: Service): Vnode =
   var username, userUrl: cstring
