@@ -25,7 +25,7 @@ type
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
-    trackNumber*, duration*, listenedAt*: Option[int]
+    trackNumber*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
 
@@ -61,7 +61,7 @@ func newTrack*(
   trackName, artistName: cstring,
   releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
   artistMbids: Option[seq[cstring]] = none(seq[cstring]),
-  trackNumber, duration: Option[int] = none(int),
+  trackNumber: Option[int] = none(int),
   listenedAt: Option[int] = none(int),
   mirrored, preMirror: Option[bool] = none(bool)): Track =
   ## Create new Track object
@@ -72,7 +72,6 @@ func newTrack*(
   result.releaseMbid = releaseMbid
   result.artistMbids = artistMbids
   result.trackNumber = trackNumber
-  result.duration = duration
   result.listenedAt = listenedAt
   result.mirrored = mirrored
   result.preMirror = preMirror
