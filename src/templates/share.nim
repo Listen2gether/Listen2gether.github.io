@@ -2,24 +2,29 @@ import
   std/[asyncjs, jsffi, tables],
   pkg/karax/[karaxdsl, vdom],
   pkg/nodejs/jsindexeddb,
+  pkg/listenbrainz,
   ../types
 from std/sugar import collect
 
-type
-  ClientView* = enum
-    homeView, mirrorView
-
 var
+  lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
   clientUsersDbStore*: cstring = "clientUsers"
   mirrorUsersDbStore*: cstring = "mirrorUsers"
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
+  storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
+  storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
+  clientErrorMessage*, mirrorErrorMessage*: string
 
-proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions): Future[Table[cstring, User]] {.async.} =
+proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
   let objStore = await getAll(db, dbStore, dbOptions)
   result = collect:
     for user in to(objStore, seq[User]): {user.userId: user}
+
+proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
+  ## Stores a user in a given store in IndexedDB.
+  discard await put(db, dbStore, toJs user, dbOptions)
 
 proc headerSection*(): Vnode =
   ## Produces header section to be used on all pages.
