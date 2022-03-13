@@ -5,6 +5,7 @@ else:
     std/asyncdispatch
 
 import
+  std/strutils,
   pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
@@ -37,13 +38,19 @@ proc to*(val: Option[string]): Option[cstring] =
   else:
     result = none cstring
 
+proc toInt*(val: Option[string]): Option[int] =
+  ## Convert `Option[string]` to `Option[int]`
+  if isSome val:
+    result = some parseInt get val
+  else:
+    result = none int
 
 proc to*(
   track: Track,
   listenedAt: Option[int]): APIListen =
   ## Convert a `Track` object to a `Listen` object
   let
-    additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
+    additionalInfo = AdditionalInfo(tracknumber: some $track.trackNumber,
                                     trackMbid: some $track.recordingMbid,
                                     recordingMbid: some $track.recordingMbid,
                                     releaseMbid: some $track.releaseMbid,
@@ -55,7 +62,6 @@ proc to*(
   result = APIListen(listenedAt: listenedAt,
                      trackMetadata: trackMetadata)
 
-
 proc to*(
   listen: APIListen,
   preMirror: Option[bool] = none(bool)): Track =
@@ -66,7 +72,7 @@ proc to*(
                     recordingMbid = to get(listen.trackMetadata.additionalInfo).recordingMbid,
                     releaseMbid = to get(listen.trackMetadata.additionalInfo).releaseMbid,
                     artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
-                    trackNumber = get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
+                    trackNumber = toInt get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
                     mirrored = some false)
@@ -84,17 +90,40 @@ proc to*(
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
+proc getNowPlaying*(
+  lb: AsyncListenBrainz,
+  user: User): Future[Option[Track]] {.async.} =
+  ## Return a ListenBrainz user's now playing
+  let
+    nowPlaying = await lb.getUserPlayingNow($user.services[listenBrainzService].username)
+    payload = nowPlaying.payload
+  if payload.count == 1:
+    result = some(to(payload.listens[0]))
+  else:
+    result = none(Track)
 
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
   user: User,
-  preMirror: bool,
-  count: int = 8): Future[seq[Track]] {.async.} =
+  preMirror: bool): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   let
-    userListens = await lb.getUserListens($user.services[listenBrainzService].username, count = count)
+    userListens = await lb.getUserListens($user.services[listenBrainzService].username)
   if userListens.payload.count > 0:
     result = to(userListens.payload.listens, some(preMirror))
+
+
+# proc updateUser(username: cstring) {.async.} =
+  ## Gets user's now playing, recents and updates db
+
+proc initUser*(
+  lb: AsyncListenBrainz,
+  username: cstring): Future[User] {.async.} =
+  ## Gets a given user's now playing, recent tracks and returns a `User` object
+  var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username), Service.lastFmService: newServiceUser(Service.lastFmService)])
+  user.playingNow = await lb.getNowPlaying(user)
+  user.listenHistory = await lb.getRecentTracks(user, preMirror = true)
+  return user
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror
