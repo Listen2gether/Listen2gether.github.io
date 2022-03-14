@@ -72,7 +72,7 @@ proc validateLBUser(username: string) {.async.} =
       user = newUser(userId = cstring userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = cstring payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)])
     if payload.count == 1:
       user.playingNow = some to payload.listens[0]
-      user.latestListenTs = toUnix getTime()
+      user.latestListenTs = int toUnix getTime()
     mirrorUser = user
     discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
