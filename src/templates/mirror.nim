@@ -17,14 +17,15 @@ proc getMirrorUser*(username: cstring) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   if username in storedMirrorUsers:
-    mirrorUser = storedMirrorUsers[username]
+    mirrorUser = await lbClient.updateUser(storedMirrorUsers[username])
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
   else:
     mirrorUser = await lbClient.initUser(username)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     redraw()
 
-proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 6): Vnode =
+proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 9): Vnode =
   var
     trackName, artistName: cstring
     preMirrorSplit: bool = false
