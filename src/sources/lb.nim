@@ -50,7 +50,7 @@ proc to*(
   listenedAt: Option[int]): APIListen =
   ## Convert a `Track` object to a `Listen` object
   let
-    additionalInfo = AdditionalInfo(tracknumber: some $track.trackNumber,
+    additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
                                     trackMbid: some $track.recordingMbid,
                                     recordingMbid: some $track.recordingMbid,
                                     releaseMbid: some $track.releaseMbid,
@@ -72,7 +72,7 @@ proc to*(
                     recordingMbid = to get(listen.trackMetadata.additionalInfo).recordingMbid,
                     releaseMbid = to get(listen.trackMetadata.additionalInfo).releaseMbid,
                     artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
-                    trackNumber = toInt get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
+                    trackNumber = get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
                     mirrored = some false)
