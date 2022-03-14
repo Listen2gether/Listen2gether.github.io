@@ -23,5 +23,8 @@ jobs:
           path: nim
           version: devel
 
-      - name: Compile release build
+      - name: Install dependencies
+        run: nimble install -d:js -y --depsOnly
+
+      - name: Run tests
         run: nimble test
