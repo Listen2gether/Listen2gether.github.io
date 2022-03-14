@@ -1,0 +1,27 @@
+name: Test
+on:
+  push:
+    paths:
+      - ".github/workflows/**"
+      - "src/**"
+      - "listen2gether.nimble"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+      - name: Setup Nim
+        uses: alaviss/setup-nim@0.1.1
+        with:
+          path: nim
+          version: devel
+
+      - name: Compile release build
+        run: nimble test
