@@ -27,9 +27,9 @@ var NTI1493172253 = {size: 0, kind: 20, base: null, node: null, finalizer: null}
 var NTI1493172256 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI620757086 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI704643341 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
-var NTI2415919818 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
+var NTI2415919798 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1845494147 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
-var NTI2415919852 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI2415919832 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI1476395028 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
 var NTI1795162164 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1795162169 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
@@ -1294,7 +1294,7 @@ var NNI1795162161 = {kind: 2, len: 17, offset: 0, typ: null, name: null, sons: [
 {kind: 1, offset: "recordingMbid", len: 0, typ: NTI1795162133, name: "recordingMbid", sons: null}, 
 {kind: 1, offset: "trackMbid", len: 0, typ: NTI1795162133, name: "trackMbid", sons: null}, 
 {kind: 1, offset: "workMbids", len: 0, typ: NTI1795162169, name: "workMbids", sons: null}, 
-{kind: 1, offset: "tracknumber", len: 0, typ: NTI1795162133, name: "tracknumber", sons: null}, 
+{kind: 1, offset: "tracknumber", len: 0, typ: NTI1493173197, name: "tracknumber", sons: null}, 
 {kind: 1, offset: "isrc", len: 0, typ: NTI1795162133, name: "isrc", sons: null}, 
 {kind: 1, offset: "spotifyId", len: 0, typ: NTI1795162133, name: "spotifyId", sons: null}, 
 {kind: 1, offset: "tags", len: 0, typ: NTI1795162169, name: "tags", sons: null}, 
@@ -1334,14 +1334,14 @@ NTI1845494148.base = NTI1845494144;
 var NNI1476395028 = {kind: 2, len: 0, offset: 0, typ: null, name: null, sons: []};
 NTI1476395028.node = NNI1476395028;
 NTI1476395028.base = NTI33555112;
-var NNI2415919852 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI33554439, name: "Field0", sons: null}, 
+var NNI2415919832 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI33554439, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554439, name: "Field1", sons: null}]};
-NTI2415919852.node = NNI2415919852;
+NTI2415919832.node = NNI2415919832;
 var NNI1845494147 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "latestListenTs", len: 0, typ: NTI33554456, name: "latestListenTs", sons: null}, 
 {kind: 1, offset: "userId", len: 0, typ: NTI33554439, name: "userId", sons: null}]};
 NTI1845494147.node = NNI1845494147;
 NTI1845494147.base = NTI1845494144;
-NTI2415919818.base = NTI1459617798;
+NTI2415919798.base = NTI1459617798;
 NTI704643341.base = NTI33554440;
 var NNI620757086 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI33554439, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554439, name: "Field1", sons: null}]};
@@ -4442,8 +4442,8 @@ function none_1459617886() {
 
 }
 
-function setContentType_2415919737(lb_2415919739, contentType_2415919740) {
-    lb_2415919739.http.headers.set("Content-Type", toJSStr(contentType_2415919740));
+function setContentType_2415919709(lb_2415919711, contentType_2415919712) {
+    lb_2415919711.http.headers.set("Content-Type", toJSStr(contentType_2415919712));
 
   
 }
@@ -6070,25 +6070,25 @@ function parseHeaders_1610612847(headers_1610612848) {
   return result_1610612849;
 
 }
-async function handleRateLimit_2415919764(lb_2415919766, req_2415919767, respHeaders_2415919768) {
-  var result_2415919769 = null;
+async function handleRateLimit_2415919736(lb_2415919738, req_2415919739, respHeaders_2415919740) {
+  var result_2415919741 = null;
 
   BeforeRet: do {
-    var resetMs_2415919779 = mulInt(1000, nsuParseInt(cstrToNimstr(respHeaders_2415919768.get("x-ratelimit-reset"))));
+    var resetMs_2415919751 = mulInt(1000, nsuParseInt(cstrToNimstr(respHeaders_2415919740.get("x-ratelimit-reset"))));
     Label1: do {
         Label2: while (true) {
         if (!true) break Label2;
-          (await setTimeoutAsync_1610612830(resetMs_2415919779));
-          var newReq_2415919785 = newRequest_1610612876(req_2415919767);
-          var resp_2415919790 = (await request_1694499103(lb_2415919766.http, newReq_2415919785));
-          var payload_2415919791 = resp_2415919790.responseText;
-          var code_2415919792 = resp_2415919790.status;
-          if (!(is2xx_1660948917(code_2415919792))) {
-          responseCheck_1778384969(code_2415919792);
+          (await setTimeoutAsync_1610612830(resetMs_2415919751));
+          var newReq_2415919757 = newRequest_1610612876(req_2415919739);
+          var resp_2415919762 = (await request_1694499103(lb_2415919738.http, newReq_2415919757));
+          var payload_2415919763 = resp_2415919762.responseText;
+          var code_2415919764 = resp_2415919762.status;
+          if (!(is2xx_1660948917(code_2415919764))) {
+          responseCheck_1778384969(code_2415919764);
           }
           else {
-            var headers_2415919793 = parseHeaders_1610612847(resp_2415919790.headers);
-            result_2415919769 = {code: nimCopy(null, code_2415919792, NTI1660944414), body: cstrToNimstr(payload_2415919791), headers: headers_2415919793};
+            var headers_2415919765 = parseHeaders_1610612847(resp_2415919762.headers);
+            result_2415919741 = {code: nimCopy(null, code_2415919764, NTI1660944414), body: cstrToNimstr(payload_2415919763), headers: headers_2415919765};
             break BeforeRet;
           }
           
@@ -6096,32 +6096,32 @@ async function handleRateLimit_2415919764(lb_2415919766, req_2415919767, respHea
     } while (false);
   } while (false);
 
-  return result_2415919769;
+  return result_2415919741;
 
 }
-async function request_2415919742(lb_2415919744, req_2415919745) {
-  var result_2415919746 = null;
+async function request_2415919714(lb_2415919716, req_2415919717) {
+  var result_2415919718 = null;
 
   BeforeRet: do {
-    var newReq_2415919756 = newRequest_1610612876(req_2415919745);
-    var resp_2415919761 = (await request_1694499103(lb_2415919744.http, newReq_2415919756));
-    var payload_2415919762 = resp_2415919761.responseText;
-    var code_2415919763 = resp_2415919761.status;
-    if (!(is2xx_1660948917(code_2415919763))) {
-    if ((code_2415919763 == 429)) {
-    result_2415919746 = (await handleRateLimit_2415919764(lb_2415919744, req_2415919745, resp_2415919761.headers));
+    var newReq_2415919728 = newRequest_1610612876(req_2415919717);
+    var resp_2415919733 = (await request_1694499103(lb_2415919716.http, newReq_2415919728));
+    var payload_2415919734 = resp_2415919733.responseText;
+    var code_2415919735 = resp_2415919733.status;
+    if (!(is2xx_1660948917(code_2415919735))) {
+    if ((code_2415919735 == 429)) {
+    result_2415919718 = (await handleRateLimit_2415919736(lb_2415919716, req_2415919717, resp_2415919733.headers));
     break BeforeRet;
     }
     
-    responseCheck_1778384969(code_2415919763);
+    responseCheck_1778384969(code_2415919735);
     }
     
-    var headers_2415919813 = parseHeaders_1610612847(resp_2415919761.headers);
-    result_2415919746 = {code: nimCopy(null, code_2415919763, NTI1660944414), body: cstrToNimstr(payload_2415919762), headers: headers_2415919813};
+    var headers_2415919785 = parseHeaders_1610612847(resp_2415919733.headers);
+    result_2415919718 = {code: nimCopy(null, code_2415919735, NTI1660944414), body: cstrToNimstr(payload_2415919734), headers: headers_2415919785};
     break BeforeRet;
   } while (false);
 
-  return result_2415919746;
+  return result_2415919718;
 
 }
 
@@ -7198,9 +7198,9 @@ function parseObjectInner_1845500313(s_1845500315, i_1845500316, i_1845500316_Id
                   }
                   
                     if (eqStrings(makeNimstrLit("tracknumber"), key_1845500328[0])) Temporary17 = true; else {                      Temporary17 = eqStrings(makeNimstrLit("tracknumber"), key_1845500328[0]);                    }                  if (Temporary17) {
-                  var v2_1845500629 = [({val: [], has: false})];
-                  parseHook_1845496091(s_1845500315, i_1845500316, i_1845500316_Idx, v2_1845500629[0]);
-                  v_1845500317[v_1845500317_Idx].tracknumber = nimCopy(v_1845500317[v_1845500317_Idx].tracknumber, v2_1845500629[0], NTI1795162133);
+                  var v2_1845500629 = [({val: 0, has: false})];
+                  parseHook_1845497184(s_1845500315, i_1845500316, i_1845500316_Idx, v2_1845500629[0]);
+                  v_1845500317[v_1845500317_Idx].tracknumber = nimCopy(v_1845500317[v_1845500317_Idx].tracknumber, v2_1845500629[0], NTI1493173197);
                   break Label8;
                   }
                   
@@ -7348,7 +7348,7 @@ function parseHook_1845500267(s_1845500269, i_1845500270, i_1845500270_Idx, v_18
       raiseException({message: (makeNimstrLit("Expected { but got ") || []).concat([s_1845500269[i_1845500270[i_1845500270_Idx]]],makeNimstrLit(" instead. At offset: ") || [],HEX24_318767107(i_1845500270[i_1845500270_Idx]) || []), parent: null, m_type: NTI1895825411, name: null, trace: [], up: null}, "JsonError");
     }
     
-    v_1845500271[v_1845500271_Idx] = ({artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: [], has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})});
+    v_1845500271[v_1845500271_Idx] = ({artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: 0, has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})});
     parseObjectInner_1845500313(s_1845500269, i_1845500270, i_1845500270_Idx, v_1845500271, v_1845500271_Idx);
     Label9: do {
         Label10: while (true) {
@@ -8263,28 +8263,28 @@ function fromJson_1845499492(s_1845499495) {
   return result_1845499497[0];
 
 }
-async function getUserPlayingNow_2415919723(lb_2415919725, username_2415919726) {
-  var result_2415919727 = null;
+async function getUserPlayingNow_2415919695(lb_2415919697, username_2415919698) {
+  var result_2415919699 = null;
 
   BeforeRet: do {
-    setContentType_2415919737(lb_2415919725, makeNimstrLit("application/x-www-form-urlencoded"));
-    var req_2415919741 = newPureRequest_1778384919(build_1778384953(lb_2415919725.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/playing-now"), username_2415919726), 1, []), []);
-    var resp_2415919821 = (await request_2415919742(lb_2415919725, req_2415919741));
-    result_2415919727 = fromJson_1845499492(resp_2415919821.body);
+    setContentType_2415919709(lb_2415919697, makeNimstrLit("application/x-www-form-urlencoded"));
+    var req_2415919713 = newPureRequest_1778384919(build_1778384953(lb_2415919697.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/playing-now"), username_2415919698), 1, []), []);
+    var resp_2415919793 = (await request_2415919714(lb_2415919697, req_2415919713));
+    result_2415919699 = fromJson_1845499492(resp_2415919793.body);
     break BeforeRet;
   } while (false);
 
-  return result_2415919727;
+  return result_2415919699;
 
 }
 
-function some_2415919845(val_2415919847) {
-  var result_2415919848 = ({val: ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}), has: false});
+function some_2415919817(val_2415919819) {
+  var result_2415919820 = ({val: ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}), has: false});
 
-    result_2415919848.has = true;
-    result_2415919848.val = nimCopy(result_2415919848.val, val_2415919847, NTI1459617798);
+    result_2415919820.has = true;
+    result_2415919820.val = nimCopy(result_2415919820.val, val_2415919819, NTI1459617798);
 
-  return result_2415919848;
+  return result_2415919820;
 
 }
 
@@ -8378,20 +8378,20 @@ function isNone_1845494947(self_1845494949) {
 
 }
 
-function get_2415919566(self_2415919568) {
-  var result_2415919569 = null;
-  var result_2415919569_Idx = 0;
+function get_2415919538(self_2415919540) {
+  var result_2415919541 = null;
+  var result_2415919541_Idx = 0;
 
   BeforeRet: do {
-    if (isNone_1845494947(self_2415919568)) {
+    if (isNone_1845494947(self_2415919540)) {
     raiseException({message: makeNimstrLit("Can\'t obtain a value from a `none`"), parent: null, m_type: NTI1476395028, name: null, trace: [], up: null}, "UnpackDefect");
     }
     
-    result_2415919569 = self_2415919568; result_2415919569_Idx = "val";
+    result_2415919541 = self_2415919540; result_2415919541_Idx = "val";
     break BeforeRet;
   } while (false);
 
-  return [result_2415919569, result_2415919569_Idx];
+  return [result_2415919541, result_2415919541_Idx];
 
 }
 
@@ -8503,55 +8503,33 @@ function isSome_1845494884(self_1845494886) {
 
 }
 
-function get_2415919614(self_2415919616, otherwise_2415919617) {
+function get_2415919586(self_2415919588, otherwise_2415919589) {
     var Temporary1;
 
-  var result_2415919618 = null;
+  var result_2415919590 = null;
 
-    if (isSome_1845494884(self_2415919616)) {
-    Temporary1 = self_2415919616.val;
+    if (isSome_1845494884(self_2415919588)) {
+    Temporary1 = self_2415919588.val;
     }
     else {
-    Temporary1 = otherwise_2415919617;
+    Temporary1 = otherwise_2415919589;
     }
     
-    result_2415919618 = Temporary1;
+    result_2415919590 = Temporary1;
 
-  return result_2415919618;
-
-}
-
-function none_1459617976() {
-  var result_1459617983 = ({val: 0, has: false});
-
-  return result_1459617983;
+  return result_2415919590;
 
 }
 
-function toInt_2415919400(val_2415919402) {
-  var result_2415919404 = ({val: 0, has: false});
-
-    if (isSome_1845493925(val_2415919402)) {
-    result_2415919404 = nimCopy(result_2415919404, some_1493174222(nsuParseInt(get_1845493977(val_2415919402))), NTI1493173197);
-    }
-    else {
-      result_2415919404 = nimCopy(result_2415919404, none_1459617976(), NTI1493173197);
-    }
-    
-
-  return result_2415919404;
-
-}
-
-function to_2415919542(listen_2415919543, preMirror_2415919552) {
+function to_2415919514(listen_2415919515, preMirror_2415919524) {
     var Temporary1;
     var Temporary2;
 
-  var result_2415919553 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
+  var result_2415919525 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
 
-    result_2415919553 = nimCopy(result_2415919553, newTrack_1459617950(toJSStr(listen_2415919543.trackMetadata.trackName), toJSStr(listen_2415919543.trackMetadata.artistName), to_2415919352(listen_2415919543.trackMetadata.releaseName), to_2415919352((Temporary1 = get_2415919566(listen_2415919543.trackMetadata.additionalInfo), Temporary1)[0][Temporary1[1]].recordingMbid), to_2415919352((Temporary2 = get_2415919566(listen_2415919543.trackMetadata.additionalInfo), Temporary2)[0][Temporary2[1]].releaseMbid), to_2415919277(get_2415919614(listen_2415919543.trackMetadata.additionalInfo, {artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: [], has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})}).artistMbids), toInt_2415919400(get_2415919614(listen_2415919543.trackMetadata.additionalInfo, {artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: [], has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})}).tracknumber), listen_2415919543.listenedAt, some_1845496929(false), preMirror_2415919552), NTI1459617798);
+    result_2415919525 = nimCopy(result_2415919525, newTrack_1459617950(toJSStr(listen_2415919515.trackMetadata.trackName), toJSStr(listen_2415919515.trackMetadata.artistName), to_2415919352(listen_2415919515.trackMetadata.releaseName), to_2415919352((Temporary1 = get_2415919538(listen_2415919515.trackMetadata.additionalInfo), Temporary1)[0][Temporary1[1]].recordingMbid), to_2415919352((Temporary2 = get_2415919538(listen_2415919515.trackMetadata.additionalInfo), Temporary2)[0][Temporary2[1]].releaseMbid), to_2415919277(get_2415919586(listen_2415919515.trackMetadata.additionalInfo, {artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: 0, has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})}).artistMbids), get_2415919586(listen_2415919515.trackMetadata.additionalInfo, {artistMbids: ({val: [], has: false}), releaseGroupMbid: ({val: [], has: false}), releaseMbid: ({val: [], has: false}), recordingMbid: ({val: [], has: false}), trackMbid: ({val: [], has: false}), workMbids: ({val: [], has: false}), tracknumber: ({val: 0, has: false}), isrc: ({val: [], has: false}), spotifyId: ({val: [], has: false}), tags: ({val: [], has: false}), mediaPlayer: ({val: [], has: false}), mediaPlayerVersion: ({val: [], has: false}), submissionClient: ({val: [], has: false}), submissionClientVersion: ({val: [], has: false}), musicService: ({val: [], has: false}), musicServiceName: ({val: [], has: false}), originUrl: ({val: [], has: false})}).tracknumber, listen_2415919515.listenedAt, some_1845496929(false), preMirror_2415919524), NTI1459617798);
 
-  return result_2415919553;
+  return result_2415919525;
 
 }
 
@@ -8561,20 +8539,20 @@ function none_1459617995() {
   return result_1459618002;
 
 }
-async function getNowPlaying_2415919707(lb_2415919708, user_2415919709) {
-  var result_2415919713 = null;
+async function getNowPlaying_2415919679(lb_2415919680, user_2415919681) {
+  var result_2415919685 = null;
 
-    var nowPlaying_2415919843 = (await getUserPlayingNow_2415919723(lb_2415919708, cstrToNimstr(user_2415919709.services[chckIndx(0, 0, (user_2415919709.services).length - 1)].username)));
-    var payload_2415919844 = nowPlaying_2415919843.payload;
-    if ((payload_2415919844.count == 1)) {
-    result_2415919713 = some_2415919845(to_2415919542(payload_2415919844.listens[chckIndx(0, 0, (payload_2415919844.listens).length - 1)], none_1459617995()));
+    var nowPlaying_2415919815 = (await getUserPlayingNow_2415919695(lb_2415919680, cstrToNimstr(user_2415919681.services[chckIndx(0, 0, (user_2415919681.services).length - 1)].username)));
+    var payload_2415919816 = nowPlaying_2415919815.payload;
+    if ((payload_2415919816.count == 1)) {
+    result_2415919685 = some_2415919817(to_2415919514(payload_2415919816.listens[chckIndx(0, 0, (payload_2415919816.listens).length - 1)], none_1459617995()));
     }
     else {
-      result_2415919713 = none_1459617886();
+      result_2415919685 = none_1459617886();
     }
     
 
-  return result_2415919713;
+  return result_2415919685;
 
 }
 
@@ -8933,44 +8911,44 @@ function fromJson_1845501578(s_1845501581) {
   return result_1845501583[0];
 
 }
-async function getUserListens_2415919893(lb_2415919895, username_2415919896, minTS_2415919897, maxTS_2415919898, count_2415919899) {
-  var result_2415919900 = null;
+async function getUserListens_2415919865(lb_2415919867, username_2415919868, minTS_2415919869, maxTS_2415919870, count_2415919871) {
+  var result_2415919872 = null;
 
   BeforeRet: do {
-    var params_2415919914 = [nimCopy(null, {Field0: makeNimstrLit("count"), Field1: HEX24_318767107(nimMin(count_2415919899, 100))}, NTI2415919852)];
-    if (!((minTS_2415919897 == 0))) {
-    params_2415919914.push({Field0: makeNimstrLit("minTS"), Field1: HEX24_318767107(minTS_2415919897)});;
+    var params_2415919886 = [nimCopy(null, {Field0: makeNimstrLit("count"), Field1: HEX24_318767107(nimMin(count_2415919871, 100))}, NTI2415919832)];
+    if (!((minTS_2415919869 == 0))) {
+    params_2415919886.push({Field0: makeNimstrLit("minTS"), Field1: HEX24_318767107(minTS_2415919869)});;
     }
     
-    if (!((maxTS_2415919898 == 0))) {
-    params_2415919914.push({Field0: makeNimstrLit("maxTS"), Field1: HEX24_318767107(maxTS_2415919898)});;
+    if (!((maxTS_2415919870 == 0))) {
+    params_2415919886.push({Field0: makeNimstrLit("maxTS"), Field1: HEX24_318767107(maxTS_2415919870)});;
     }
     
-    setContentType_2415919737(lb_2415919895, makeNimstrLit("application/x-www-form-urlencoded"));
-    var req_2415919927 = newPureRequest_1778384919(build_1778384953(lb_2415919895.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/listens"), username_2415919896), 1, params_2415919914), []);
-    var resp_2415919936 = (await request_2415919742(lb_2415919895, req_2415919927));
-    result_2415919900 = fromJson_1845501578(resp_2415919936.body);
+    setContentType_2415919709(lb_2415919867, makeNimstrLit("application/x-www-form-urlencoded"));
+    var req_2415919899 = newPureRequest_1778384919(build_1778384953(lb_2415919867.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/listens"), username_2415919868), 1, params_2415919886), []);
+    var resp_2415919908 = (await request_2415919714(lb_2415919867, req_2415919899));
+    result_2415919872 = fromJson_1845501578(resp_2415919908.body);
     break BeforeRet;
   } while (false);
 
-  return result_2415919900;
+  return result_2415919872;
 
 }
 
-function to_2415919654(listens_2415919655, preMirror_2415919664) {
-  var result_2415919665 = [];
+function to_2415919626(listens_2415919627, preMirror_2415919636) {
+  var result_2415919637 = [];
 
     Label1: do {
-      var listen_2415919686 = null;
+      var listen_2415919658 = null;
       var i_452985574 = 0;
-      var L_452985575 = (listens_2415919655).length;
+      var L_452985575 = (listens_2415919627).length;
       Label2: do {
           Label3: while (true) {
           if (!(i_452985574 < L_452985575)) break Label3;
-            listen_2415919686 = listens_2415919655[chckIndx(i_452985574, 0, (listens_2415919655).length - 1)];
-            result_2415919665.push(to_2415919542(listen_2415919686, preMirror_2415919664));;
+            listen_2415919658 = listens_2415919627[chckIndx(i_452985574, 0, (listens_2415919627).length - 1)];
+            result_2415919637.push(to_2415919514(listen_2415919658, preMirror_2415919636));;
             i_452985574 = addInt(i_452985574, 1);
-            if (!(((listens_2415919655).length == L_452985575))) {
+            if (!(((listens_2415919627).length == L_452985575))) {
             failedAssertImpl_218103864(makeNimstrLit("iterators.nim(240, 11) `len(a) == L` the length of the seq changed while iterating over it"));
             }
             
@@ -8978,33 +8956,33 @@ function to_2415919654(listens_2415919655, preMirror_2415919664) {
       } while (false);
     } while (false);
 
-  return result_2415919665;
+  return result_2415919637;
 
 }
-async function getRecentTracks_2415919877(lb_2415919878, user_2415919879, preMirror_2415919880) {
-  var result_2415919883 = null;
+async function getRecentTracks_2415919849(lb_2415919850, user_2415919851, preMirror_2415919852) {
+  var result_2415919855 = null;
 
-    var userListens_2415919958 = (await getUserListens_2415919893(lb_2415919878, cstrToNimstr(user_2415919879.services[chckIndx(0, 0, (user_2415919879.services).length - 1)].username), 0, 0, 25));
-    if ((0 < userListens_2415919958.payload.count)) {
-    result_2415919883 = to_2415919654(userListens_2415919958.payload.listens, some_1845496929(preMirror_2415919880));
+    var userListens_2415919930 = (await getUserListens_2415919865(lb_2415919850, cstrToNimstr(user_2415919851.services[chckIndx(0, 0, (user_2415919851.services).length - 1)].username), 0, 0, 25));
+    if ((0 < userListens_2415919930.payload.count)) {
+    result_2415919855 = to_2415919626(userListens_2415919930.payload.listens, some_1845496929(preMirror_2415919852));
     }
     
 
-  return result_2415919883;
+  return result_2415919855;
 
 }
-async function initUser_2415919977(lb_2415919978, username_2415919979) {
-  var result_2415919982 = null;
+async function initUser_2415919949(lb_2415919950, username_2415919951) {
+  var result_2415919954 = null;
 
   BeforeRet: do {
-    var user_2415919992 = newUser_1459617882(username_2415919979, [newServiceUser_1459617846(0, username_2415919979, "", ""), newServiceUser_1459617846(1, "", "", "")], none_1459617886(), [], 0);
-    user_2415919992.playingNow = nimCopy(user_2415919992.playingNow, (await getNowPlaying_2415919707(lb_2415919978, user_2415919992)), NTI1459617810);
-    user_2415919992.listenHistory = nimCopy(null, (await getRecentTracks_2415919877(lb_2415919978, user_2415919992, true)), NTI2415919818);
-    result_2415919982 = user_2415919992;
+    var user_2415919964 = newUser_1459617882(username_2415919951, [newServiceUser_1459617846(0, username_2415919951, "", ""), newServiceUser_1459617846(1, "", "", "")], none_1459617886(), [], 0);
+    user_2415919964.playingNow = nimCopy(user_2415919964.playingNow, (await getNowPlaying_2415919679(lb_2415919950, user_2415919964)), NTI1459617810);
+    user_2415919964.listenHistory = nimCopy(null, (await getRecentTracks_2415919849(lb_2415919950, user_2415919964, true)), NTI2415919798);
+    result_2415919954 = user_2415919964;
     break BeforeRet;
   } while (false);
 
-  return result_2415919982;
+  return result_2415919954;
 
 }
 
@@ -9092,7 +9070,7 @@ async function getMirrorUser_637534239(username_637534240) {
     mirrorMirrorView_637534226[0] = 0;
     }
     else {
-      mirrorUser_654311475[0] = (await initUser_2415919977(lbClient_654311434[0], username_637534240));
+      mirrorUser_654311475[0] = (await initUser_2415919949(lbClient_654311434[0], username_637534240));
       var _ = storeUser_654312913(db_654311435[0], mirrorUsersDbStore_654311437[0], mirrorUser_654311475[0], dbOptions_654311438[0]);
       redraw_671089634(kxi_671088705[0]);
     }
@@ -9538,9 +9516,9 @@ async function validateToken_620757135(lb_620757137, token_620757138) {
   var result_620757139 = null;
 
   BeforeRet: do {
-    setContentType_2415919737(lb_620757137, makeNimstrLit("application/x-www-form-urlencoded"));
+    setContentType_2415919709(lb_620757137, makeNimstrLit("application/x-www-form-urlencoded"));
     var req_620757153 = newPureRequest_1778384919(build_1778384953(lb_620757137.baseUrl, makeNimstrLit("/1/validate-token"), 1, [nimCopy(null, {Field0: makeNimstrLit("token"), Field1: nimCopy(null, token_620757138, NTI33554439)}, NTI620757086)]), []);
-    var resp_620757162 = (await request_2415919742(lb_620757137, req_620757153));
+    var resp_620757162 = (await request_2415919714(lb_620757137, req_620757153));
     result_620757139 = fromJson_1845495864(resp_620757162.body);
     break BeforeRet;
   } while (false);
@@ -9886,12 +9864,12 @@ async function validateLBUser_620757244(username_620757245) {
     Temporary2 = framePtr;
     try {
     var c_620757253 = newAsyncListenBrainz_1610612809([], makeNimstrLit("https://api.listenbrainz.org"));
-    var res_620757262 = (await getUserPlayingNow_2415919723(c_620757253, username_620757245));
+    var res_620757262 = (await getUserPlayingNow_2415919695(c_620757253, username_620757245));
     var payload_620757263 = res_620757262.payload;
     var userId_620757264 = nimCopy(null, payload_620757263.userId, NTI33554439);
     var user_620757265 = newUser_1459617882(toJSStr(userId_620757264), [newServiceUser_1459617846(0, toJSStr(payload_620757263.userId), "", ""), newServiceUser_1459617846(1, "", "", "")], none_1459617886(), [], 0);
     if ((payload_620757263.count == 1)) {
-    user_620757265.playingNow = nimCopy(user_620757265.playingNow, some_2415919845(to_2415919542(payload_620757263.listens[chckIndx(0, 0, (payload_620757263.listens).length - 1)], none_1459617995())), NTI1459617810);
+    user_620757265.playingNow = nimCopy(user_620757265.playingNow, some_2415919817(to_2415919514(payload_620757263.listens[chckIndx(0, 0, (payload_620757263.listens).length - 1)], none_1459617995())), NTI1459617810);
     user_620757265.latestListenTs = toUnix_1493173221(getTime_1493173268());
     }
     
