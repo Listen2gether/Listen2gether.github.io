@@ -17,8 +17,7 @@ proc getMirrorUser*(username: cstring) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   if username in storedMirrorUsers:
-    mirrorUser = storedMirrorUsers[username]
-    discard lbClient.updateUser(mirrorUser)
+    mirrorUser = await lbClient.updateUser(storedMirrorUsers[username])
     echo "updated mirror user"
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     echo "stored mirror user"
