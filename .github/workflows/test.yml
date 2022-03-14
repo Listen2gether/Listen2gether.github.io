@@ -4,6 +4,7 @@ on:
     paths:
       - ".github/workflows/**"
       - "src/**"
+      - "tests/**"
       - "listen2gether.nimble"
 
 jobs:
