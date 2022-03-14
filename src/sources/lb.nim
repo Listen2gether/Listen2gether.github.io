@@ -110,21 +110,11 @@ proc getRecentTracks*(
   if userListens.payload.count > 0:
     result = tracks & user.listenHistory
 
-proc updateListenTs*(user: var User) =
+proc updateLatestListenTs*(user: var User) =
   ## Updates a user's `latestListenTs` from their `listenHistory`
   if user.listenHistory.len > 0:
     if isSome user.listenHistory[0].listenedAt:
       user.latestListenTs = get user.listenHistory[0].listenedAt
-
-proc updateUser*(
-  lb: AsyncListenBrainz,
-  user: User, preMirror = true): Future[User] {.async.} =
-  ## Gets user's now playing, recent tracks, and latest listen timestamp
-  var updatedUser: User = user
-  updatedUser.playingNow = await lb.getNowPlaying(user)
-  updatedUser.listenHistory = await lb.getRecentTracks(user, preMirror)
-  updateListenTs(updatedUser)
-  return updatedUser
 
 proc initUser*(
   lb: AsyncListenBrainz,
@@ -134,8 +124,18 @@ proc initUser*(
   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username), Service.lastFmService: newServiceUser(Service.lastFmService)])
   user.playingNow = await lb.getNowPlaying(user)
   user.listenHistory = await lb.getRecentTracks(user, preMirror = true)
-  updateListenTs(user)
+  updateLatestListenTs(user)
   return user
+
+proc updateUser*(
+  lb: AsyncListenBrainz,
+  user: User, preMirror = true): Future[User] {.async.} =
+  ## Gets user's now playing, recent tracks, and latest listen timestamp
+  var updatedUser: User = user
+  updatedUser.playingNow = await lb.getNowPlaying(user)
+  updatedUser.listenHistory = await lb.getRecentTracks(user, preMirror)
+  updateLatestListenTs(updatedUser)
+  return updatedUser
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror
