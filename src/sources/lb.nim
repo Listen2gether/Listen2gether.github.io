@@ -31,6 +31,7 @@ proc to*(val: Option[seq[string]]): Option[seq[cstring]] =
     var list: seq[cstring]
     for item in val.get():
       list.add cstring item
+    result = some list
   else:
     result = none seq[cstring]
 
@@ -40,13 +41,6 @@ proc to*(val: Option[string]): Option[cstring] =
     result = some cstring get val
   else:
     result = none cstring
-
-proc toInt*(val: Option[string]): Option[int] =
-  ## Convert `Option[string]` to `Option[int]`
-  if isSome val:
-    result = some parseInt get val
-  else:
-    result = none int
 
 proc to*(
   track: Track,
@@ -72,8 +66,8 @@ proc to*(
   result = newTrack(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
                     releaseName = to listen.trackMetadata.releaseName,
-                    recordingMbid = to get(listen.trackMetadata.additionalInfo).recordingMbid,
-                    releaseMbid = to get(listen.trackMetadata.additionalInfo).releaseMbid,
+                    recordingMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid,
+                    releaseMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).releaseMbid,
                     artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
                     trackNumber = get(listen.trackMetadata.additionalInfo, AdditionalInfo()).trackNumber,
                     listenedAt = listen.listenedAt,
@@ -105,14 +99,26 @@ proc getNowPlaying*(
   else:
     result = none(Track)
 
+proc diffTracks*(tracks, oldTracks: seq[Track]): seq[Track] =
+  if oldTracks.len > 0:
+    let
+      nextTrackTimestamp = get tracks[^1].listenedAt
+      lastTrackTimestamp = get oldTracks[0].listenedAt
+    if lastTrackTimestamp < nextTrackTimestamp:
+      result = tracks & oldTracks
+  else:
+    result = tracks
+
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
   user: User,
   preMirror: bool): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
-  let userListens = await lb.getUserListens($user.services[listenBrainzService].username)
+  let
+    userListens = await lb.getUserListens($user.services[listenBrainzService].username)
+    tracks = to(userListens.payload.listens, some(preMirror))
   if userListens.payload.count > 0:
-    result = to(userListens.payload.listens, some(preMirror))
+    result = diffTracks(tracks, user.listenHistory)
 
 proc updateListenTs*(user: User): int64 =
   ## Returns a user's `latestListenTs` from their `listenHistory`
