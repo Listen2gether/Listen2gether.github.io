@@ -59,8 +59,8 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
                   preMirrorSplit = true
             li(class = "row listen"):
               tdiv(id = "listen-details"):
-                if isSome(track.mirrored):
-                  if get(track.mirrored):
+                if isSome track.mirrored:
+                  if get track.mirrored:
                     img(src = "/assets/mirrored.svg")
                   else:
                     img(src = "/assets/pre-mirror.svg")
