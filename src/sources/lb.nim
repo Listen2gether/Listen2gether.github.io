@@ -18,16 +18,19 @@ const userBaseUrl* = "https://listenbrainz.org/user/"
 proc to*(val: Option[seq[cstring]]): Option[seq[string]] =
   ## Convert `Option[seq[cstring]]` to `Option[seq[string]]`
   if isSome val:
+    var list: seq[string]
     for item in val.get():
-      result.get().add $item
+      list.add $item
+    result = some list
   else:
     result = none seq[string]
 
 proc to*(val: Option[seq[string]]): Option[seq[cstring]] =
   ## Convert `Option[seq[string]]` to `Option[seq[cstring]]`
   if isSome val:
+    var list: seq[cstring]
     for item in val.get():
-      result.get().add cstring item
+      list.add cstring item
   else:
     result = none seq[cstring]
 
@@ -107,14 +110,18 @@ proc getRecentTracks*(
   user: User,
   preMirror: bool): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
-  let
-    userListens = await lb.getUserListens($user.services[listenBrainzService].username)
+  let userListens = await lb.getUserListens($user.services[listenBrainzService].username)
   if userListens.payload.count > 0:
     result = to(userListens.payload.listens, some(preMirror))
 
-
-# proc updateUser(username: cstring) {.async.} =
-  ## Gets user's now playing, recents and updates db
+proc updateUser*(
+  lb: AsyncListenBrainz,
+  user: User, preMirror = true): Future[User] {.async.} =
+  ## Gets user's now playing, recents
+  var updatedUser: User = user
+  updatedUser.playingNow = await lb.getNowPlaying(user)
+  updatedUser.listenHistory = await lb.getRecentTracks(user, preMirror)
+  return updatedUser
 
 proc initUser*(
   lb: AsyncListenBrainz,
