@@ -129,13 +129,11 @@ proc initUser*(
 
 proc updateUser*(
   lb: AsyncListenBrainz,
-  user: User, preMirror = true): Future[User] {.async.} =
-  ## Gets user's now playing, recent tracks, and latest listen timestamp
-  var updatedUser: User = user
-  updatedUser.playingNow = await lb.getNowPlaying(user)
-  updatedUser.listenHistory = await lb.getRecentTracks(user, preMirror)
-  updateLatestListenTs(updatedUser)
-  return updatedUser
+  user: var User, preMirror = true) {.async.} =
+  ## Updates user's now playing, recent tracks, and latest listen timestamp
+  user.playingNow = await lb.getNowPlaying(user)
+  user.listenHistory = await lb.getRecentTracks(user, preMirror)
+  updateLatestListenTs(user)
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror

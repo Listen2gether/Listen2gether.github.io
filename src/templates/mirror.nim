@@ -17,8 +17,11 @@ proc getMirrorUser*(username: cstring) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   if username in storedMirrorUsers:
-    mirrorUser = await lbClient.updateUser(storedMirrorUsers[username])
+    mirrorUser = storedMirrorUsers[username]
+    discard lbClient.updateUser(mirrorUser)
+    echo "updated mirror user"
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+    echo "stored mirror user"
     mirrorMirrorView = MirrorView.login
   else:
     mirrorUser = await lbClient.initUser(username)
@@ -48,7 +51,7 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
                 text "Playing now"
         if listenHistory.len > 0:
           for idx, track in listenHistory[0..maxListens]:
-            if isSome(track.preMirror):
+            if isSome track.preMirror:
               if get(track.preMirror) == true and preMirrorSplit == false:
                 if idx == 0:
                   preMirrorSplit = true
