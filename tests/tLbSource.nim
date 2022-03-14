@@ -1,4 +1,4 @@
-import std/unittest
+import std/[unittest, os, asyncdispatch]
 include ../src/sources/lb
 
 suite "ListenBrainz source":
@@ -68,9 +68,24 @@ suite "ListenBrainz source":
       check newTracks == tracks
 
   suite "API tools":
-    test "diffTracks concat (Simple)":
+    setup:
       let
-        oldTracks = @[newTrack(cstring "track", cstring "artist", listenedAt = some 2), newTrack(cstring "track", cstring "artist", listenedAt = some 1)]
-        tracks = @[newTrack(cstring "track", cstring "artist", listenedAt = some 4), newTrack(cstring "track", cstring "artist", listenedAt = some 3)]
-        newTracks = tracks & oldTracks
-      check diffTracks(tracks, oldTracks) == newTracks
+        lb = newAsyncListenBrainz()
+        username = cstring os.getEnv("LISTENBRAINZ_USER")
+      var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
+
+    test "Get now playing":
+      discard lb.getNowPlaying(username)
+
+    test "Get recent tracks":
+      discard lb.getRecentTracks(username, user.latestListenTs, preMirror = false)
+
+    test "Update latestListenTs":
+      user.updateLatestListenTs()
+
+    test "Initialise user":
+      discard lb.initUser(username)
+
+    test "Update user":
+      discard lb.updateUser(user)
+
