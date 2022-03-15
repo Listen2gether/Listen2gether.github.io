@@ -36,18 +36,18 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
   if res.valid:
     lbClient = newAsyncListenBrainz($token)
     if store:
-      clientUser = newUser(userId = cstring res.userName.get(), services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, cstring res.userName.get(), token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+      clientUser = await lbClient.initUser(res.userName.get(), token = token)
       discard storeUser(db, clientUsersDbStore, clientUser)
       discard db.getClientUsers(homeSigninView)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
-      redraw()
+      # redraw()
     else:
       clientErrorMessage = "Token no longer valid!"
       clientUser = nil
       discard db.delete(clientUsersDbStore, userId, dbOptions)
-      redraw()
+    redraw()
 
 proc serviceToggle: Vnode =
   result = buildHtml:
@@ -64,16 +64,7 @@ proc loadMirror(service: Service, username: cstring) =
 proc validateLBUser(username: string) {.async.} =
   ## Validates and gets now playing for user.
   try:
-    let
-      c = newAsyncListenBrainz()
-      res = await c.getUserPlayingNow username
-      payload = res.payload
-      userId = payload.userId
-      user = newUser(userId = cstring userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = cstring payload.userId), Service.lastFmService: newServiceUser(Service.lastFmService)])
-    if payload.count == 1:
-      user.playingNow = some to payload.listens[0]
-      user.latestListenTs = int toUnix getTime()
-    mirrorUser = user
+    mirrorUser = await lbClient.initUser(username)
     discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
     loadMirror(Service.listenBrainzService, username)
@@ -116,13 +107,6 @@ proc onMirror(ev: kdom.Event; n: VNode) =
         redraw()
       else:
         discard validateLBUser($username)
-
-proc errorMessage*(message: string): Vnode =
-  result = buildHtml:
-    tdiv(class = "error-message"):
-      if message != "":
-        p(id = "error"):
-          text message
 
 proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirror = false): Vnode =
   var
@@ -174,6 +158,9 @@ proc mirrorUserModal: Vnode =
         p(id = "modal-text", class = "body"):
           text "Select a user to mirror..."
         renderUsers(storedMirrorUsers, mirrorUser, mirror = true)
+      else:
+        p(id = "modal-text", class = "body"):
+          text "Enter a username and select a service."
 
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirror)
@@ -248,24 +235,25 @@ proc serviceModal*(view: var ServiceView): Vnode =
 
 proc returnModal*(view: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
-    tdiv(class = "col login-container"):
+    tdiv(class = "login-container"):
       p(id = "modal-text", class = "body"):
         text "Welcome back!"
-      a(id = "link"):
-        text "Not you?"
-        proc onclick(ev: kdom.Event; n: VNode) =
-          view = SigninView.newUser
-      renderUsers(storedClientUsers, clientUser)
-      errorMessage(clientErrorMessage)
+      tdiv(id = "returning-user"):
+        a(id = "link"):
+          text "Not you?"
+          proc onclick(ev: kdom.Event; n: VNode) =
+            view = SigninView.newUser
+        renderUsers(storedClientUsers, clientUser)
+        errorMessage(clientErrorMessage)
       if mirror:
         mirrorUserModal()
 
 proc loginModal*(view: var ServiceView, mirror: bool): Vnode =
   result = buildHtml:
-    tdiv(class = "col login-container"):
-      p(id = "modal-text", class = "body"):
-        text "Login to your service:"
+    tdiv(class = "login-container"):
       tdiv(id = "service-modal-container"):
+        p(id = "modal-text", class = "body"):
+          text "Login to your service:"
         case view:
         of ServiceView.none:
           serviceModal(view)
@@ -278,8 +266,6 @@ proc loginModal*(view: var ServiceView, mirror: bool): Vnode =
           returnButton(view)
 
       if mirror:
-        p(id = "modal-text", class = "body"):
-          text "Enter a username and select a service to start mirroring another user's listens."
         mirrorUserModal()
 
 proc titleCol: Vnode =
@@ -296,7 +282,7 @@ proc titleCol: Vnode =
 
 proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror = true): Vnode =
   result = buildHtml:
-    tdiv:
+    tdiv(id = "signin-container", class = "col"):
       case signinView:
       of SigninView.loadingUsers:
         discard db.getClientUsers(signinView)
@@ -333,14 +319,11 @@ proc logoCol: Vnode =
         )
       )
 
-proc signinSection*: Vnode =
+proc mainSection*: Vnode =
   result = buildHtml:
     tdiv(class = "container"):
       titleCol()
       signinCol(homeSigninView, homeServiceView)
-
-proc descriptionSection*: Vnode =
-  result = buildHtml:
-    tdiv(class = "container"):
+      tdiv(class = "break-column")
       descriptionCol()
       logoCol()

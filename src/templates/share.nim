@@ -39,6 +39,13 @@ proc headerSection*(): Vnode =
       span: text "2"
       text "gether"
 
+proc errorMessage*(message: string): Vnode =
+  result = buildHtml:
+    tdiv(class = "error-message"):
+      if message != "":
+        p(id = "error"):
+          text message
+
 proc loadingModal*(message: cstring): Vnode =
   result = buildHtml:
     tdiv(class = "col login-container"):

@@ -3,6 +3,10 @@
 #title-container
   flex-direction: column
 
+.break-column
+  flex-basis: 100%
+  width: 0
+
 .login-container
   justify-content: center
   flex-wrap: wrap
@@ -27,6 +31,11 @@
   text-align: center
   margin-bottom: .25rem
 
+#returning-user
+  display: flex
+  flex-direction: column
+  align-items: center
+
 #title
   font: normal 3.5rem v.$header-font
 
@@ -46,6 +55,9 @@
   justify-content: space-between
   width: 21em
   max-width: 21em
+
+// .error-message
+//   padding-top: .5rem
 
 input
   min-width: 13em
@@ -118,14 +130,15 @@ input
   padding: .3rem 0rem
 
 #service-modal-container
-  // margin-bottom: 1em
   align-items: center
   display: flex
   flex-direction: column
+  padding-bottom: .5em
 
 #service-modal
   display: flex
   justify-content: space-evenly
+  padding-top: .25em
 
 .service-logo-button
   height: 3em
@@ -143,7 +156,7 @@ input
   background-color: v.$lastfm
 
 .login-button
-  margin: 0rem 0.5em 1rem 0.5em
+  margin: 0.5em
   font-size: 1.2em
 
 .service-logo
@@ -166,6 +179,7 @@ input
   display: flex
   flex-direction: column
   align-items: center
+  padding-top: .5em
 
 #mirror-button
   width: fit-content
