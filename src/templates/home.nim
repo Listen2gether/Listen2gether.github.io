@@ -42,7 +42,6 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
-      # redraw()
     else:
       clientErrorMessage = "Token no longer valid!"
       clientUser = nil
@@ -68,10 +67,9 @@ proc validateLBUser(username: string) {.async.} =
     discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
     loadMirror(Service.listenBrainzService, username)
-    redraw()
   except:
     mirrorErrorMessage = "Please enter a valid user!"
-    redraw()
+  redraw()
 
 proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
@@ -81,30 +79,24 @@ proc onMirror(ev: kdom.Event; n: VNode) =
   ## client user nil error
   if clientUser.isNil:
     clientErrorMessage = "Please login before trying to mirror!"
-    redraw()
   else:
     clientErrorMessage = ""
-    redraw()
 
   ## mirror user nil error
   if mirrorUser.isNil and username == "":
     mirrorErrorMessage = "Please choose a user!"
-    redraw()
   else:
     mirrorErrorMessage = ""
-    redraw()
 
   if not mirrorUser.isNil and username == "":
     username = mirrorUser.services[Service.listenBrainzService].username
 
   if serviceSwitch:
     mirrorErrorMessage = "Last.fm users are not supported yet.."
-    redraw()
   else:
     if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
       if clientUser.services[Service.listenBrainzService].username == username:
         mirrorErrorMessage = "Please enter a different user!"
-        redraw()
       else:
         discard validateLBUser($username)
 
@@ -149,7 +141,6 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirro
                     discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
                 else:
                   currentUser = nil
-                redraw()
 
 proc mirrorUserModal: Vnode =
   result = buildHtml:
@@ -169,13 +160,15 @@ proc mirrorUserModal: Vnode =
       button(id = "mirror-button", class = "row login-button", onclick = onMirror):
         text "Start mirroring!"
 
-proc returnButton*(view: var ServiceView): Vnode =
+proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vnode =
   result = buildHtml:
     tdiv:
       button(id = "return", class = "row login-button"):
         text "🔙"
         proc onclick(ev: kdom.Event; n: VNode) =
-          view = ServiceView.none
+          serviceView = ServiceView.none
+          signinView = SigninView.returningUser
+
 
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
@@ -201,11 +194,11 @@ proc lastFmModal*: Vnode =
       p(class = "body"):
         text "Last.fm users are not currently supported!"
 
-proc buttonModal*(service: Service, view: var ServiceView): Vnode =
+proc buttonModal*(service: Service, serviceView: var ServiceView, signinView: var SigninView): Vnode =
   result = buildHtml:
     tdiv(id = "button-modal"):
       submitButton service
-      returnButton(view)
+      returnButton(serviceView, signinView)
 
 proc serviceModal*(view: var ServiceView): Vnode =
   result = buildHtml:
@@ -248,22 +241,22 @@ proc returnModal*(view: var SigninView, mirror: bool): Vnode =
       if mirror:
         mirrorUserModal()
 
-proc loginModal*(view: var ServiceView, mirror: bool): Vnode =
+proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
     tdiv(class = "login-container"):
       tdiv(id = "service-modal-container"):
         p(id = "modal-text", class = "body"):
           text "Login to your service:"
-        case view:
+        case serviceView:
         of ServiceView.none:
-          serviceModal(view)
+          serviceModal(serviceView)
         of ServiceView.listenBrainzService:
           errorMessage(clientErrorMessage)
           listenBrainzModal()
-          buttonModal(Service.listenBrainzService, view)
+          buttonModal(Service.listenBrainzService, serviceView, signinView)
         of ServiceView.lastFmService:
           lastFmModal()
-          returnButton(view)
+          returnButton(serviceView, signinView)
 
       if mirror:
         mirrorUserModal()
@@ -291,7 +284,7 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
       of SigninView.returningUser:
         returnModal(signinView, mirror)
       of SigninView.newUser:
-        loginModal(serviceView, mirror)
+        loginModal(serviceView, signinView, mirror)
 
 proc descriptionCol: Vnode =
   result = buildHtml:
