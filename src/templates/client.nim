@@ -29,7 +29,7 @@ proc createDom(): VNode =
         service = parseEnum[Service]($params["service"])
         if mirrorUser.isNil and globalView != ClientView.errorView:
           globalView = ClientView.loadingView
-          discard getMirrorUser(username)
+          discard getMirrorUser(username, service)
         elif globalView == ClientView.errorView:
           echo "error!"
         else:

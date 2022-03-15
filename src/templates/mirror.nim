@@ -1,5 +1,5 @@
 import
-  std/[times, options, asyncjs, tables],
+  std/[dom, times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom],
   pkg/listenbrainz,
   ../sources/[lb],
@@ -14,11 +14,22 @@ var
   mirrorSigninView = SigninView.loadingUsers
   mirrorServiceView = ServiceView.none
 
-proc getMirrorUser*(username: cstring) {.async.} =
+proc setTimeoutAsync(ms: int): Future[void] =
+  let promise = newPromise() do (res: proc(): void):
+    discard setTimeout(res, ms)
+  return promise
+
+proc longPoll(ms: int = 30000) {.async.} =
+  await setTimeoutAsync(ms)
+  mirrorUser = await lbClient.updateUser(mirrorUser)
+  discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+
+proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
+  let userId = cstring($service & ":" & $username)
   if username in storedMirrorUsers:
-    mirrorUser = await lbClient.updateUser(storedMirrorUsers[username])
+    mirrorUser = await lbClient.updateUser(storedMirrorUsers[userId])
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
     redraw()
@@ -113,6 +124,7 @@ proc mainSection*(service: Service): Vnode =
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
+        discard longPoll()
         tdiv(id = "mirror"):
           p:
             text "You are mirroring "
