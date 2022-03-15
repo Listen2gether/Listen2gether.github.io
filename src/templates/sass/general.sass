@@ -45,6 +45,7 @@ main
   display: flex
   flex-direction: row
   margin: auto 25vw
+  flex-wrap: wrap
 
 @media (max-width: 1368px)
   .container
@@ -70,7 +71,7 @@ p
 .row
   display: flex
   align-items: center
-  margin: 1rem 0.5rem 1.25rem 0.5rem
+  margin: 0.75rem
   border: 0.01rem solid v.$fg_color
   box-sizing: border-box
   box-shadow: 0 0.05em 0.05em hsl(0deg 0% 0% / 0.15), 0 0.1em 0.1em hsl(0deg 0% 0% / 0.2), 0 0.2em 0.2em hsl(0deg 0% 0% / 0.15), 0 0.4em 0.4em hsl(0deg 0% 0% / 0.1)
@@ -89,13 +90,11 @@ button
 button:hover
   background-color: v.$accent_color
 
-.error-message
-  padding-bottom: 1rem
-
 .error-message:empty
   display: none
 
 #error
+  margin: .5rem
   color: v.$red
 
 #spinner
