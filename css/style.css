@@ -49,6 +49,7 @@ main {
   display: flex;
   flex-direction: row;
   margin: auto 25vw;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 1368px) {
@@ -80,7 +81,7 @@ p {
 .row {
   display: flex;
   align-items: center;
-  margin: 1rem 0.5rem 1.25rem 0.5rem;
+  margin: 0.75rem;
   border: 0.01rem solid #111111;
   box-sizing: border-box;
   box-shadow: 0 0.05em 0.05em rgba(0, 0, 0, 0.15), 0 0.1em 0.1em rgba(0, 0, 0, 0.2), 0 0.2em 0.2em rgba(0, 0, 0, 0.15), 0 0.4em 0.4em rgba(0, 0, 0, 0.1);
@@ -100,15 +101,12 @@ button:hover {
   background-color: #E2E2E2;
 }
 
-.error-message {
-  padding-bottom: 1rem;
-}
-
 .error-message:empty {
   display: none;
 }
 
 #error {
+  margin: 0.5rem;
   color: #FF4545;
 }
 
@@ -140,6 +138,11 @@ footer {
   flex-direction: column;
 }
 
+.break-column {
+  flex-basis: 100%;
+  width: 0;
+}
+
 .login-container {
   justify-content: center;
   flex-wrap: wrap;
@@ -168,6 +171,12 @@ footer {
 #modal-text {
   text-align: center;
   margin-bottom: 0.25rem;
+}
+
+#returning-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 #title {
@@ -275,11 +284,13 @@ input:checked + .slider:before {
   align-items: center;
   display: flex;
   flex-direction: column;
+  padding-bottom: 0.5em;
 }
 
 #service-modal {
   display: flex;
   justify-content: space-evenly;
+  padding-top: 0.25em;
 }
 
 .service-logo-button {
@@ -300,7 +311,7 @@ input:checked + .slider:before {
 }
 
 .login-button {
-  margin: 0rem 0.5em 1rem 0.5em;
+  margin: 0.5em;
   font-size: 1.2em;
 }
 
@@ -327,6 +338,7 @@ input:checked + .slider:before {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 0.5em;
 }
 
 #mirror-button {
@@ -389,7 +401,7 @@ hr {
 }
 
 .listen {
-  margin: 1em 1.25em;
+  margin: 1.25em;
   padding: 0.8rem;
 }
 
@@ -428,6 +440,13 @@ hr {
 
 #artist-name {
   font-size: 0.85rem;
+}
+
+#mirror-error {
+  text-align: center;
+  padding: 3em;
+  font-size: 3em;
+  font-weight: 600;
 }
 
 /*# sourceMappingURL=style.css.map */
