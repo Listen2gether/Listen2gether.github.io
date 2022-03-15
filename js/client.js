@@ -9282,32 +9282,32 @@ function headerSection_654312950() {
 
 }
 
-function titleCol_620757989() {
-  var result_620757990 = null;
+function titleCol_620757992() {
+  var result_620757993 = null;
 
-    var tmp_620757991 = tree_704643850(44, []);
-    tmp_620757991.id = "title-container";
-    tmp_620757991.class = "col";
-    var tmp_620757992 = tree_704643850(32, []);
-    tmp_620757992.id = "title";
-    var tmp_620757993 = tree_704643850(45, []);
-    tmp_620757993.class = "header";
-    setAttr_704643713(tmp_620757993, "href", "/");
-    add_704643787(tmp_620757993, text_704643902(makeNimstrLit("Listen")));
-    var tmp_620757994 = tree_704643850(71, []);
-    add_704643787(tmp_620757994, text_704643902(makeNimstrLit("2")));
-    add_704643787(tmp_620757993, tmp_620757994);
-    add_704643787(tmp_620757993, text_704643902(makeNimstrLit("gether")));
-    add_704643787(tmp_620757992, tmp_620757993);
-    add_704643787(tmp_620757992, text_704643902(makeNimstrLit(" is a website for listen parties.")));
-    add_704643787(tmp_620757991, tmp_620757992);
+    var tmp_620757994 = tree_704643850(44, []);
+    tmp_620757994.id = "title-container";
+    tmp_620757994.class = "col";
     var tmp_620757995 = tree_704643850(32, []);
-    tmp_620757995.id = "subtitle";
-    add_704643787(tmp_620757995, text_704643902(makeNimstrLit("Whether you\'re physically in the same room or not.")));
-    add_704643787(tmp_620757991, tmp_620757995);
-    result_620757990 = tmp_620757991;
+    tmp_620757995.id = "title";
+    var tmp_620757996 = tree_704643850(45, []);
+    tmp_620757996.class = "header";
+    setAttr_704643713(tmp_620757996, "href", "/");
+    add_704643787(tmp_620757996, text_704643902(makeNimstrLit("Listen")));
+    var tmp_620757997 = tree_704643850(71, []);
+    add_704643787(tmp_620757997, text_704643902(makeNimstrLit("2")));
+    add_704643787(tmp_620757996, tmp_620757997);
+    add_704643787(tmp_620757996, text_704643902(makeNimstrLit("gether")));
+    add_704643787(tmp_620757995, tmp_620757996);
+    add_704643787(tmp_620757995, text_704643902(makeNimstrLit(" is a website for listen parties.")));
+    add_704643787(tmp_620757994, tmp_620757995);
+    var tmp_620757998 = tree_704643850(32, []);
+    tmp_620757998.id = "subtitle";
+    add_704643787(tmp_620757998, text_704643902(makeNimstrLit("Whether you\'re physically in the same room or not.")));
+    add_704643787(tmp_620757994, tmp_620757998);
+    result_620757993 = tmp_620757994;
 
-  return result_620757990;
+  return result_620757993;
 
 }
 
@@ -9768,7 +9768,6 @@ function HEX3Aanonymous_620757644(ev_620757645, n_620757646) {
                             currentUser_620757270[currentUser_620757270_Idx] = null;
                           }
                           
-                          redraw_671089634(kxi_671088705[0]);
 
                         
                       }
@@ -9909,7 +9908,6 @@ async function validateLBUser_620757233(username_620757234) {
     var _ = storeUser_654312931(db_654311444[0], mirrorUsersDbStore_654311446[0], mirrorUser_654311484[0], dbOptions_654311447[0]);
     mirrorErrorMessage_654311486[0] = nimCopy(null, [], NTI33554439);
     loadMirror_620757219(0, toJSStr(username_620757234));
-    redraw_671089634(kxi_671088705[0]);
 --excHandler;
 } catch (EXCEPTION) {
  var prevJSError = lastJSError;
@@ -9917,11 +9915,11 @@ async function validateLBUser_620757233(username_620757234) {
  --excHandler;
     framePtr = Temporary2;
     mirrorErrorMessage_654311486[0] = nimCopy(null, makeNimstrLit("Please enter a valid user!"), NTI33554439);
-    redraw_671089634(kxi_671088705[0]);
     lastJSError = prevJSError;
     } finally {
     framePtr = Temporary2;
     }
+    redraw_671089634(kxi_671088705[0]);
     result_620757236 = undefined;
     break BeforeRet;
   } while (false);
@@ -9938,20 +9936,16 @@ function onMirror_620757246(ev_620757247, n_620757248) {
     var serviceSwitch_620757250 = document.getElementById("service_switch").checked;
     if ((clientUser_654311483[0] == null)) {
     clientErrorMessage_654311485[0] = nimCopy(null, makeNimstrLit("Please login before trying to mirror!"), NTI33554439);
-    redraw_671089634(kxi_671088705[0]);
     }
     else {
       clientErrorMessage_654311485[0] = nimCopy(null, [], NTI33554439);
-      redraw_671089634(kxi_671088705[0]);
     }
     
     if (((mirrorUser_654311484[0] == null) && (username_620757249 == ""))) {
     mirrorErrorMessage_654311486[0] = nimCopy(null, makeNimstrLit("Please choose a user!"), NTI33554439);
-    redraw_671089634(kxi_671088705[0]);
     }
     else {
       mirrorErrorMessage_654311486[0] = nimCopy(null, [], NTI33554439);
-      redraw_671089634(kxi_671088705[0]);
     }
     
     if ((!((mirrorUser_654311484[0] == null)) && (username_620757249 == ""))) {
@@ -9960,13 +9954,11 @@ function onMirror_620757246(ev_620757247, n_620757248) {
     
     if (serviceSwitch_620757250) {
     mirrorErrorMessage_654311486[0] = nimCopy(null, makeNimstrLit("Last.fm users are not supported yet.."), NTI33554439);
-    redraw_671089634(kxi_671088705[0]);
     }
     else {
         if (!!((clientUser_654311483[0] == null))) Temporary1 = false; else {          if (!((mirrorUser_654311484[0] == null))) Temporary2 = true; else {            Temporary2 = !((username_620757249 == ""));          }          Temporary1 = Temporary2;        }      if (Temporary1) {
       if ((clientUser_654311483[0].services[chckIndx(0, 0, (clientUser_654311483[0].services).length - 1)].username == username_620757249)) {
       mirrorErrorMessage_654311486[0] = nimCopy(null, makeNimstrLit("Please enter a different user!"), NTI33554439);
-      redraw_671089634(kxi_671088705[0]);
       }
       else {
       var _ = validateLBUser_620757233(cstrToNimstr(username_620757249));
@@ -10046,64 +10038,64 @@ function mirrorUserModal_620757826() {
 
 }
 
-function returnModal_620757971(view_620757972, view_620757972_Idx, mirror_620757973) {
+function returnModal_620757973(view_620757974, view_620757974_Idx, mirror_620757975) {
     
-function HEX3Aanonymous_620757979(ev_620757980, n_620757981) {
-        view_620757972[view_620757972_Idx] = 2;
+function HEX3Aanonymous_620757981(ev_620757982, n_620757983) {
+        view_620757974[view_620757974_Idx] = 2;
 
       
     }
 
-  var result_620757974 = null;
+  var result_620757976 = null;
 
-    var tmp_620757975 = tree_704643850(44, []);
-    tmp_620757975.class = "login-container";
-    var tmp_620757976 = tree_704643850(32, []);
-    tmp_620757976.id = "modal-text";
-    tmp_620757976.class = "body";
-    add_704643787(tmp_620757976, text_704643902(makeNimstrLit("Welcome back!")));
-    add_704643787(tmp_620757975, tmp_620757976);
     var tmp_620757977 = tree_704643850(44, []);
-    tmp_620757977.id = "returning-user";
-    var tmp_620757978 = tree_704643850(45, []);
-    tmp_620757978.id = "link";
-    add_704643787(tmp_620757978, text_704643902(makeNimstrLit("Not you?")));
-    addEventHandler_671089814(tmp_620757978, 0, HEX3Aanonymous_620757979, kxi_671088705[0]);
+    tmp_620757977.class = "login-container";
+    var tmp_620757978 = tree_704643850(32, []);
+    tmp_620757978.id = "modal-text";
+    tmp_620757978.class = "body";
+    add_704643787(tmp_620757978, text_704643902(makeNimstrLit("Welcome back!")));
     add_704643787(tmp_620757977, tmp_620757978);
-    add_704643787(tmp_620757977, renderUsers_620757266(storedClientUsers_654311475[0], clientUser_654311483, 0, false));
-    add_704643787(tmp_620757977, errorMessage_654312991(clientErrorMessage_654311485[0]));
-    add_704643787(tmp_620757975, tmp_620757977);
-    if (mirror_620757973) {
-    add_704643787(tmp_620757975, mirrorUserModal_620757826());
+    var tmp_620757979 = tree_704643850(44, []);
+    tmp_620757979.id = "returning-user";
+    var tmp_620757980 = tree_704643850(45, []);
+    tmp_620757980.id = "link";
+    add_704643787(tmp_620757980, text_704643902(makeNimstrLit("Not you?")));
+    addEventHandler_671089814(tmp_620757980, 0, HEX3Aanonymous_620757981, kxi_671088705[0]);
+    add_704643787(tmp_620757979, tmp_620757980);
+    add_704643787(tmp_620757979, renderUsers_620757266(storedClientUsers_654311475[0], clientUser_654311483, 0, false));
+    add_704643787(tmp_620757979, errorMessage_654312991(clientErrorMessage_654311485[0]));
+    add_704643787(tmp_620757977, tmp_620757979);
+    if (mirror_620757975) {
+    add_704643787(tmp_620757977, mirrorUserModal_620757826());
     }
     
-    result_620757974 = tmp_620757975;
+    result_620757976 = tmp_620757977;
 
-  return result_620757974;
+  return result_620757976;
 
 }
 
-function serviceModal_620757926(view_620757927, view_620757927_Idx) {
+function serviceModal_620757928(view_620757929, view_620757929_Idx) {
               
-function HEX3Aanonymous_620757961(ev_620757962, n_620757963) {
-                  switch (parseEnum_620757648(cstrToNimstr(n_620757963.id))) {
+function HEX3Aanonymous_620757963(ev_620757964, n_620757965) {
+                  switch (parseEnum_620757648(cstrToNimstr(n_620757965.id))) {
                   case 0:
-                    view_620757927[view_620757927_Idx] = 1;
+                    view_620757929[view_620757929_Idx] = 1;
                     break;
                   case 1:
-                    view_620757927[view_620757927_Idx] = 2;
+                    view_620757929[view_620757929_Idx] = 2;
                     break;
                   }
 
                 
               }
 
-  var result_620757928 = null;
+  var result_620757930 = null;
 
-    var tmp_620757929 = tree_704643850(44, []);
-    tmp_620757929.id = "service-modal";
+    var tmp_620757931 = tree_704643850(44, []);
+    tmp_620757931.id = "service-modal";
     Label1: do {
-      var service_620757957 = 0;
+      var service_620757959 = 0;
       Label2: do {
         var v_452985609 = 0;
         var res_452985610 = 0;
@@ -10111,265 +10103,266 @@ function HEX3Aanonymous_620757961(ev_620757962, n_620757963) {
             Label4: while (true) {
             if (!(res_452985610 <= 1)) break Label4;
               v_452985609 = chckRange(res_452985610, 0, 1);
-              service_620757957 = v_452985609;
-              var tmp_620757930 = tree_704643850(195, []);
-              tmp_620757930.id = toJSStr(reprEnum(service_620757957, NTI1459617795));
-              tmp_620757930.class = "row";
-              var tmp_620757931 = tree_704643850(44, []);
-              tmp_620757931.class = "service-logo-button";
-              switch (service_620757957) {
+              service_620757959 = v_452985609;
+              var tmp_620757932 = tree_704643850(195, []);
+              tmp_620757932.id = toJSStr(reprEnum(service_620757959, NTI1459617795));
+              tmp_620757932.class = "row";
+              var tmp_620757933 = tree_704643850(44, []);
+              tmp_620757933.class = "service-logo-button";
+              switch (service_620757959) {
               case 0:
-                var tmp_620757932 = tree_704643850(76, []);
-                setAttr_704643713(tmp_620757932, "src", "/assets/listenbrainz-logo.svg");
-                tmp_620757932.id = "listenbrainz-logo";
-                tmp_620757932.class = "service-logo";
-                setAttr_704643713(tmp_620757932, "alt", "ListenBrainz.org logo");
-                add_704643787(tmp_620757931, tmp_620757932);
+                var tmp_620757934 = tree_704643850(76, []);
+                setAttr_704643713(tmp_620757934, "src", "/assets/listenbrainz-logo.svg");
+                tmp_620757934.id = "listenbrainz-logo";
+                tmp_620757934.class = "service-logo";
+                setAttr_704643713(tmp_620757934, "alt", "ListenBrainz.org logo");
+                add_704643787(tmp_620757933, tmp_620757934);
                 break;
               case 1:
-                var tmp_620757933 = tree_704643850(76, []);
-                setAttr_704643713(tmp_620757933, "src", "/assets/lastfm-logo.svg");
-                tmp_620757933.id = "lastfm-logo";
-                tmp_620757933.class = "service-logo";
-                setAttr_704643713(tmp_620757933, "alt", "last.fm logo");
-                add_704643787(tmp_620757931, tmp_620757933);
+                var tmp_620757935 = tree_704643850(76, []);
+                setAttr_704643713(tmp_620757935, "src", "/assets/lastfm-logo.svg");
+                tmp_620757935.id = "lastfm-logo";
+                tmp_620757935.class = "service-logo";
+                setAttr_704643713(tmp_620757935, "alt", "last.fm logo");
+                add_704643787(tmp_620757933, tmp_620757935);
                 break;
               }
-              add_704643787(tmp_620757930, tmp_620757931);
-              addEventHandler_671089814(tmp_620757930, 0, HEX3Aanonymous_620757961, kxi_671088705[0]);
-              add_704643787(tmp_620757929, tmp_620757930);
+              add_704643787(tmp_620757932, tmp_620757933);
+              addEventHandler_671089814(tmp_620757932, 0, HEX3Aanonymous_620757963, kxi_671088705[0]);
+              add_704643787(tmp_620757931, tmp_620757932);
               res_452985610 = addInt(res_452985610, 1);
             }
         } while (false);
       } while (false);
     } while (false);
-    result_620757928 = tmp_620757929;
+    result_620757930 = tmp_620757931;
 
-  return result_620757928;
+  return result_620757930;
 
 }
 
-function onLBTokenEnter_620757899(ev_620757900, n_620757901) {
-    if (eqStrings(cstrToNimstr(n_620757901.id), makeNimstrLit("listenbrainz-token"))) {
-    var token_620757902 = document.getElementById("listenbrainz-token").value;
-    var _ = validateLBToken_620757124(token_620757902, "", true);
+function onLBTokenEnter_620757900(ev_620757901, n_620757902) {
+    if (eqStrings(cstrToNimstr(n_620757902.id), makeNimstrLit("listenbrainz-token"))) {
+    var token_620757903 = document.getElementById("listenbrainz-token").value;
+    var _ = validateLBToken_620757124(token_620757903, "", true);
     }
     
 
   
 }
 
-function listenBrainzModal_620757912() {
-  var result_620757913 = null;
+function listenBrainzModal_620757913() {
+  var result_620757914 = null;
 
-    var tmp_620757914 = tree_704643850(44, []);
     var tmp_620757915 = tree_704643850(44, []);
-    tmp_620757915.class = "row textbox";
-    var tmp_620757916 = tree_704643850(194, []);
-    setAttr_704643713(tmp_620757916, "type", "text");
-    tmp_620757916.class = "text-input token-input";
-    tmp_620757916.id = "listenbrainz-token";
-    setAttr_704643713(tmp_620757916, "placeholder", "Enter your ListenBrainz token");
-    addEventHandler_671089814(tmp_620757916, 29, onLBTokenEnter_620757899, kxi_671088705[0]);
+    var tmp_620757916 = tree_704643850(44, []);
+    tmp_620757916.class = "row textbox";
+    var tmp_620757917 = tree_704643850(194, []);
+    setAttr_704643713(tmp_620757917, "type", "text");
+    tmp_620757917.class = "text-input token-input";
+    tmp_620757917.id = "listenbrainz-token";
+    setAttr_704643713(tmp_620757917, "placeholder", "Enter your ListenBrainz token");
+    addEventHandler_671089814(tmp_620757917, 29, onLBTokenEnter_620757900, kxi_671088705[0]);
+    add_704643787(tmp_620757916, tmp_620757917);
     add_704643787(tmp_620757915, tmp_620757916);
-    add_704643787(tmp_620757914, tmp_620757915);
-    result_620757913 = tmp_620757914;
+    result_620757914 = tmp_620757915;
 
-  return result_620757913;
-
-}
-
-function submitButton_620757903(service_620757904) {
-  var result_620757905 = null;
-
-    var buttonId_620757909 = (reprEnum(service_620757904, NTI1459617795) || []).concat(makeNimstrLit("-token") || []);
-    var tmp_620757910 = tree_704643850(44, []);
-    var tmp_620757911 = tree_704643850(195, []);
-    tmp_620757911.id = toJSStr(buttonId_620757909);
-    tmp_620757911.class = "row login-button";
-    addEventHandler_671089814(tmp_620757911, 0, onLBTokenEnter_620757899, kxi_671088705[0]);
-    add_704643787(tmp_620757911, text_704643902(makeNimstrLit("\xF0\x9F\x86\x97")));
-    add_704643787(tmp_620757910, tmp_620757911);
-    result_620757905 = tmp_620757910;
-
-  return result_620757905;
+  return result_620757914;
 
 }
 
-function returnButton_620757891(view_620757892, view_620757892_Idx) {
+function submitButton_620757904(service_620757905) {
+  var result_620757906 = null;
+
+    var buttonId_620757910 = (reprEnum(service_620757905, NTI1459617795) || []).concat(makeNimstrLit("-token") || []);
+    var tmp_620757911 = tree_704643850(44, []);
+    var tmp_620757912 = tree_704643850(195, []);
+    tmp_620757912.id = toJSStr(buttonId_620757910);
+    tmp_620757912.class = "row login-button";
+    addEventHandler_671089814(tmp_620757912, 0, onLBTokenEnter_620757900, kxi_671088705[0]);
+    add_704643787(tmp_620757912, text_704643902(makeNimstrLit("\xF0\x9F\x86\x97")));
+    add_704643787(tmp_620757911, tmp_620757912);
+    result_620757906 = tmp_620757911;
+
+  return result_620757906;
+
+}
+
+function returnButton_620757891(serviceView_620757892, serviceView_620757892_Idx, signinView_620757893, signinView_620757893_Idx) {
     
-function HEX3Aanonymous_620757896(ev_620757897, n_620757898) {
-        view_620757892[view_620757892_Idx] = 0;
+function HEX3Aanonymous_620757897(ev_620757898, n_620757899) {
+        serviceView_620757892[serviceView_620757892_Idx] = 0;
+        signinView_620757893[signinView_620757893_Idx] = 1;
 
       
     }
 
-  var result_620757893 = null;
+  var result_620757894 = null;
 
-    var tmp_620757894 = tree_704643850(44, []);
-    var tmp_620757895 = tree_704643850(195, []);
-    tmp_620757895.id = "return";
-    tmp_620757895.class = "row login-button";
-    add_704643787(tmp_620757895, text_704643902(makeNimstrLit("\xF0\x9F\x94\x99")));
-    addEventHandler_671089814(tmp_620757895, 0, HEX3Aanonymous_620757896, kxi_671088705[0]);
-    add_704643787(tmp_620757894, tmp_620757895);
-    result_620757893 = tmp_620757894;
+    var tmp_620757895 = tree_704643850(44, []);
+    var tmp_620757896 = tree_704643850(195, []);
+    tmp_620757896.id = "return";
+    tmp_620757896.class = "row login-button";
+    add_704643787(tmp_620757896, text_704643902(makeNimstrLit("\xF0\x9F\x94\x99")));
+    addEventHandler_671089814(tmp_620757896, 0, HEX3Aanonymous_620757897, kxi_671088705[0]);
+    add_704643787(tmp_620757895, tmp_620757896);
+    result_620757894 = tmp_620757895;
 
-  return result_620757893;
-
-}
-
-function buttonModal_620757921(service_620757922, view_620757923, view_620757923_Idx) {
-  var result_620757924 = null;
-
-    var tmp_620757925 = tree_704643850(44, []);
-    tmp_620757925.id = "button-modal";
-    add_704643787(tmp_620757925, submitButton_620757903(service_620757922));
-    add_704643787(tmp_620757925, returnButton_620757891(view_620757923, view_620757923_Idx));
-    result_620757924 = tmp_620757925;
-
-  return result_620757924;
+  return result_620757894;
 
 }
 
-function lastFmModal_620757917() {
-  var result_620757918 = null;
+function buttonModal_620757922(service_620757923, serviceView_620757924, serviceView_620757924_Idx, signinView_620757925, signinView_620757925_Idx) {
+  var result_620757926 = null;
 
-    var tmp_620757919 = tree_704643850(44, []);
-    tmp_620757919.id = "lastfm-auth";
-    var tmp_620757920 = tree_704643850(32, []);
-    tmp_620757920.class = "body";
-    add_704643787(tmp_620757920, text_704643902(makeNimstrLit("Last.fm users are not currently supported!")));
-    add_704643787(tmp_620757919, tmp_620757920);
-    result_620757918 = tmp_620757919;
+    var tmp_620757927 = tree_704643850(44, []);
+    tmp_620757927.id = "button-modal";
+    add_704643787(tmp_620757927, submitButton_620757904(service_620757923));
+    add_704643787(tmp_620757927, returnButton_620757891(serviceView_620757924, serviceView_620757924_Idx, signinView_620757925, signinView_620757925_Idx));
+    result_620757926 = tmp_620757927;
 
-  return result_620757918;
+  return result_620757926;
 
 }
 
-function loginModal_620757982(view_620757983, view_620757983_Idx, mirror_620757984) {
-  var result_620757985 = null;
+function lastFmModal_620757918() {
+  var result_620757919 = null;
 
-    var tmp_620757986 = tree_704643850(44, []);
-    tmp_620757986.class = "login-container";
-    var tmp_620757987 = tree_704643850(44, []);
-    tmp_620757987.id = "service-modal-container";
-    var tmp_620757988 = tree_704643850(32, []);
-    tmp_620757988.id = "modal-text";
-    tmp_620757988.class = "body";
-    add_704643787(tmp_620757988, text_704643902(makeNimstrLit("Login to your service:")));
-    add_704643787(tmp_620757987, tmp_620757988);
-    switch (view_620757983[view_620757983_Idx]) {
+    var tmp_620757920 = tree_704643850(44, []);
+    tmp_620757920.id = "lastfm-auth";
+    var tmp_620757921 = tree_704643850(32, []);
+    tmp_620757921.class = "body";
+    add_704643787(tmp_620757921, text_704643902(makeNimstrLit("Last.fm users are not currently supported!")));
+    add_704643787(tmp_620757920, tmp_620757921);
+    result_620757919 = tmp_620757920;
+
+  return result_620757919;
+
+}
+
+function loginModal_620757984(serviceView_620757985, serviceView_620757985_Idx, signinView_620757986, signinView_620757986_Idx, mirror_620757987) {
+  var result_620757988 = null;
+
+    var tmp_620757989 = tree_704643850(44, []);
+    tmp_620757989.class = "login-container";
+    var tmp_620757990 = tree_704643850(44, []);
+    tmp_620757990.id = "service-modal-container";
+    var tmp_620757991 = tree_704643850(32, []);
+    tmp_620757991.id = "modal-text";
+    tmp_620757991.class = "body";
+    add_704643787(tmp_620757991, text_704643902(makeNimstrLit("Login to your service:")));
+    add_704643787(tmp_620757990, tmp_620757991);
+    switch (serviceView_620757985[serviceView_620757985_Idx]) {
     case 0:
-      add_704643787(tmp_620757987, serviceModal_620757926(view_620757983, view_620757983_Idx));
+      add_704643787(tmp_620757990, serviceModal_620757928(serviceView_620757985, serviceView_620757985_Idx));
       break;
     case 1:
-      add_704643787(tmp_620757987, errorMessage_654312991(clientErrorMessage_654311485[0]));
-      add_704643787(tmp_620757987, listenBrainzModal_620757912());
-      add_704643787(tmp_620757987, buttonModal_620757921(0, view_620757983, view_620757983_Idx));
+      add_704643787(tmp_620757990, errorMessage_654312991(clientErrorMessage_654311485[0]));
+      add_704643787(tmp_620757990, listenBrainzModal_620757913());
+      add_704643787(tmp_620757990, buttonModal_620757922(0, serviceView_620757985, serviceView_620757985_Idx, signinView_620757986, signinView_620757986_Idx));
       break;
     case 2:
-      add_704643787(tmp_620757987, lastFmModal_620757917());
-      add_704643787(tmp_620757987, returnButton_620757891(view_620757983, view_620757983_Idx));
+      add_704643787(tmp_620757990, lastFmModal_620757918());
+      add_704643787(tmp_620757990, returnButton_620757891(serviceView_620757985, serviceView_620757985_Idx, signinView_620757986, signinView_620757986_Idx));
       break;
     }
-    add_704643787(tmp_620757986, tmp_620757987);
-    if (mirror_620757984) {
-    add_704643787(tmp_620757986, mirrorUserModal_620757826());
+    add_704643787(tmp_620757989, tmp_620757990);
+    if (mirror_620757987) {
+    add_704643787(tmp_620757989, mirrorUserModal_620757826());
     }
     
-    result_620757985 = tmp_620757986;
+    result_620757988 = tmp_620757989;
 
-  return result_620757985;
-
-}
-
-function signinCol_620757996(signinView_620757997, signinView_620757997_Idx, serviceView_620757998, serviceView_620757998_Idx, mirror_620757999) {
-  var result_620758000 = null;
-
-    var tmp_620758001 = tree_704643850(44, []);
-    tmp_620758001.id = "signin-container";
-    tmp_620758001.class = "col";
-    switch (signinView_620757997[signinView_620757997_Idx]) {
-    case 0:
-      var _ = getClientUsers_620757044(db_654311444[0], signinView_620757997, signinView_620757997_Idx, clientUsersDbStore_654311445[0]);
-      var _ = getMirrorUsers_620757109(db_654311444[0], mirrorUsersDbStore_654311446[0]);
-      add_704643787(tmp_620758001, loadingModal_654312996("Loading users..."));
-      break;
-    case 1:
-      add_704643787(tmp_620758001, returnModal_620757971(signinView_620757997, signinView_620757997_Idx, mirror_620757999));
-      break;
-    case 2:
-      add_704643787(tmp_620758001, loginModal_620757982(serviceView_620757998, serviceView_620757998_Idx, mirror_620757999));
-      break;
-    }
-    result_620758000 = tmp_620758001;
-
-  return result_620758000;
+  return result_620757988;
 
 }
 
-function descriptionCol_620758002() {
+function signinCol_620757999(signinView_620758000, signinView_620758000_Idx, serviceView_620758001, serviceView_620758001_Idx, mirror_620758002) {
   var result_620758003 = null;
 
     var tmp_620758004 = tree_704643850(44, []);
-    tmp_620758004.id = "description-container";
+    tmp_620758004.id = "signin-container";
     tmp_620758004.class = "col";
-    var tmp_620758005 = tree_704643850(32, []);
-    tmp_620758005.class = "body";
-    add_704643787(tmp_620758005, text_704643902(makeNimstrLit("Virtual listen parties are powered by ListenBrainz and a Matrix chatroom.")));
-    add_704643787(tmp_620758004, tmp_620758005);
+    switch (signinView_620758000[signinView_620758000_Idx]) {
+    case 0:
+      var _ = getClientUsers_620757044(db_654311444[0], signinView_620758000, signinView_620758000_Idx, clientUsersDbStore_654311445[0]);
+      var _ = getMirrorUsers_620757109(db_654311444[0], mirrorUsersDbStore_654311446[0]);
+      add_704643787(tmp_620758004, loadingModal_654312996("Loading users..."));
+      break;
+    case 1:
+      add_704643787(tmp_620758004, returnModal_620757973(signinView_620758000, signinView_620758000_Idx, mirror_620758002));
+      break;
+    case 2:
+      add_704643787(tmp_620758004, loginModal_620757984(serviceView_620758001, serviceView_620758001_Idx, signinView_620758000, signinView_620758000_Idx, mirror_620758002));
+      break;
+    }
     result_620758003 = tmp_620758004;
 
   return result_620758003;
 
 }
 
-function logoCol_620758006() {
-  var result_620758007 = null;
+function descriptionCol_620758005() {
+  var result_620758006 = null;
 
-    var tmp_620758008 = tree_704643850(44, []);
-    tmp_620758008.id = "logo-container";
-    tmp_620758008.class = "col";
-    var tmp_620758009 = tree_704643850(45, []);
-    setAttr_704643713(tmp_620758009, "href", "https://listenbrainz.org/");
-    var tmp_620758010 = tree_704643850(76, []);
-    setAttr_704643713(tmp_620758010, "src", "/assets/listenbrainz-logo.svg");
-    tmp_620758010.id = "listenbrainz-logo";
-    tmp_620758010.class = "logo";
-    setAttr_704643713(tmp_620758010, "alt", "ListenBrainz.org logo");
-    add_704643787(tmp_620758009, tmp_620758010);
-    add_704643787(tmp_620758008, tmp_620758009);
-    var tmp_620758011 = tree_704643850(45, []);
-    setAttr_704643713(tmp_620758011, "href", "https://matrix.org/");
-    var tmp_620758012 = tree_704643850(76, []);
-    setAttr_704643713(tmp_620758012, "src", "/assets/matrix-logo.svg");
-    tmp_620758012.id = "matrix-logo";
-    tmp_620758012.class = "logo";
-    setAttr_704643713(tmp_620758012, "alt", "Matrix.org logo");
-    add_704643787(tmp_620758011, tmp_620758012);
-    add_704643787(tmp_620758008, tmp_620758011);
-    result_620758007 = tmp_620758008;
+    var tmp_620758007 = tree_704643850(44, []);
+    tmp_620758007.id = "description-container";
+    tmp_620758007.class = "col";
+    var tmp_620758008 = tree_704643850(32, []);
+    tmp_620758008.class = "body";
+    add_704643787(tmp_620758008, text_704643902(makeNimstrLit("Virtual listen parties are powered by ListenBrainz and a Matrix chatroom.")));
+    add_704643787(tmp_620758007, tmp_620758008);
+    result_620758006 = tmp_620758007;
 
-  return result_620758007;
+  return result_620758006;
 
 }
 
-function mainSection_620758013() {
-  var result_620758014 = null;
+function logoCol_620758009() {
+  var result_620758010 = null;
 
-    var tmp_620758015 = tree_704643850(44, []);
-    tmp_620758015.class = "container";
-    add_704643787(tmp_620758015, titleCol_620757989());
-    add_704643787(tmp_620758015, signinCol_620757996(homeSigninView_620757024, 0, homeServiceView_620757023, 0, true));
-    var tmp_620758016 = tree_704643850(44, []);
-    tmp_620758016.class = "break-column";
-    add_704643787(tmp_620758015, tmp_620758016);
-    add_704643787(tmp_620758015, descriptionCol_620758002());
-    add_704643787(tmp_620758015, logoCol_620758006());
-    result_620758014 = tmp_620758015;
+    var tmp_620758011 = tree_704643850(44, []);
+    tmp_620758011.id = "logo-container";
+    tmp_620758011.class = "col";
+    var tmp_620758012 = tree_704643850(45, []);
+    setAttr_704643713(tmp_620758012, "href", "https://listenbrainz.org/");
+    var tmp_620758013 = tree_704643850(76, []);
+    setAttr_704643713(tmp_620758013, "src", "/assets/listenbrainz-logo.svg");
+    tmp_620758013.id = "listenbrainz-logo";
+    tmp_620758013.class = "logo";
+    setAttr_704643713(tmp_620758013, "alt", "ListenBrainz.org logo");
+    add_704643787(tmp_620758012, tmp_620758013);
+    add_704643787(tmp_620758011, tmp_620758012);
+    var tmp_620758014 = tree_704643850(45, []);
+    setAttr_704643713(tmp_620758014, "href", "https://matrix.org/");
+    var tmp_620758015 = tree_704643850(76, []);
+    setAttr_704643713(tmp_620758015, "src", "/assets/matrix-logo.svg");
+    tmp_620758015.id = "matrix-logo";
+    tmp_620758015.class = "logo";
+    setAttr_704643713(tmp_620758015, "alt", "Matrix.org logo");
+    add_704643787(tmp_620758014, tmp_620758015);
+    add_704643787(tmp_620758011, tmp_620758014);
+    result_620758010 = tmp_620758011;
 
-  return result_620758014;
+  return result_620758010;
+
+}
+
+function mainSection_620758016() {
+  var result_620758017 = null;
+
+    var tmp_620758018 = tree_704643850(44, []);
+    tmp_620758018.class = "container";
+    add_704643787(tmp_620758018, titleCol_620757992());
+    add_704643787(tmp_620758018, signinCol_620757999(homeSigninView_620757024, 0, homeServiceView_620757023, 0, true));
+    var tmp_620758019 = tree_704643850(44, []);
+    tmp_620758019.class = "break-column";
+    add_704643787(tmp_620758018, tmp_620758019);
+    add_704643787(tmp_620758018, descriptionCol_620758005());
+    add_704643787(tmp_620758018, logoCol_620758009());
+    result_620758017 = tmp_620758018;
+
+  return result_620758017;
 
 }
 
@@ -10377,7 +10370,7 @@ function home_452984846() {
   var result_452984847 = null;
 
     var tmp_452984848 = tree_704643850(31, []);
-    add_704643787(tmp_452984848, mainSection_620758013());
+    add_704643787(tmp_452984848, mainSection_620758016());
     result_452984847 = tmp_452984848;
 
   return result_452984847;
@@ -11522,7 +11515,7 @@ function mainSection_637534709(service_637534710) {
     var tmp_637534720 = tree_704643850(44, []);
     switch (mirrorMirrorView_637534227[0]) {
     case 0:
-      add_704643787(tmp_637534720, signinCol_620757996(mirrorSigninView_637534228, 0, mirrorServiceView_637534229, 0, false));
+      add_704643787(tmp_637534720, signinCol_620757999(mirrorSigninView_637534228, 0, mirrorServiceView_637534229, 0, false));
       break;
     case 1:
       var tmp_637534721 = tree_704643850(44, []);
