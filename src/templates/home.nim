@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, tables, strutils, options, times],
+  std/[asyncjs, tables, strutils, options],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   pkg/listenbrainz/core,
@@ -36,7 +36,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
   if res.valid:
     lbClient = newAsyncListenBrainz($token)
     if store:
-      clientUser = await lbClient.initUser(res.userName.get(), token = token)
+      clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
       discard storeUser(db, clientUsersDbStore, clientUser)
       discard db.getClientUsers(homeSigninView)
   else:
