@@ -1,6 +1,7 @@
 import
   std/[times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom],
+  pkg/listenbrainz,
   ../sources/[lb],
   ../types, home, share
 
@@ -18,14 +19,19 @@ proc getMirrorUser*(username: cstring) {.async.} =
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   if username in storedMirrorUsers:
     mirrorUser = await lbClient.updateUser(storedMirrorUsers[username])
-    echo "updated mirror user"
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
-    echo "stored mirror user"
     mirrorMirrorView = MirrorView.login
-  else:
-    mirrorUser = await lbClient.initUser(username)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     redraw()
+  else:
+    try:
+      mirrorUser = await lbClient.initUser(username)
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+      mirrorMirrorView = MirrorView.login
+      redraw()
+    except HttpRequestError:
+      mirrorErrorMessage = "The requested user is not valid!"
+      globalView = ClientView.errorView
+      redraw()
 
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 9): Vnode =
   var
@@ -77,10 +83,17 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
                 span(title = date):
                   text time
 
-proc mainSection*(user: User, service: Service): Vnode =
+proc mirrorError*(message: string): Vnode =
+  result = buildHtml:
+    main:
+      tdiv(id = "mirror-error"):
+        errorMessage("Uh Oh!")
+        errorMessage(message)
+
+proc mainSection*(service: Service): Vnode =
   var username, userUrl: cstring
 
-  if user.isNil:
+  if mirrorUser.isNil:
     echo "mirror user is nil!"
   else:
     echo "mirror user is good :)"
@@ -88,10 +101,10 @@ proc mainSection*(user: User, service: Service): Vnode =
       mirrorMirrorView = MirrorView.mirroring
     case service:
     of Service.listenBrainzService:
-      username = user.services[Service.listenBrainzService].username
+      username = mirrorUser.services[Service.listenBrainzService].username
       userUrl = cstring(lb.userBaseUrl & $username)
     of Service.lastFmService:
-      username = user.services[Service.lastFmService].username
+      username = mirrorUser.services[Service.lastFmService].username
       # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
@@ -105,4 +118,4 @@ proc mainSection*(user: User, service: Service): Vnode =
             text "You are mirroring "
             a(href = userUrl):
               text $username & "!"
-        renderListens(user.playingNow, user.listenHistory)
+        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory)
