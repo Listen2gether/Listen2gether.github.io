@@ -6,7 +6,12 @@ import
   ../types
 from std/sugar import collect
 
+type
+  ClientView* = enum
+    homeView, mirrorView, loadingView, errorView
+
 var
+  globalView*: ClientView = ClientView.homeView
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
   clientUsersDbStore*: cstring = "clientUsers"

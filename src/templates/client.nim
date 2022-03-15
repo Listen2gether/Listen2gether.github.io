@@ -2,26 +2,20 @@ import
   pkg/karax/[karax, karaxdsl, vdom, kdom],
   std/[strutils, uri, sequtils, tables],
   ../types,
+  pkg/listenbrainz,
   home, mirror, share
-
-type
-  ClientView* = enum
-    homeView, mirrorView
-
-var
-  globalView: ClientView = ClientView.homeView
 
 proc home: Vnode =
   ## Generates main section for Home page.
   result = buildHtml:
     main:
-      signinSection()
-      descriptionSection()
+      mainSection()
 
-proc mirror(user: User, service: Service): Vnode =
+proc mirror(service: Service): Vnode =
+  ## Generates main section for Mirror page.
   result = buildHtml:
     main:
-      mainSection(user, service)
+      mainSection(service)
 
 proc createDom(): VNode =
   var
@@ -30,19 +24,32 @@ proc createDom(): VNode =
   if ($window.location.pathname) == "/mirror":
     let params = toTable toSeq decodeQuery(($window.location.search).split("?")[1])
     if "username" in params and "service" in params:
-      username = cstring params["username"]
-      service = parseEnum[Service]($params["service"])
-      if mirrorUser.isNil:
-        discard getMirrorUser(username)
-      globalView = ClientView.mirrorView
+      try:
+        username = cstring params["username"]
+        service = parseEnum[Service]($params["service"])
+        if mirrorUser.isNil and globalView != ClientView.errorView:
+          globalView = ClientView.loadingView
+          discard getMirrorUser(username)
+        elif globalView == ClientView.errorView:
+          echo "error!"
+        else:
+          globalView = ClientView.mirrorView
+      except ValueError:
+        mirrorErrorMessage = "Invalid service!"
+        globalView = ClientView.errorView
 
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
-    of homeView:
+    of ClientView.homeView:
       home()
-    of mirrorView:
-      mirror(mirrorUser, service)
+    of ClientView.loadingView:
+      main:
+        loadingModal(cstring("Loading " & $username & "'s listens..."))
+    of ClientView.errorView:
+      mirrorError(mirrorErrorMessage)
+    of ClientView.mirrorView:
+      mirror(service)
     footerSection()
 
 setRenderer createDom
