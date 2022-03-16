@@ -25,12 +25,12 @@ var NTI1493172257 = {size: 0, kind: 17, base: null, node: null, finalizer: null}
 var NTI620757086 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI704643341 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI33555131 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
-var NTI2415919695 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
+var NTI2415919696 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI33555128 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
 var NTI1459617907 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
-var NTI2415919850 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
+var NTI2415919851 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1828716931 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
-var NTI2415919729 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
+var NTI2415919730 = {size: 0, kind: 18, base: null, node: null, finalizer: null};
 var NTI2415919266 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
 var NTI1476395028 = {size: 0, kind: 17, base: null, node: null, finalizer: null};
 var NTI1778384948 = {size: 0, kind: 24, base: null, node: null, finalizer: null};
@@ -1338,19 +1338,19 @@ var NNI1476395028 = {kind: 2, len: 0, offset: 0, typ: null, name: null, sons: []
 NTI1476395028.node = NNI1476395028;
 NTI1476395028.base = NTI33555112;
 NTI2415919266.base = NTI33554440;
-var NNI2415919729 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI33554439, name: "Field0", sons: null}, 
+var NNI2415919730 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "Field0", len: 0, typ: NTI33554439, name: "Field0", sons: null}, 
 {kind: 1, offset: "Field1", len: 0, typ: NTI33554439, name: "Field1", sons: null}]};
-NTI2415919729.node = NNI2415919729;
+NTI2415919730.node = NNI2415919730;
 var NNI1828716931 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "lastUpdateTs", len: 0, typ: NTI33554456, name: "lastUpdateTs", sons: null}, 
 {kind: 1, offset: "userId", len: 0, typ: NTI33554439, name: "userId", sons: null}]};
 NTI1828716931.node = NNI1828716931;
 NTI1828716931.base = NTI1828716928;
-NTI2415919850.base = NTI1459617798;
+NTI2415919851.base = NTI1459617798;
 NTI1459617907.base = NTI1459617798;
 var NNI33555128 = {kind: 2, len: 0, offset: 0, typ: null, name: null, sons: []};
 NTI33555128.node = NNI33555128;
 NTI33555128.base = NTI33555112;
-NTI2415919695.base = NTI1459617798;
+NTI2415919696.base = NTI1459617798;
 var NNI33555131 = {kind: 2, len: 0, offset: 0, typ: null, name: null, sons: []};
 NTI33555131.node = NNI33555131;
 NTI33555131.base = NTI33555112;
@@ -1991,10 +1991,10 @@ function negInt(a_33556982) {
 }
     var daysUntilMonthLeap_1493172494 = new Int32Array([0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]);
       var daysUntilMonth_1493172493 = new Int32Array([0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]);
-    var f2_637534693 = {patterns: [3, 33, 1, 44, 33, 1, 32, 0, 33, 1, 32, 13, 33, 1, 32, 23], formatStr: makeNimstrLit("dddd, d MMMM YYYY")};
+    var f2_637534671 = {patterns: [3, 33, 1, 44, 33, 1, 32, 0, 33, 1, 32, 13, 33, 1, 32, 23], formatStr: makeNimstrLit("dddd, d MMMM YYYY")};
     var DefaultLocale_1493173892 = {MMM: [makeNimstrLit("Jan"), makeNimstrLit("Feb"), makeNimstrLit("Mar"), makeNimstrLit("Apr"), makeNimstrLit("May"), makeNimstrLit("Jun"), makeNimstrLit("Jul"), makeNimstrLit("Aug"), makeNimstrLit("Sep"), makeNimstrLit("Oct"), makeNimstrLit("Nov"), makeNimstrLit("Dec")], MMMM: [makeNimstrLit("January"), makeNimstrLit("February"), makeNimstrLit("March"), makeNimstrLit("April"), makeNimstrLit("May"), makeNimstrLit("June"), makeNimstrLit("July"), makeNimstrLit("August"), makeNimstrLit("September"), makeNimstrLit("October"), makeNimstrLit("November"), makeNimstrLit("December")], ddd: [makeNimstrLit("Mon"), makeNimstrLit("Tue"), makeNimstrLit("Wed"), makeNimstrLit("Thu"), makeNimstrLit("Fri"), makeNimstrLit("Sat"), makeNimstrLit("Sun")], dddd: [makeNimstrLit("Monday"), makeNimstrLit("Tuesday"), makeNimstrLit("Wednesday"), makeNimstrLit("Thursday"), makeNimstrLit("Friday"), makeNimstrLit("Saturday"), makeNimstrLit("Sunday")]};
-    var f2_637534723 = {patterns: [7, 33, 1, 58, 9, 33, 1, 58, 15, 33, 1, 32, 1, 33, 1, 47, 11, 33, 1, 47, 21], formatStr: makeNimstrLit("HH:mm:ss dd/MM/yy")};
-    var f2_637534731 = {patterns: [7, 33, 1, 58, 9], formatStr: makeNimstrLit("HH:mm")};
+    var f2_637534701 = {patterns: [7, 33, 1, 58, 9, 33, 1, 58, 15, 33, 1, 32, 1, 33, 1, 47, 11, 33, 1, 47, 21], formatStr: makeNimstrLit("HH:mm:ss dd/MM/yy")};
+    var f2_637534709 = {patterns: [7, 33, 1, 58, 9], formatStr: makeNimstrLit("HH:mm")};
 var gid_704643683 = [0];
 var objectID_1241514146 = [0];
 var vcomponents_738197517 = [{}];
@@ -8960,27 +8960,27 @@ function fromJson_1828724362(s_1828724365) {
   return result_1828724367[0];
 
 }
-async function getUserListens_2415919768(lb_2415919770, username_2415919771, minTS_2415919772, maxTS_2415919773, count_2415919774) {
-  var result_2415919775 = null;
+async function getUserListens_2415919769(lb_2415919771, username_2415919772, minTS_2415919773, maxTS_2415919774, count_2415919775) {
+  var result_2415919776 = null;
 
   BeforeRet: do {
-    var params_2415919789 = [nimCopy(null, {Field0: makeNimstrLit("count"), Field1: HEX24_318767107(nimMin(count_2415919774, 100))}, NTI2415919729)];
-    if (!((minTS_2415919772 == 0))) {
-    params_2415919789.push({Field0: makeNimstrLit("min_ts"), Field1: HEX24_318767107(minTS_2415919772)});;
+    var params_2415919790 = [nimCopy(null, {Field0: makeNimstrLit("count"), Field1: HEX24_318767107(nimMin(count_2415919775, 100))}, NTI2415919730)];
+    if (!((minTS_2415919773 == 0))) {
+    params_2415919790.push({Field0: makeNimstrLit("min_ts"), Field1: HEX24_318767107(minTS_2415919773)});;
     }
     
-    if (!((maxTS_2415919773 == 0))) {
-    params_2415919789.push({Field0: makeNimstrLit("max_ts"), Field1: HEX24_318767107(maxTS_2415919773)});;
+    if (!((maxTS_2415919774 == 0))) {
+    params_2415919790.push({Field0: makeNimstrLit("max_ts"), Field1: HEX24_318767107(maxTS_2415919774)});;
     }
     
-    setContentType_2415919610(lb_2415919770, makeNimstrLit("application/x-www-form-urlencoded"));
-    var req_2415919802 = newPureRequest_1761607703(build_1761607737(lb_2415919770.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/listens"), username_2415919771), 1, params_2415919789), []);
-    var resp_2415919811 = (await request_2415919615(lb_2415919770, req_2415919802));
-    result_2415919775 = fromJson_1828724362(resp_2415919811.body);
+    setContentType_2415919610(lb_2415919771, makeNimstrLit("application/x-www-form-urlencoded"));
+    var req_2415919803 = newPureRequest_1761607703(build_1761607737(lb_2415919771.baseUrl, nsuFormatSingleElem(makeNimstrLit("/1/user/$#/listens"), username_2415919772), 1, params_2415919790), []);
+    var resp_2415919812 = (await request_2415919615(lb_2415919771, req_2415919803));
+    result_2415919776 = fromJson_1828724362(resp_2415919812.body);
     break BeforeRet;
   } while (false);
 
-  return result_2415919775;
+  return result_2415919776;
 
 }
 
@@ -9008,65 +9008,65 @@ function to_2415919527(listens_2415919528, preMirror_2415919537) {
   return result_2415919538;
 
 }
-async function getRecentTracks_2415919750(lb_2415919751, username_2415919752, preMirror_2415919753, maxTs_2415919754, minTs_2415919755) {
-  var result_2415919758 = null;
+async function getRecentTracks_2415919750(lb_2415919751, username_2415919752, preMirror_2415919753, maxTs_2415919754, minTs_2415919755, count_2415919756) {
+  var result_2415919759 = null;
 
-    var userListens_2415919833 = (await getUserListens_2415919768(lb_2415919751, cstrToNimstr(username_2415919752), minTs_2415919755, maxTs_2415919754, 25));
-    result_2415919758 = to_2415919527(userListens_2415919833.payload.listens, some_1828719713(preMirror_2415919753));
+    var userListens_2415919834 = (await getUserListens_2415919769(lb_2415919751, cstrToNimstr(username_2415919752), minTs_2415919755, maxTs_2415919754, count_2415919756));
+    result_2415919759 = to_2415919527(userListens_2415919834.payload.listens, some_1828719713(preMirror_2415919753));
 
-  return result_2415919758;
+  return result_2415919759;
 
 }
 
-function HEX26_2415919930(x_2415919932, y_2415919933) {
-  var result_2415919934 = [];
+function HEX26_2415919931(x_2415919933, y_2415919934) {
+  var result_2415919935 = [];
 
-    result_2415919934 = new Array(chckRange(addInt((x_2415919932).length, (y_2415919933).length), 0, 2147483647)); for (var i = 0 ; i < chckRange(addInt((x_2415919932).length, (y_2415919933).length), 0, 2147483647) ; ++i) { result_2415919934[i] = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}); }    Label1: do {
-      var i_2415919953 = 0;
+    result_2415919935 = new Array(chckRange(addInt((x_2415919933).length, (y_2415919934).length), 0, 2147483647)); for (var i = 0 ; i < chckRange(addInt((x_2415919933).length, (y_2415919934).length), 0, 2147483647) ; ++i) { result_2415919935[i] = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}); }    Label1: do {
+      var i_2415919954 = 0;
       var colontmp__452985572 = 0;
-      colontmp__452985572 = subInt((x_2415919932).length, 1);
+      colontmp__452985572 = subInt((x_2415919933).length, 1);
       var res_452985573 = 0;
       Label2: do {
           Label3: while (true) {
           if (!(res_452985573 <= colontmp__452985572)) break Label3;
-            i_2415919953 = res_452985573;
-            result_2415919934[chckIndx(i_2415919953, 0, (result_2415919934).length - 1)] = nimCopy(result_2415919934[chckIndx(i_2415919953, 0, (result_2415919934).length - 1)], x_2415919932[chckIndx(i_2415919953, 0, (x_2415919932).length - 1)], NTI1459617798);
+            i_2415919954 = res_452985573;
+            result_2415919935[chckIndx(i_2415919954, 0, (result_2415919935).length - 1)] = nimCopy(result_2415919935[chckIndx(i_2415919954, 0, (result_2415919935).length - 1)], x_2415919933[chckIndx(i_2415919954, 0, (x_2415919933).length - 1)], NTI1459617798);
             res_452985573 = addInt(res_452985573, 1);
           }
       } while (false);
     } while (false);
     Label4: do {
-      var i_2415919961 = 0;
+      var i_2415919962 = 0;
       var colontmp__452985576 = 0;
-      colontmp__452985576 = subInt((y_2415919933).length, 1);
+      colontmp__452985576 = subInt((y_2415919934).length, 1);
       var res_452985577 = 0;
       Label5: do {
           Label6: while (true) {
           if (!(res_452985577 <= colontmp__452985576)) break Label6;
-            i_2415919961 = res_452985577;
-            result_2415919934[chckIndx(addInt(i_2415919961, (x_2415919932).length), 0, (result_2415919934).length - 1)] = nimCopy(result_2415919934[chckIndx(addInt(i_2415919961, (x_2415919932).length), 0, (result_2415919934).length - 1)], y_2415919933[chckIndx(i_2415919961, 0, (y_2415919933).length - 1)], NTI1459617798);
+            i_2415919962 = res_452985577;
+            result_2415919935[chckIndx(addInt(i_2415919962, (x_2415919933).length), 0, (result_2415919935).length - 1)] = nimCopy(result_2415919935[chckIndx(addInt(i_2415919962, (x_2415919933).length), 0, (result_2415919935).length - 1)], y_2415919934[chckIndx(i_2415919962, 0, (y_2415919934).length - 1)], NTI1459617798);
             res_452985577 = addInt(res_452985577, 1);
           }
       } while (false);
     } while (false);
 
-  return result_2415919934;
+  return result_2415919935;
 
 }
-async function updateUser_2415919905(lb_2415919906, user_2415919907, preMirror_2415919908) {
-  var result_2415919910 = null;
+async function updateUser_2415919906(lb_2415919907, user_2415919908, preMirror_2415919909) {
+  var result_2415919911 = null;
 
   BeforeRet: do {
-    var updatedUser_2415919920 = user_2415919907;
-    updatedUser_2415919920.lastUpdateTs = chckRange(toUnix_1493173221(getTime_1493173268()), -2147483648, 2147483647);
-    updatedUser_2415919920.playingNow = nimCopy(updatedUser_2415919920.playingNow, (await getNowPlaying_2415919580(lb_2415919906, user_2415919907.services[chckIndx(0, 0, (user_2415919907.services).length - 1)].username)), NTI1459617810);
-    var newTracks_2415919929 = (await getRecentTracks_2415919750(lb_2415919906, user_2415919907.services[chckIndx(0, 0, (user_2415919907.services).length - 1)].username, preMirror_2415919908, 0, user_2415919907.lastUpdateTs));
-    updatedUser_2415919920.listenHistory = nimCopy(null, HEX26_2415919930(newTracks_2415919929, user_2415919907.listenHistory), NTI2415919850);
-    result_2415919910 = updatedUser_2415919920;
+    var updatedUser_2415919921 = user_2415919908;
+    updatedUser_2415919921.lastUpdateTs = chckRange(toUnix_1493173221(getTime_1493173268()), -2147483648, 2147483647);
+    updatedUser_2415919921.playingNow = nimCopy(updatedUser_2415919921.playingNow, (await getNowPlaying_2415919580(lb_2415919907, user_2415919908.services[chckIndx(0, 0, (user_2415919908.services).length - 1)].username)), NTI1459617810);
+    var newTracks_2415919930 = (await getRecentTracks_2415919750(lb_2415919907, user_2415919908.services[chckIndx(0, 0, (user_2415919908.services).length - 1)].username, preMirror_2415919909, 0, user_2415919908.lastUpdateTs, 50));
+    updatedUser_2415919921.listenHistory = nimCopy(null, HEX26_2415919931(newTracks_2415919930, user_2415919908.listenHistory), NTI2415919851);
+    result_2415919911 = updatedUser_2415919921;
     break BeforeRet;
   } while (false);
 
-  return result_2415919910;
+  return result_2415919911;
 
 }
 
@@ -9181,20 +9181,20 @@ function newServiceUser_1459617846(service_1459617847, username_1459617848, toke
   return result_1459617851;
 
 }
-async function initUser_2415919852(lb_2415919853, username_2415919854, token_2415919855) {
-  var result_2415919858 = null;
+async function initUser_2415919853(lb_2415919854, username_2415919855, token_2415919856) {
+  var result_2415919859 = null;
 
   BeforeRet: do {
-    var userId_2415919871 = toJSStr((makeNimstrLit("listenbrainz:") || []).concat(cstrToNimstr(username_2415919854) || []));
-    var user_2415919872 = newUser_1459617882(userId_2415919871, [newServiceUser_1459617846(0, username_2415919854, token_2415919855, ""), newServiceUser_1459617846(1, "", "", "")], none_1459617886(), [], 0);
-    user_2415919872.lastUpdateTs = chckRange(toUnix_1493173221(getTime_1493173268()), -2147483648, 2147483647);
-    user_2415919872.playingNow = nimCopy(user_2415919872.playingNow, (await getNowPlaying_2415919580(lb_2415919853, username_2415919854)), NTI1459617810);
-    user_2415919872.listenHistory = nimCopy(null, (await getRecentTracks_2415919750(lb_2415919853, username_2415919854, true, 0, 0)), NTI2415919695);
-    result_2415919858 = user_2415919872;
+    var userId_2415919872 = toJSStr((makeNimstrLit("listenbrainz:") || []).concat(cstrToNimstr(username_2415919855) || []));
+    var user_2415919873 = newUser_1459617882(userId_2415919872, [newServiceUser_1459617846(0, username_2415919855, token_2415919856, ""), newServiceUser_1459617846(1, "", "", "")], none_1459617886(), [], 0);
+    user_2415919873.lastUpdateTs = chckRange(toUnix_1493173221(getTime_1493173268()), -2147483648, 2147483647);
+    user_2415919873.playingNow = nimCopy(user_2415919873.playingNow, (await getNowPlaying_2415919580(lb_2415919854, username_2415919855)), NTI1459617810);
+    user_2415919873.listenHistory = nimCopy(null, (await getRecentTracks_2415919750(lb_2415919854, username_2415919855, true, 0, 0, 50)), NTI2415919696);
+    result_2415919859 = user_2415919873;
     break BeforeRet;
   } while (false);
 
-  return result_2415919858;
+  return result_2415919859;
 
 }
 
@@ -9217,7 +9217,7 @@ async function getMirrorUser_637534275(username_637534276, service_637534277) {
     if (timeToUpdate_637534250(mirrorUser_654311484[0].lastUpdateTs, 30000)) {
     switch (service_637534277) {
     case 0:
-      mirrorUser_654311484[0] = (await updateUser_2415919905(lbClient_654311443[0], mirrorUser_654311484[0], true));
+      mirrorUser_654311484[0] = (await updateUser_2415919906(lbClient_654311443[0], mirrorUser_654311484[0], true));
       break;
     case 1:
       mirrorUser_654311484[0] = null;
@@ -9235,7 +9235,7 @@ async function getMirrorUser_637534275(username_637534276, service_637534277) {
       try {
       switch (service_637534277) {
       case 0:
-        mirrorUser_654311484[0] = (await initUser_2415919852(lbClient_654311443[0], username_637534276, ""));
+        mirrorUser_654311484[0] = (await initUser_2415919853(lbClient_654311443[0], username_637534276, ""));
         break;
       case 1:
         mirrorUser_654311484[0] = null;
@@ -9804,7 +9804,7 @@ async function validateLBToken_620757123(token_620757124, userId_620757125, stor
     if (res_620757183.valid) {
     lbClient_654311443[0] = newAsyncListenBrainz_1560281161(cstrToNimstr(token_620757124), makeNimstrLit("https://api.listenbrainz.org"));
     if (store_620757126) {
-    clientUser_654311483[0] = (await initUser_2415919852(lbClient_654311443[0], toJSStr((Temporary1 = get_620757196(res_620757183.userName), Temporary1)[0][Temporary1[1]]), token_620757124));
+    clientUser_654311483[0] = (await initUser_2415919853(lbClient_654311443[0], toJSStr((Temporary1 = get_620757196(res_620757183.userName), Temporary1)[0][Temporary1[1]]), token_620757124));
     var _ = storeUser_654312931(db_654311444[0], clientUsersDbStore_654311445[0], clientUser_654311483[0], dbOptions_654311447[0]);
     var _ = getClientUsers_620757043(db_654311444[0], homeSigninView_620757023, 0, clientUsersDbStore_654311445[0]);
     }
@@ -9991,7 +9991,7 @@ async function validateLBUser_620757232(username_620757233) {
 ++excHandler;
     Temporary2 = framePtr;
     try {
-    mirrorUser_654311484[0] = (await initUser_2415919852(lbClient_654311443[0], toJSStr(username_620757233), ""));
+    mirrorUser_654311484[0] = (await initUser_2415919853(lbClient_654311443[0], toJSStr(username_620757233), ""));
     var _ = storeUser_654312931(db_654311444[0], mirrorUsersDbStore_654311446[0], mirrorUser_654311484[0], dbOptions_654311447[0]);
     mirrorErrorMessage_654311486[0] = nimCopy(null, [], NTI33554439);
     loadMirror_620757218(0, toJSStr(username_620757233));
@@ -10476,18 +10476,18 @@ function home_452984846() {
 
 }
 
-function mirrorError_637534813(message_637534814) {
-  var result_637534815 = null;
+function mirrorError_637534799(message_637534800) {
+  var result_637534801 = null;
 
-    var tmp_637534816 = tree_704643850(31, []);
-    var tmp_637534817 = tree_704643850(44, []);
-    tmp_637534817.id = "mirror-error";
-    add_704643787(tmp_637534817, errorMessage_654312991(makeNimstrLit("Uh Oh!")));
-    add_704643787(tmp_637534817, errorMessage_654312991(message_637534814));
-    add_704643787(tmp_637534816, tmp_637534817);
-    result_637534815 = tmp_637534816;
+    var tmp_637534802 = tree_704643850(31, []);
+    var tmp_637534803 = tree_704643850(44, []);
+    tmp_637534803.id = "mirror-error";
+    add_704643787(tmp_637534803, errorMessage_654312991(makeNimstrLit("Uh Oh!")));
+    add_704643787(tmp_637534803, errorMessage_654312991(message_637534800));
+    add_704643787(tmp_637534802, tmp_637534803);
+    result_637534801 = tmp_637534802;
 
-  return result_637534815;
+  return result_637534801;
 
 }
 
@@ -10518,7 +10518,7 @@ async function longPoll_637534256(service_637534257, ms_637534258) {
     if (timeToUpdate_637534250(mirrorUser_654311484[0].lastUpdateTs, ms_637534258)) {
     switch (service_637534257) {
     case 0:
-      mirrorUser_654311484[0] = (await updateUser_2415919905(lbClient_654311443[0], mirrorUser_654311484[0], true));
+      mirrorUser_654311484[0] = (await updateUser_2415919906(lbClient_654311443[0], mirrorUser_654311484[0], true));
       break;
     case 1:
       mirrorUser_654311484[0] = null;
@@ -10550,28 +10550,6 @@ function inViewport_788531090(el_788531091) {
 
 }
 
-function HEX5BHEX5D_637534511(s_637534515, x_637534516) {
-  var result_637534517 = [];
-
-    var a_637534519 = x_637534516.a;
-    var L_637534521 = addInt(subInt(x_637534516.b, a_637534519), 1);
-    result_637534517 = new Array(chckRange(L_637534521, 0, 2147483647)); for (var i = 0 ; i < chckRange(L_637534521, 0, 2147483647) ; ++i) { result_637534517[i] = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}); }    Label1: do {
-      var i_637534530 = 0;
-      var i_452985627 = 0;
-      Label2: do {
-          Label3: while (true) {
-          if (!(i_452985627 < L_637534521)) break Label3;
-            i_637534530 = i_452985627;
-            result_637534517[chckIndx(i_637534530, 0, (result_637534517).length - 1)] = nimCopy(result_637534517[chckIndx(i_637534530, 0, (result_637534517).length - 1)], s_637534515[chckIndx(addInt(i_637534530, a_637534519), 0, (s_637534515).length - 1)], NTI1459617798);
-            i_452985627 = addInt(i_452985627, 1);
-          }
-      } while (false);
-    } while (false);
-
-  return result_637534517;
-
-}
-
 function isNone_1493175042(self_1493175044) {
   var result_1493175045 = false;
 
@@ -10581,57 +10559,59 @@ function isNone_1493175042(self_1493175044) {
 
 }
 
-function get_2415920009(self_2415920011) {
-  var result_2415920012 = null;
-  var result_2415920012_Idx = 0;
+function get_2415920011(self_2415920013) {
+  var result_2415920014 = null;
+  var result_2415920014_Idx = 0;
 
   BeforeRet: do {
-    if (isNone_1493175042(self_2415920011)) {
+    if (isNone_1493175042(self_2415920013)) {
     raiseException({message: makeNimstrLit("Can\'t obtain a value from a `none`"), parent: null, m_type: NTI1476395028, name: null, trace: [], up: null}, "UnpackDefect");
     }
     
-    result_2415920012 = self_2415920011; result_2415920012_Idx = "val";
+    result_2415920014 = self_2415920013; result_2415920014_Idx = "val";
     break BeforeRet;
   } while (false);
 
-  return [result_2415920012, result_2415920012_Idx];
+  return [result_2415920014, result_2415920014_Idx];
 
 }
 
-function HEX5BHEX5D_2415919979(s_2415919981, i_2415919982) {
-  var result_2415919983 = null;
+function HEX5BHEX5D_2415919981(s_2415919983, i_2415919984) {
+  var result_2415919985 = null;
 
-    result_2415919983 = s_2415919981[chckIndx(subInt((s_2415919981).length, i_2415919982), 0, (s_2415919981).length - 1)];
+    result_2415919985 = s_2415919983[chckIndx(subInt((s_2415919983).length, i_2415919984), 0, (s_2415919983).length - 1)];
 
-  return result_2415919983;
+  return result_2415919985;
 
 }
-async function pageUser_2415919969(lb_2415919970, user_2415919971, user_2415919971_Idx) {
+async function pageUser_2415919970(lb_2415919971, user_2415919972, user_2415919972_Idx, endInd_2415919973, endInd_2415919973_Idx) {
     var Temporary1;
 
-  var result_2415919973 = null;
+  var result_2415919975 = null;
 
   BeforeRet: do {
-    var maxTs_2415920030 = (Temporary1 = get_2415920009(HEX5BHEX5D_2415919979(user_2415919971[user_2415919971_Idx].listenHistory, 1).listenedAt), Temporary1)[0][Temporary1[1]];
-    var newTracks_2415920035 = (await getRecentTracks_2415919750(lb_2415919970, user_2415919971[user_2415919971_Idx].services[chckIndx(0, 0, (user_2415919971[user_2415919971_Idx].services).length - 1)].username, true, maxTs_2415920030, 0));
-    user_2415919971[user_2415919971_Idx].listenHistory = nimCopy(null, HEX26_2415919930(user_2415919971[user_2415919971_Idx].listenHistory, newTracks_2415920035), NTI2415919850);
-    result_2415919973 = undefined;
+    var maxTs_2415920032 = (Temporary1 = get_2415920011(HEX5BHEX5D_2415919981(user_2415919972[user_2415919972_Idx].listenHistory, 1).listenedAt), Temporary1)[0][Temporary1[1]];
+    var newTracks_2415920037 = (await getRecentTracks_2415919750(lb_2415919971, user_2415919972[user_2415919972_Idx].services[chckIndx(0, 0, (user_2415919972[user_2415919972_Idx].services).length - 1)].username, true, maxTs_2415920032, 0, 50));
+    user_2415919972[user_2415919972_Idx].listenHistory = nimCopy(null, HEX26_2415919931(user_2415919972[user_2415919972_Idx].listenHistory, newTracks_2415920037), NTI2415919851);
+    endInd_2415919973[endInd_2415919973_Idx] = addInt(endInd_2415919973[endInd_2415919973_Idx], 10);
+    result_2415919975 = undefined;
     break BeforeRet;
   } while (false);
 
-  return result_2415919973;
+  return result_2415919975;
 
 }
 
 function pageListens_637534494(ev_637534495, n_637534496) {
       var Temporary1;
 
-    var d_637534497 = n_637534496.dom;
-      if (!!((d_637534497 == null))) Temporary1 = false; else {        Temporary1 = inViewport_788531090(d_637534497.lastChild);      }    if (Temporary1) {
-    if ((d_637534497.childNodes.length < (HEX5BHEX5D_637534511(mirrorUser_654311484[0].listenHistory, HEX2EHEX2E_1107297107(0, listenEndInd_637534232[0]))).length)) {
+    var increment_637534497 = 10;
+    var d_637534498 = n_637534496.dom;
+      if (!!((d_637534498 == null))) Temporary1 = false; else {        Temporary1 = inViewport_788531090(d_637534498.lastChild);      }    if (Temporary1) {
+    if ((subInt((mirrorUser_654311484[0].listenHistory).length, 1) <= addInt(listenEndInd_637534232[0], increment_637534497))) {
     switch (mirrorUserService_637534231[0]) {
     case 0:
-      var _ = pageUser_2415919969(lbClient_654311443[0], mirrorUser_654311484, 0);
+      var _ = pageUser_2415919970(lbClient_654311443[0], mirrorUser_654311484, 0, listenEndInd_637534232, 0);
       break;
     case 1:
       mirrorUser_654311484[0] = null;
@@ -10640,8 +10620,7 @@ function pageListens_637534494(ev_637534495, n_637534496) {
     var _ = storeUser_654312931(db_654311444[0], mirrorUsersDbStore_654311446[0], mirrorUser_654311484[0], dbOptions_654311447[0]);
     }
     else {
-      listenEndInd_637534232[0] = addInt(listenEndInd_637534232[0], 10);
-      redraw_671089634(kxi_671088705[0]);
+    listenEndInd_637534232[0] = addInt(listenEndInd_637534232[0], increment_637534497);
     }
     
     }
@@ -10650,34 +10629,56 @@ function pageListens_637534494(ev_637534495, n_637534496) {
   
 }
 
-function isSome_637534581(self_637534583) {
-  var result_637534584 = false;
+function isSome_637534544(self_637534546) {
+  var result_637534547 = false;
 
-    result_637534584 = self_637534583.has;
+    result_637534547 = self_637534546.has;
 
-  return result_637534584;
-
-}
-
-function isNone_637534606(self_637534608) {
-  var result_637534609 = false;
-
-    result_637534609 = !(self_637534608.has);
-
-  return result_637534609;
+  return result_637534547;
 
 }
 
-function get_637534598(self_637534600) {
-  var result_637534601 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
+function isNone_637534569(self_637534571) {
+  var result_637534572 = false;
 
-    if (isNone_637534606(self_637534600)) {
+    result_637534572 = !(self_637534571.has);
+
+  return result_637534572;
+
+}
+
+function get_637534561(self_637534563) {
+  var result_637534564 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
+
+    if (isNone_637534569(self_637534563)) {
     raiseException({message: makeNimstrLit("Can\'t obtain a value from a `none`"), parent: null, m_type: NTI1476395028, name: null, trace: [], up: null}, "UnpackDefect");
     }
     
-    result_637534601 = self_637534600.val;
+    result_637534564 = self_637534563.val;
 
-  return result_637534601;
+  return result_637534564;
+
+}
+
+function HEX5BHEX5D_637534611(s_637534615, x_637534616) {
+  var result_637534617 = [];
+
+    var a_637534619 = x_637534616.a;
+    var L_637534621 = addInt(subInt(x_637534616.b, a_637534619), 1);
+    result_637534617 = new Array(chckRange(L_637534621, 0, 2147483647)); for (var i = 0 ; i < chckRange(L_637534621, 0, 2147483647) ; ++i) { result_637534617[i] = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})}); }    Label1: do {
+      var i_637534630 = 0;
+      var i_452985627 = 0;
+      Label2: do {
+          Label3: while (true) {
+          if (!(i_452985627 < L_637534621)) break Label3;
+            i_637534630 = i_452985627;
+            result_637534617[chckIndx(i_637534630, 0, (result_637534617).length - 1)] = nimCopy(result_637534617[chckIndx(i_637534630, 0, (result_637534617).length - 1)], s_637534615[chckIndx(addInt(i_637534630, a_637534619), 0, (s_637534615).length - 1)], NTI1459617798);
+            i_452985627 = addInt(i_452985627, 1);
+          }
+      } while (false);
+    } while (false);
+
+  return result_637534617;
 
 }
 
@@ -11418,12 +11419,12 @@ function inZone_1493173643(time_1493173644, zone_1493173645) {
 
 }
 
-function format_637534687(time_637534689, zone_637534691) {
-  var result_637534692 = [];
+function format_637534665(time_637534667, zone_637534669) {
+  var result_637534670 = [];
 
-    result_637534692 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534689, zone_637534691), f2_637534693, DefaultLocale_1493173892), NTI33554439);
+    result_637534670 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534667, zone_637534669), f2_637534671, DefaultLocale_1493173892), NTI33554439);
 
-  return result_637534692;
+  return result_637534670;
 
 }
 
@@ -11519,21 +11520,21 @@ function get_1493175059(self_1493175061) {
 
 }
 
-function format_637534717(time_637534719, zone_637534721) {
-  var result_637534722 = [];
+function format_637534695(time_637534697, zone_637534699) {
+  var result_637534700 = [];
 
-    result_637534722 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534719, zone_637534721), f2_637534723, DefaultLocale_1493173892), NTI33554439);
+    result_637534700 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534697, zone_637534699), f2_637534701, DefaultLocale_1493173892), NTI33554439);
 
-  return result_637534722;
+  return result_637534700;
 
 }
 
-function format_637534725(time_637534727, zone_637534729) {
-  var result_637534730 = [];
+function format_637534703(time_637534705, zone_637534707) {
+  var result_637534708 = [];
 
-    result_637534730 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534727, zone_637534729), f2_637534731, DefaultLocale_1493173892), NTI33554439);
+    result_637534708 = nimCopy(null, format_1493175098(inZone_1493173643(time_637534705, zone_637534707), f2_637534709, DefaultLocale_1493173892), NTI33554439);
 
-  return result_637534730;
+  return result_637534708;
 
 }
 
@@ -11568,142 +11569,143 @@ function get_1828716890(self_1828716892) {
 
 }
 
-function renderListens_637534547(playingNow_637534549, listenHistory_637534550, endInd_637534551) {
+function renderListens_637534510(playingNow_637534512, listenHistory_637534513, endInd_637534514) {
               var Temporary4;
               var Temporary5;
+                var Temporary6;
 
-  var result_637534552 = null;
+  var result_637534515 = null;
 
-    var trackName_637534553 = null;
-    var artistName_637534554 = null;
-    var preMirrorSplit_637534555 = false;
-    var tmp_637534556 = tree_704643850(44, []);
-    tmp_637534556.class = "listens";
-    var tmp_637534557 = tree_704643850(37, []);
-    addEventHandler_671089814(tmp_637534557, 9, pageListens_637534494, kxi_671088705[0]);
-    if (isSome_637534581(playingNow_637534549)) {
-    var tmp_637534558 = tree_704643850(38, []);
-    tmp_637534558.id = "now-playing";
-    tmp_637534558.class = "row listen";
-    var tmp_637534559 = tree_704643850(44, []);
-    tmp_637534559.id = "listen-details";
-    var tmp_637534560 = tree_704643850(76, []);
-    setAttr_704643713(tmp_637534560, "src", "/assets/nowplaying.svg");
-    add_704643787(tmp_637534559, tmp_637534560);
-    var tmp_637534561 = tree_704643850(44, []);
-    tmp_637534561.id = "track-details";
-    trackName_637534553 = get_637534598(playingNow_637534549).trackName;
-    artistName_637534554 = get_637534598(playingNow_637534549).artistName;
-    var tmp_637534562 = tree_704643850(32, []);
-    setAttr_704643713(tmp_637534562, "title", trackName_637534553);
-    tmp_637534562.id = "track-name";
-    add_704643787(tmp_637534562, text_704643905(trackName_637534553));
-    add_704643787(tmp_637534561, tmp_637534562);
-    var tmp_637534563 = tree_704643850(32, []);
-    setAttr_704643713(tmp_637534563, "title", artistName_637534554);
-    tmp_637534563.id = "artist-name";
-    add_704643787(tmp_637534563, text_704643905(artistName_637534554));
-    add_704643787(tmp_637534561, tmp_637534563);
-    add_704643787(tmp_637534559, tmp_637534561);
-    var tmp_637534564 = tree_704643850(71, []);
-    add_704643787(tmp_637534564, text_704643902(makeNimstrLit("Playing now")));
-    add_704643787(tmp_637534559, tmp_637534564);
-    add_704643787(tmp_637534558, tmp_637534559);
-    add_704643787(tmp_637534557, tmp_637534558);
+    var trackName_637534516 = null;
+    var artistName_637534517 = null;
+    var preMirrorSplit_637534518 = false;
+    var tmp_637534519 = tree_704643850(44, []);
+    tmp_637534519.class = "listens";
+    var tmp_637534520 = tree_704643850(37, []);
+    addEventHandler_671089814(tmp_637534520, 9, pageListens_637534494, kxi_671088705[0]);
+    if (isSome_637534544(playingNow_637534512)) {
+    var tmp_637534521 = tree_704643850(38, []);
+    tmp_637534521.id = "now-playing";
+    tmp_637534521.class = "row listen";
+    var tmp_637534522 = tree_704643850(44, []);
+    tmp_637534522.id = "listen-details";
+    var tmp_637534523 = tree_704643850(76, []);
+    setAttr_704643713(tmp_637534523, "src", "/assets/nowplaying.svg");
+    add_704643787(tmp_637534522, tmp_637534523);
+    var tmp_637534524 = tree_704643850(44, []);
+    tmp_637534524.id = "track-details";
+    trackName_637534516 = get_637534561(playingNow_637534512).trackName;
+    artistName_637534517 = get_637534561(playingNow_637534512).artistName;
+    var tmp_637534525 = tree_704643850(32, []);
+    setAttr_704643713(tmp_637534525, "title", trackName_637534516);
+    tmp_637534525.id = "track-name";
+    add_704643787(tmp_637534525, text_704643905(trackName_637534516));
+    add_704643787(tmp_637534524, tmp_637534525);
+    var tmp_637534526 = tree_704643850(32, []);
+    setAttr_704643713(tmp_637534526, "title", artistName_637534517);
+    tmp_637534526.id = "artist-name";
+    add_704643787(tmp_637534526, text_704643905(artistName_637534517));
+    add_704643787(tmp_637534524, tmp_637534526);
+    add_704643787(tmp_637534522, tmp_637534524);
+    var tmp_637534527 = tree_704643850(71, []);
+    add_704643787(tmp_637534527, text_704643902(makeNimstrLit("Playing now")));
+    add_704643787(tmp_637534522, tmp_637534527);
+    add_704643787(tmp_637534521, tmp_637534522);
+    add_704643787(tmp_637534520, tmp_637534521);
     }
     
-    if ((0 < (listenHistory_637534550).length)) {
+    if ((0 < (listenHistory_637534513).length)) {
     Label1: do {
-      var idx_637534685 = 0;
-      var track_637534686 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
+      var idx_637534662 = 0;
+      var track_637534663 = ({trackName: null, artistName: null, releaseName: ({val: null, has: false}), recordingMbid: ({val: null, has: false}), releaseMbid: ({val: null, has: false}), artistMbids: ({val: [], has: false}), trackNumber: ({val: 0, has: false}), listenedAt: ({val: 0, has: false}), mirrored: ({val: false, has: false}), preMirror: ({val: false, has: false})});
       var colontmp__452985621 = [];
-      colontmp__452985621 = HEX5BHEX5D_637534511(listenHistory_637534550, HEX2EHEX2E_1107297107(0, endInd_637534551));
+      colontmp__452985621 = HEX5BHEX5D_637534611(listenHistory_637534513, HEX2EHEX2E_1107297107(0, endInd_637534514));
       var i_452985623 = 0;
       var L_452985624 = (colontmp__452985621).length;
       Label2: do {
           Label3: while (true) {
           if (!(i_452985623 < L_452985624)) break Label3;
-            idx_637534685 = i_452985623;
-            track_637534686 = nimCopy(track_637534686, colontmp__452985621[chckIndx(i_452985623, 0, (colontmp__452985621).length - 1)], NTI1459617798);
-            var today_637534694 = format_637534687(getTime_1493173268(), local_1493173710());
-            var listenTime_637534710 = fromUnix_1493173209(get_1493175059(listenHistory_637534550[chckIndx(idx_637534685, 0, (listenHistory_637534550).length - 1)].listenedAt));
-            var cleanDate_637534716 = format_637534687(listenTime_637534710, local_1493173710());
-            var detailedDate_637534724 = toJSStr(format_637534717(listenTime_637534710, local_1493173710()));
-            var time_637534732 = format_637534725(listenTime_637534710, local_1493173710());
-            if (isSome_1828716838(track_637534686.preMirror)) {
-              if (!get_1828716890(track_637534686.preMirror)) Temporary4 = false; else {                Temporary4 = !(preMirrorSplit_637534555);              }            if (Temporary4) {
-            if ((idx_637534685 == 0)) {
-            preMirrorSplit_637534555 = true;
+            idx_637534662 = i_452985623;
+            track_637534663 = nimCopy(track_637534663, colontmp__452985621[chckIndx(i_452985623, 0, (colontmp__452985621).length - 1)], NTI1459617798);
+            var lastCleanDate_637534664 = [];
+            var today_637534672 = format_637534665(getTime_1493173268(), local_1493173710());
+            var listenTime_637534688 = fromUnix_1493173209(get_1493175059(listenHistory_637534513[chckIndx(idx_637534662, 0, (listenHistory_637534513).length - 1)].listenedAt));
+            var cleanDate_637534694 = format_637534665(listenTime_637534688, local_1493173710());
+            var detailedDate_637534702 = toJSStr(format_637534695(listenTime_637534688, local_1493173710()));
+            var time_637534710 = format_637534703(listenTime_637534688, local_1493173710());
+            if (isSome_1828716838(track_637534663.preMirror)) {
+              if (!get_1828716890(track_637534663.preMirror)) Temporary4 = false; else {                Temporary4 = !(preMirrorSplit_637534518);              }            if (Temporary4) {
+            if ((idx_637534662 == 0)) {
+            preMirrorSplit_637534518 = true;
             }
             else {
-              var tmp_637534565 = tree_704643850(33, []);
-              add_704643787(tmp_637534557, tmp_637534565);
-              preMirrorSplit_637534555 = true;
+              var tmp_637534528 = tree_704643850(33, []);
+              add_704643787(tmp_637534520, tmp_637534528);
+              preMirrorSplit_637534518 = true;
             }
             
             }
             
             }
             
-            if (!(eqStrings(today_637534694, cleanDate_637534716))) {
-            var lastCleanDate_637534755 = [];
-            if (!((idx_637534685 == 0))) {
-            lastCleanDate_637534755 = nimCopy(null, format_637534687(fromUnix_1493173209(get_1493175059(listenHistory_637534550[chckIndx(subInt(idx_637534685, 1), 0, (listenHistory_637534550).length - 1)].listenedAt)), local_1493173710()), NTI33554439);
+            if (!(eqStrings(today_637534672, cleanDate_637534694))) {
+            if (!((idx_637534662 == 0))) {
+            lastCleanDate_637534664 = nimCopy(null, format_637534665(fromUnix_1493173209(get_1493175059(listenHistory_637534513[chckIndx(subInt(idx_637534662, 1), 0, (listenHistory_637534513).length - 1)].listenedAt)), local_1493173710()), NTI33554439);
             }
             
-              if (!!(eqStrings(lastCleanDate_637534755, []))) Temporary5 = false; else {                Temporary5 = !(eqStrings(lastCleanDate_637534755, cleanDate_637534716));              }            if (Temporary5) {
-            var tmp_637534566 = tree_704643850(44, []);
-            tmp_637534566.class = "listen-date";
-            var tmp_637534567 = tree_704643850(32, []);
-            add_704643787(tmp_637534567, text_704643902(cleanDate_637534716));
-            add_704643787(tmp_637534566, tmp_637534567);
-            var tmp_637534568 = tree_704643850(33, []);
-            add_704643787(tmp_637534566, tmp_637534568);
-            add_704643787(tmp_637534557, tmp_637534566);
+              if ((idx_637534662 == 0)) Temporary5 = true; else {                if (!!(eqStrings(lastCleanDate_637534664, []))) Temporary6 = false; else {                  Temporary6 = !(eqStrings(lastCleanDate_637534664, cleanDate_637534694));                }                Temporary5 = Temporary6;              }            if (Temporary5) {
+            var tmp_637534529 = tree_704643850(44, []);
+            tmp_637534529.class = "listen-date";
+            var tmp_637534530 = tree_704643850(32, []);
+            add_704643787(tmp_637534530, text_704643902(cleanDate_637534694));
+            add_704643787(tmp_637534529, tmp_637534530);
+            var tmp_637534531 = tree_704643850(33, []);
+            add_704643787(tmp_637534529, tmp_637534531);
+            add_704643787(tmp_637534520, tmp_637534529);
             }
             
             }
             
-            var tmp_637534569 = tree_704643850(38, []);
-            tmp_637534569.id = toJSStr(HEX24_318767107(get_1493175059(track_637534686.listenedAt)));
-            tmp_637534569.class = "row listen";
-            var tmp_637534570 = tree_704643850(44, []);
-            tmp_637534570.id = "listen-details";
-            if (isSome_1828716838(track_637534686.mirrored)) {
-            if (get_1828716890(track_637534686.mirrored)) {
-            var tmp_637534571 = tree_704643850(76, []);
-            setAttr_704643713(tmp_637534571, "src", "/assets/mirrored.svg");
-            add_704643787(tmp_637534570, tmp_637534571);
+            var tmp_637534532 = tree_704643850(38, []);
+            tmp_637534532.id = toJSStr(HEX24_318767107(get_1493175059(track_637534663.listenedAt)));
+            tmp_637534532.class = "row listen";
+            var tmp_637534533 = tree_704643850(44, []);
+            tmp_637534533.id = "listen-details";
+            if (isSome_1828716838(track_637534663.mirrored)) {
+            if (get_1828716890(track_637534663.mirrored)) {
+            var tmp_637534534 = tree_704643850(76, []);
+            setAttr_704643713(tmp_637534534, "src", "/assets/mirrored.svg");
+            add_704643787(tmp_637534533, tmp_637534534);
             }
             else {
-              var tmp_637534572 = tree_704643850(76, []);
-              setAttr_704643713(tmp_637534572, "src", "/assets/pre-mirror.svg");
-              add_704643787(tmp_637534570, tmp_637534572);
+              var tmp_637534535 = tree_704643850(76, []);
+              setAttr_704643713(tmp_637534535, "src", "/assets/pre-mirror.svg");
+              add_704643787(tmp_637534533, tmp_637534535);
             }
             
             }
             
-            var tmp_637534573 = tree_704643850(44, []);
-            tmp_637534573.id = "track-details";
-            trackName_637534553 = track_637534686.trackName;
-            artistName_637534554 = track_637534686.artistName;
-            var tmp_637534574 = tree_704643850(32, []);
-            setAttr_704643713(tmp_637534574, "title", trackName_637534553);
-            tmp_637534574.id = "track-name";
-            add_704643787(tmp_637534574, text_704643905(trackName_637534553));
-            add_704643787(tmp_637534573, tmp_637534574);
-            var tmp_637534575 = tree_704643850(32, []);
-            setAttr_704643713(tmp_637534575, "title", artistName_637534554);
-            tmp_637534575.id = "artist-name";
-            add_704643787(tmp_637534575, text_704643905(artistName_637534554));
-            add_704643787(tmp_637534573, tmp_637534575);
-            add_704643787(tmp_637534570, tmp_637534573);
-            var tmp_637534576 = tree_704643850(71, []);
-            setAttr_704643713(tmp_637534576, "title", detailedDate_637534724);
-            add_704643787(tmp_637534576, text_704643902(time_637534732));
-            add_704643787(tmp_637534570, tmp_637534576);
-            add_704643787(tmp_637534569, tmp_637534570);
-            add_704643787(tmp_637534557, tmp_637534569);
+            var tmp_637534536 = tree_704643850(44, []);
+            tmp_637534536.id = "track-details";
+            trackName_637534516 = track_637534663.trackName;
+            artistName_637534517 = track_637534663.artistName;
+            var tmp_637534537 = tree_704643850(32, []);
+            setAttr_704643713(tmp_637534537, "title", trackName_637534516);
+            tmp_637534537.id = "track-name";
+            add_704643787(tmp_637534537, text_704643905(trackName_637534516));
+            add_704643787(tmp_637534536, tmp_637534537);
+            var tmp_637534538 = tree_704643850(32, []);
+            setAttr_704643713(tmp_637534538, "title", artistName_637534517);
+            tmp_637534538.id = "artist-name";
+            add_704643787(tmp_637534538, text_704643905(artistName_637534517));
+            add_704643787(tmp_637534536, tmp_637534538);
+            add_704643787(tmp_637534533, tmp_637534536);
+            var tmp_637534539 = tree_704643850(71, []);
+            setAttr_704643713(tmp_637534539, "title", detailedDate_637534702);
+            add_704643787(tmp_637534539, text_704643902(time_637534710));
+            add_704643787(tmp_637534533, tmp_637534539);
+            add_704643787(tmp_637534532, tmp_637534533);
+            add_704643787(tmp_637534520, tmp_637534532);
             i_452985623 = addInt(i_452985623, 1);
             if (!(((colontmp__452985621).length == L_452985624))) {
             failedAssertImpl_218103864(makeNimstrLit("iterators.nim(173, 11) `len(a) == L` the length of the seq changed while iterating over it"));
@@ -11714,19 +11716,19 @@ function renderListens_637534547(playingNow_637534549, listenHistory_637534550, 
     } while (false);
     }
     
-    add_704643787(tmp_637534556, tmp_637534557);
-    result_637534552 = tmp_637534556;
+    add_704643787(tmp_637534519, tmp_637534520);
+    result_637534515 = tmp_637534519;
 
-  return result_637534552;
+  return result_637534515;
 
 }
 
-function mainSection_637534818(service_637534819) {
-  var result_637534820 = null;
+function mainSection_637534804(service_637534805) {
+  var result_637534806 = null;
 
-    var username_637534821 = null;
-    var userUrl_637534822 = null;
-    mirrorUserService_637534231[0] = service_637534819;
+    var username_637534807 = null;
+    var userUrl_637534808 = null;
+    mirrorUserService_637534231[0] = service_637534805;
     if ((mirrorUser_654311484[0] == null)) {
     rawEcho(makeNimstrLit("mirror user is nil!"));
     }
@@ -11736,40 +11738,40 @@ function mainSection_637534818(service_637534819) {
       mirrorMirrorView_637534228[0] = 1;
       }
       
-      switch (service_637534819) {
+      switch (service_637534805) {
       case 0:
-        username_637534821 = mirrorUser_654311484[0].services[chckIndx(0, 0, (mirrorUser_654311484[0].services).length - 1)].username;
-        userUrl_637534822 = toJSStr((makeNimstrLit("https://listenbrainz.org/user/") || []).concat(cstrToNimstr(username_637534821) || []));
+        username_637534807 = mirrorUser_654311484[0].services[chckIndx(0, 0, (mirrorUser_654311484[0].services).length - 1)].username;
+        userUrl_637534808 = toJSStr((makeNimstrLit("https://listenbrainz.org/user/") || []).concat(cstrToNimstr(username_637534807) || []));
         break;
       case 1:
-        username_637534821 = mirrorUser_654311484[0].services[chckIndx(1, 0, (mirrorUser_654311484[0].services).length - 1)].username;
+        username_637534807 = mirrorUser_654311484[0].services[chckIndx(1, 0, (mirrorUser_654311484[0].services).length - 1)].username;
         break;
       }
     }
     
-    var tmp_637534829 = tree_704643850(44, []);
+    var tmp_637534815 = tree_704643850(44, []);
     switch (mirrorMirrorView_637534228[0]) {
     case 0:
-      add_704643787(tmp_637534829, signinCol_620757998(mirrorSigninView_637534229, 0, mirrorServiceView_637534230, 0, false));
+      add_704643787(tmp_637534815, signinCol_620757998(mirrorSigninView_637534229, 0, mirrorServiceView_637534230, 0, false));
       break;
     case 1:
-      var _ = longPoll_637534256(service_637534819, 30000);
-      var tmp_637534830 = tree_704643850(44, []);
-      tmp_637534830.id = "mirror";
-      var tmp_637534831 = tree_704643850(32, []);
-      add_704643787(tmp_637534831, text_704643902(makeNimstrLit("You are mirroring ")));
-      var tmp_637534832 = tree_704643850(45, []);
-      setAttr_704643713(tmp_637534832, "href", userUrl_637534822);
-      add_704643787(tmp_637534832, text_704643902((cstrToNimstr(username_637534821) || []).concat(makeNimstrLit("!") || [])));
-      add_704643787(tmp_637534831, tmp_637534832);
-      add_704643787(tmp_637534830, tmp_637534831);
-      add_704643787(tmp_637534829, tmp_637534830);
-      add_704643787(tmp_637534829, renderListens_637534547(mirrorUser_654311484[0].playingNow, mirrorUser_654311484[0].listenHistory, listenEndInd_637534232[0]));
+      var _ = longPoll_637534256(service_637534805, 30000);
+      var tmp_637534816 = tree_704643850(44, []);
+      tmp_637534816.id = "mirror";
+      var tmp_637534817 = tree_704643850(32, []);
+      add_704643787(tmp_637534817, text_704643902(makeNimstrLit("You are mirroring ")));
+      var tmp_637534818 = tree_704643850(45, []);
+      setAttr_704643713(tmp_637534818, "href", userUrl_637534808);
+      add_704643787(tmp_637534818, text_704643902((cstrToNimstr(username_637534807) || []).concat(makeNimstrLit("!") || [])));
+      add_704643787(tmp_637534817, tmp_637534818);
+      add_704643787(tmp_637534816, tmp_637534817);
+      add_704643787(tmp_637534815, tmp_637534816);
+      add_704643787(tmp_637534815, renderListens_637534510(mirrorUser_654311484[0].playingNow, mirrorUser_654311484[0].listenHistory, listenEndInd_637534232[0]));
       break;
     }
-    result_637534820 = tmp_637534829;
+    result_637534806 = tmp_637534815;
 
-  return result_637534820;
+  return result_637534806;
 
 }
 
@@ -11777,7 +11779,7 @@ function mirror_452984849(service_452984850) {
   var result_452984851 = null;
 
     var tmp_452984852 = tree_704643850(31, []);
-    add_704643787(tmp_452984852, mainSection_637534818(service_452984850));
+    add_704643787(tmp_452984852, mainSection_637534804(service_452984850));
     result_452984851 = tmp_452984852;
 
   return result_452984851;
@@ -11902,7 +11904,7 @@ function createDom_452984853() {
       add_704643787(tmp_452985236, tmp_452985237);
       break;
     case 3:
-      add_704643787(tmp_452985236, mirrorError_637534813(mirrorErrorMessage_654311486[0]));
+      add_704643787(tmp_452985236, mirrorError_637534799(mirrorErrorMessage_654311486[0]));
       break;
     case 1:
       add_704643787(tmp_452985236, mirror_452984849(service_452984855));
