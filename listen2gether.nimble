@@ -20,7 +20,7 @@ requires "karax"
 
 task sass, "Generate css":
   exec "mkdir -p public/css"
-  exec "sass src/templates/sass/index.sass public/css/style.css"
+  exec "sass --style=compressed --no-source-map src/templates/sass/index.sass public/css/style.css"
 
 task buildjs, "compile templates":
   exec "mkdir -p public/js"
