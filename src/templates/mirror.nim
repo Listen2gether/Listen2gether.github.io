@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, tables],
-  pkg/karax/[karax, karaxdsl, vdom],
+  pkg/karax/[karax, karaxdsl, vdom, vstyles],
   pkg/listenbrainz,
   ../sources/[lb],
   ../types, home, share
@@ -73,7 +73,9 @@ proc pageListens(ev: Event; n: VNode) =
   let
     increment = 10
     d = n.dom
-  if d != nil and inViewport(d.lastChild):
+    scrollHeight = 775
+
+  if d != nil and ((d.scrollHeight - d.scrollTop) == scrollHeight):
     if (mirrorUser.listenHistory.len - 1) <= (listenEndInd + increment):
       case mirrorUserService:
       of Service.listenBrainzService:
@@ -161,10 +163,7 @@ proc mainSection*(service: Service): Vnode =
   var username, userUrl: cstring
   mirrorUserService = service
 
-  if mirrorUser.isNil:
-    echo "mirror user is nil!"
-  else:
-    echo "mirror user is good :)"
+  if not mirrorUser.isNil:
     if not clientUser.isNil:
       mirrorMirrorView = MirrorView.mirroring
     case service:
