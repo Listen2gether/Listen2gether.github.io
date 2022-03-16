@@ -78,7 +78,7 @@ suite "ListenBrainz source":
       discard lb.getNowPlaying(username)
 
     test "Get recent tracks":
-      discard lb.getRecentTracks(username, user.lastUpdateTs, preMirror = false)
+      discard lb.getRecentTracks(username, preMirror = false)
 
     test "Initialise user":
       discard lb.initUser(username)
