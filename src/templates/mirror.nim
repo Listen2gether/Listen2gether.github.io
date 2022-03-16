@@ -13,6 +13,8 @@ var
   mirrorMirrorView = MirrorView.login
   mirrorSigninView = SigninView.loadingUsers
   mirrorServiceView = ServiceView.none
+  mirrorUserService: Service
+  listenEndInd: int = 10
 
 proc setTimeoutAsync(ms: int): Future[void] =
   let promise = newPromise() do (res: proc(): void):
@@ -66,16 +68,32 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       globalView = ClientView.errorView
       redraw()
 
-proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxListens: int = 9): Vnode =
+proc pageListens(ev: Event; n: VNode) =
+  ## Backfills the user's listens on scroll event and stores to DB
+  let d = n.dom
+  if d != nil and inViewport(d.lastChild):
+    if mirrorUser.listenHistory[0..listenEndInd].len > d.len:
+      case mirrorUserService:
+      of Service.listenBrainzService:
+        discard lbClient.pageUser(mirrorUser)
+      of Service.lastFmService:
+        mirrorUser = nil
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+    else:
+      listenEndInd += 10
+      redraw()
+
+
+proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd: int): Vnode =
   var
     trackName, artistName: cstring
     preMirrorSplit: bool = false
 
   result = buildHtml:
     tdiv(class = "listens"):
-      ul:
+      ul(onscroll = pageListens):
         if isSome playingNow:
-          li(class = "row listen"):
+          li(id = "now-playing", class = "row listen"):
             tdiv(id = "listen-details"):
               img(src = "/assets/nowplaying.svg")
               tdiv(id = "track-details"):
@@ -88,17 +106,18 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
               span:
                 text "Playing now"
         if listenHistory.len > 0:
-          # for idx, track in listenHistory[0..maxListens]:
-          ## TODO: add paging logic
-          for idx, track in listenHistory:
+          for idx, track in listenHistory[0..endInd]:
+            let
+              date = cstring fromUnix(get track.listenedAt).format("HH:mm:ss dd/MM/yy")
+              time = fromUnix(get track.listenedAt).format("HH:mm")
             if isSome track.preMirror:
-              if get(track.preMirror) == true and preMirrorSplit == false:
+              if get(track.preMirror) and not preMirrorSplit:
                 if idx == 0:
                   preMirrorSplit = true
                 else:
                   hr()
                   preMirrorSplit = true
-            li(class = "row listen"):
+            li(id = cstring($get(track.listenedAt)), class = "row listen"):
               tdiv(id = "listen-details"):
                 if isSome track.mirrored:
                   if get track.mirrored:
@@ -112,9 +131,6 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
                     text trackName
                   p(title = artistName, id = "artist-name"):
                     text artistName
-                let
-                  date = cstring fromUnix(get(track.listenedAt)).format("HH:mm:ss dd/MM/yy")
-                  time = fromUnix(get(track.listenedAt)).format("HH:mm")
                 span(title = date):
                   text time
 
@@ -127,6 +143,7 @@ proc mirrorError*(message: string): Vnode =
 
 proc mainSection*(service: Service): Vnode =
   var username, userUrl: cstring
+  mirrorUserService = service
 
   if mirrorUser.isNil:
     echo "mirror user is nil!"
@@ -154,4 +171,4 @@ proc mainSection*(service: Service): Vnode =
             text "You are mirroring "
             a(href = userUrl):
               text $username & "!"
-        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory)
+        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
