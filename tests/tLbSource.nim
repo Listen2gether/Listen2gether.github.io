@@ -75,14 +75,25 @@ suite "ListenBrainz source":
       var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
 
     test "Get now playing":
-      discard lb.getNowPlaying(username)
+      let nowPlaying = waitFor lb.getNowPlaying(username)
 
     test "Get recent tracks":
-      discard lb.getRecentTracks(username, preMirror = false)
+      let recentTracks = waitFor lb.getRecentTracks(username, preMirror = false)
+      check recentTracks.len == 100
 
     test "Initialise user":
-      discard lb.initUser(username)
+      let
+        newUser = waitFor lb.initUser(username)
+        userId = cstring("listenbrainz:" & $username)
+      check newUser.userId == userId
 
     test "Update user":
-      discard lb.updateUser(user)
+      let updatedUser = waitFor lb.updateUser(user)
+
+    ## Cannot be tested outside JS backend
+    # test "Page user":
+    #   let inc = 10
+    #   var endInt = 10
+    #   discard lb.pageUser(user, endInt, inc)
+    #   check endInt == 20
 
