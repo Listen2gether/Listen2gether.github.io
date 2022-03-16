@@ -83,7 +83,6 @@ proc pageListens(ev: Event; n: VNode) =
       listenEndInd += 10
       redraw()
 
-
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd: int): Vnode =
   var
     trackName, artistName: cstring
