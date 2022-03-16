@@ -24,8 +24,8 @@ jobs:
           path: nim
           version: devel
 
-      - name: Setup Dart Sass
-        run: npm install -g sass
+      - name: Setup Dart Sass and UglifyJS
+        run: npm install -g sass uglify-js
 
       - name: Install dependencies
         run: nimble install -d:js -y --depsOnly
@@ -35,6 +35,9 @@ jobs:
 
       - name: Compile release build
         run: nimble buildjs
+
+      - name: Minify JS
+        run: uglifyjs public/js/client.js -c -o public/js/client.js
 
       # - name: Commit web build
       #   uses: EndBug/add-and-commit@v4  # Commit everything to Git repo
