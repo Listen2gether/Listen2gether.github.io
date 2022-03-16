@@ -21,8 +21,8 @@ proc setTimeoutAsync(ms: int): Future[void] =
 
 proc timeToUpdate(lastUpdateTs: int, ms: int = 30000): bool =
   ## Returns true if it is time to update the user again.
-  let nextUpdate = int(toUnix getTime()) - (ms div 1000)
-  if lastUpdateTs > nextUpdate: return true
+  let nextUpdateTs = lastUpdateTs + (ms div 1000)
+  if int(toUnix getTime()) >= nextUpdateTs: return true
 
 proc longPoll(ms: int = 30000) {.async.} =
   ## Updates the mirrorUser every 30 seconds and stores to the database
@@ -30,6 +30,7 @@ proc longPoll(ms: int = 30000) {.async.} =
   if timeToUpdate(mirrorUser.lastUpdateTs, ms):
     mirrorUser = await lbClient.updateUser(mirrorUser)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+  discard longPoll(ms)
 
 proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
@@ -83,7 +84,9 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], maxLis
               span:
                 text "Playing now"
         if listenHistory.len > 0:
-          for idx, track in listenHistory[0..maxListens]:
+          # for idx, track in listenHistory[0..maxListens]:
+          ## TODO: add paging logic
+          for idx, track in listenHistory:
             if isSome track.preMirror:
               if get(track.preMirror) == true and preMirrorSplit == false:
                 if idx == 0:
