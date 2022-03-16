@@ -104,7 +104,7 @@ proc getRecentTracks*(
   username: cstring,
   preMirror: bool,
   maxTs, minTs: int = 0,
-  count: int = 50): Future[seq[Track]] {.async.} =
+  count: int = 100): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
   result = to(userListens.payload.listens, some preMirror)
@@ -137,12 +137,14 @@ proc updateUser*(
 proc pageUser*(
   lb: AsyncListenBrainz,
   user: var User,
-  endInd: var int) {.async.} =
+  endInd: var int,
+  inc: int = 10) {.async.} =
   ## Backfills user's recent tracks
-  let maxTs = get user.listenHistory[^1].listenedAt
-  let newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror = true, maxTs = maxTs)
+  let
+    maxTs = get user.listenHistory[^1].listenedAt
+    newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror = true, maxTs = maxTs)
   user.listenHistory = user.listenHistory & newTracks
-  endInd += 10
+  endInd += inc
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror
