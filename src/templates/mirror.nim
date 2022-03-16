@@ -19,23 +19,40 @@ proc setTimeoutAsync(ms: int): Future[void] =
     discard setTimeout(res, ms)
   return promise
 
+proc timeToUpdate(lastUpdateTs: int, ms: int = 30000): bool =
+  ## Returns true if it is time to update the user again.
+  let nextUpdate = int(toUnix getTime()) - (ms div 1000)
+  if lastUpdateTs > nextUpdate: return true
+
 proc longPoll(ms: int = 30000) {.async.} =
+  ## Updates the mirrorUser every 30 seconds and stores to the database
   await setTimeoutAsync(ms)
-  mirrorUser = await lbClient.updateUser(mirrorUser)
-  discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+  if timeToUpdate(mirrorUser.lastUpdateTs, ms):
+    mirrorUser = await lbClient.updateUser(mirrorUser)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
 
 proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   let userId = cstring($service & ":" & $username)
-  if username in storedMirrorUsers:
-    mirrorUser = await lbClient.updateUser(storedMirrorUsers[userId])
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+  if userId in storedMirrorUsers:
+    mirrorUser = storedMirrorUsers[userId]
+    if timeToUpdate(mirrorUser.lastUpdateTs):
+      case service:
+      of Service.listenBrainzService:
+        mirrorUser = await lbClient.updateUser(mirrorUser)
+      of Service.lastFmService:
+        mirrorUser = nil
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
     redraw()
   else:
     try:
-      mirrorUser = await lbClient.initUser(username)
+      case service:
+      of Service.listenBrainzService:
+        mirrorUser = await lbClient.initUser(username)
+      of Service.lastFmService:
+        mirrorUser = nil
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
       mirrorMirrorView = MirrorView.login
       redraw()
