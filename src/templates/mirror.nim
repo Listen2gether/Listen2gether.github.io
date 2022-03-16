@@ -107,8 +107,12 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
         if listenHistory.len > 0:
           for idx, track in listenHistory[0..endInd]:
             let
-              date = cstring fromUnix(get track.listenedAt).format("HH:mm:ss dd/MM/yy")
-              time = fromUnix(get track.listenedAt).format("HH:mm")
+              today = getTime().format("dddd, d MMMM YYYY")
+              listenTime = fromUnix get listenHistory[idx].listenedAt
+              cleanDate = listenTime.format("dddd, d MMMM YYYY")
+              detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
+              time = listenTime.format("HH:mm")
+
             if isSome track.preMirror:
               if get(track.preMirror) and not preMirrorSplit:
                 if idx == 0:
@@ -116,6 +120,17 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                 else:
                   hr()
                   preMirrorSplit = true
+
+            if today != cleanDate:
+              var lastCleanDate: string
+              if idx != 0:
+                lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format("dddd, d MMMM YYYY")
+              if lastCleanDate != "" and lastCleanDate != cleanDate:
+                tdiv(class = "listen-date"):
+                  p:
+                    text cleanDate
+                  hr()
+
             li(id = cstring($get(track.listenedAt)), class = "row listen"):
               tdiv(id = "listen-details"):
                 if isSome track.mirrored:
@@ -130,7 +145,7 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                     text trackName
                   p(title = artistName, id = "artist-name"):
                     text artistName
-                span(title = date):
+                span(title = detailedDate):
                   text time
 
 proc mirrorError*(message: string): Vnode =
