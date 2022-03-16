@@ -24,13 +24,17 @@ proc timeToUpdate(lastUpdateTs: int, ms: int = 30000): bool =
   let nextUpdateTs = lastUpdateTs + (ms div 1000)
   if int(toUnix getTime()) >= nextUpdateTs: return true
 
-proc longPoll(ms: int = 30000) {.async.} =
+proc longPoll(service: Service, ms: int = 30000) {.async.} =
   ## Updates the mirrorUser every 30 seconds and stores to the database
   await setTimeoutAsync(ms)
   if timeToUpdate(mirrorUser.lastUpdateTs, ms):
-    mirrorUser = await lbClient.updateUser(mirrorUser)
+    case service:
+    of Service.listenBrainzService:
+      mirrorUser = await lbClient.updateUser(mirrorUser)
+    of Service.lastFmService:
+      mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
-  discard longPoll(ms)
+  discard longPoll(service, ms)
 
 proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
@@ -144,7 +148,7 @@ proc mainSection*(service: Service): Vnode =
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
-        discard longPoll()
+        discard longPoll(service)
         tdiv(id = "mirror"):
           p:
             text "You are mirroring "
