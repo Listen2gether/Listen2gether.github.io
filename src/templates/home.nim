@@ -290,7 +290,13 @@ proc descriptionCol: Vnode =
   result = buildHtml:
     tdiv(id = "description-container", class = "col"):
       p(class = "body"):
-        text "Virtual listen parties are powered by ListenBrainz and a Matrix chatroom."
+        text "Virtual listen parties are powered by "
+        a(class = "header", href = "https://listenbrainz.org/"):
+          text "ListenBrainz"
+        text " and a "
+        a(class = "header", href = "https://matrix.org/"):
+          text "Matrix"
+        text " chatroom."
 
 proc logoCol: Vnode =
   result = buildHtml:
