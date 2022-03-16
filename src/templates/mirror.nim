@@ -88,6 +88,9 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
   var
     trackName, artistName: cstring
     preMirrorSplit: bool = false
+    lastCleanDate, cleanDate, today, time: string
+    listenTime: Time
+    detailedDate: cstring
 
   result = buildHtml:
     tdiv(class = "listens"):
@@ -107,13 +110,11 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                 text "Playing now"
         if listenHistory.len > 0:
           for idx, track in listenHistory[0..endInd]:
-            var
-              lastCleanDate: string
-              today = getTime().format("dddd, d MMMM YYYY")
-              listenTime = fromUnix get listenHistory[idx].listenedAt
-              cleanDate = listenTime.format("dddd, d MMMM YYYY")
-              detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
-              time = listenTime.format("HH:mm")
+            today = getTime().format("dddd, d MMMM YYYY")
+            listenTime = fromUnix get listenHistory[idx].listenedAt
+            cleanDate = listenTime.format("dddd, d MMMM YYYY")
+            detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
+            time = listenTime.format("HH:mm")
 
             if isSome track.preMirror:
               if get(track.preMirror) and not preMirrorSplit:
