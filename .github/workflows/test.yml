@@ -5,6 +5,7 @@ on:
       - ".github/workflows/**"
       - "src/**"
       - "tests/**"
+      - "**.nim"
       - "listen2gether.nimble"
 
 jobs:
