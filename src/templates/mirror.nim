@@ -70,18 +70,19 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
-  let d = n.dom
+  let
+    increment = 10
+    d = n.dom
   if d != nil and inViewport(d.lastChild):
-    if mirrorUser.listenHistory[0..listenEndInd].len > d.len:
+    if (mirrorUser.listenHistory.len - 1) <= (listenEndInd + increment):
       case mirrorUserService:
       of Service.listenBrainzService:
-        discard lbClient.pageUser(mirrorUser)
+        discard lbClient.pageUser(mirrorUser, listenEndInd)
       of Service.lastFmService:
         mirrorUser = nil
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     else:
-      listenEndInd += 10
-      redraw()
+      listenEndInd += increment
 
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd: int): Vnode =
   var
@@ -106,7 +107,8 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                 text "Playing now"
         if listenHistory.len > 0:
           for idx, track in listenHistory[0..endInd]:
-            let
+            var
+              lastCleanDate: string
               today = getTime().format("dddd, d MMMM YYYY")
               listenTime = fromUnix get listenHistory[idx].listenedAt
               cleanDate = listenTime.format("dddd, d MMMM YYYY")
@@ -122,10 +124,9 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                   preMirrorSplit = true
 
             if today != cleanDate:
-              var lastCleanDate: string
               if idx != 0:
                 lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format("dddd, d MMMM YYYY")
-              if lastCleanDate != "" and lastCleanDate != cleanDate:
+              if idx == 0 or (lastCleanDate != "" and lastCleanDate != cleanDate):
                 tdiv(class = "listen-date"):
                   p:
                     text cleanDate
