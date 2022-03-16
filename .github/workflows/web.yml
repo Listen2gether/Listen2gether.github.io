@@ -24,8 +24,8 @@ jobs:
           path: nim
           version: devel
 
-      - name: Setup Dart Sass and UglifyJS
-        run: npm install -g sass uglify-js
+      - name: Setup Dart Sass, UglifyJS, html-minifer
+        run: npm install -g sass uglify-js html-minifier
 
       - name: Install dependencies
         run: nimble install -d:js -y --depsOnly
@@ -38,6 +38,9 @@ jobs:
 
       - name: Minify JS
         run: uglifyjs public/js/client.js -c -o public/js/client.js
+
+      - name: Minify HTML
+        run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html && html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/mirror/index.html -o public/mirror/index.html
 
       # - name: Commit web build
       #   uses: EndBug/add-and-commit@v4  # Commit everything to Git repo
