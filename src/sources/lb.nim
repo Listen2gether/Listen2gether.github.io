@@ -135,13 +135,11 @@ proc updateUser*(
 
 proc pageUser*(
   lb: AsyncListenBrainz,
-  user: User): Future[User] {.async.} =
+  user: var User) {.async.} =
   ## Backfills user's recent tracks
   let maxTs = get user.listenHistory[^1].listenedAt
-  var updatedUser = user
   let newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror = true, maxTs = maxTs)
-  updatedUser.listenHistory = user.listenHistory & newTracks
-  return updatedUser
+  user.listenHistory = user.listenHistory & newTracks
 
 # index history by listenedAt
 # on init: get now playing and history set tracks as premirror
