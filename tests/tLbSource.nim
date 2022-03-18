@@ -36,9 +36,21 @@ suite "ListenBrainz source":
 
     test "Convert none `Option[string]` to `Option[cstring]`":
       let
-        stringSeq: Option[string] = none string
-        cstringSeq: Option[cstring] = none cstring
-      check to(stringSeq) == cstringSeq
+        str: Option[string] = none string
+        cstr: Option[cstring] = none cstring
+      check to(str) == cstr
+
+    test "Convert some `Option[cstring]` to `Option[string]`":
+      let
+        cstr: Option[cstring] = some cstring "test!"
+        str: Option[string] = some "test!"
+      check to(cstr) == str
+
+    test "Convert none `Option[cstring]` to `Option[string]`":
+      let
+        cstr: Option[cstring] = none cstring
+        str: Option[string] = none string
+      check to(cstr) == str
 
     test "Convert `Track` to `APIListen` (Simple)":
       let
@@ -48,7 +60,9 @@ suite "ListenBrainz source":
         track = newTrack(cstring trackName, cstring artistName, listenedAt = listenedAt)
         apiListen = newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))
         newAPIListen = to track
-      check newAPIListen.listenedAt == apiListen.listenedAt and newAPIListen.trackMetadata.trackName == apiListen.trackMetadata.trackName and newAPIListen.trackMetadata.artistName == apiListen.trackMetadata.artistName
+      check newAPIListen.listenedAt == apiListen.listenedAt
+      check newAPIListen.trackMetadata.trackName == apiListen.trackMetadata.trackName
+      check newAPIListen.trackMetadata.artistName == apiListen.trackMetadata.artistName
 
     test "Convert `seq[Track]` to `seq[APIListen]` (Simple)":
       let
@@ -58,7 +72,28 @@ suite "ListenBrainz source":
         tracks = @[newTrack(cstring trackName, cstring artistName, listenedAt = listenedAt)]
         apiListens = @[newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))]
         newAPIListens = to tracks
-      check newAPIListens[0].listenedAt == apiListens[0].listenedAt and newAPIListens[0].trackMetadata.trackName == apiListens[0].trackMetadata.trackName and newAPIListens[0].trackMetadata.artistName == apiListens[0].trackMetadata.artistName
+      check newAPIListens[0].listenedAt == apiListens[0].listenedAt
+      check newAPIListens[0].trackMetadata.trackName == apiListens[0].trackMetadata.trackName
+      check newAPIListens[0].trackMetadata.artistName == apiListens[0].trackMetadata.artistName
+
+    test "Convert `Track` to `APIListen` to `Track`":
+      let
+        trackName = "track"
+        artistName = "artist"
+        listenedAt = some 1
+        track = newTrack(cstring trackName, cstring artistName, listenedAt = listenedAt)
+        apiListen = to track
+        newTrack = to apiListen
+      check newTrack.trackName == track.trackName
+      check newTrack.artistName == track.artistName
+      check newTrack.releaseName == track.releaseName
+      check newTrack.recordingMbid == track.recordingMbid
+      check newTrack.releaseMbid == track.releaseMbid
+      check newTrack.artistMbids == track.artistMbids
+      check newTrack.trackNumber == track.trackNumber
+      check newTrack.listenedAt == track.listenedAt
+      check newTrack.mirrored == track.mirrored
+      check newTrack.preMirror == track.preMirror
 
     test "Convert `APIListen` to `Track` (Simple)":
       let
@@ -68,14 +103,38 @@ suite "ListenBrainz source":
         preMirror = some true
         track = newTrack(cstring trackName, cstring artistName, preMirror = preMirror)
         newTrack = to(apiListen, preMirror)
-      check newTrack.trackName == track.trackName and newTrack.artistName == track.artistName and newTrack.preMirror == track.preMirror
+      check newTrack.trackName == track.trackName
+      check newTrack.artistName == track.artistName
+      check newTrack.preMirror == track.preMirror
 
     test "Convert `seq[APIListen]` to `seq[Track]` (Simple)":
       let
         apiListens = @[newAPIListen(trackMetadata = newTrackMetadata("track", "artist")), newAPIListen(trackMetadata = newTrackMetadata("track1", "artist1"))]
-        tracks = @[newTrack(cstring "track", cstring "artist", mirrored = some false), newTrack(cstring "track1", cstring "artist1", mirrored = some false)]
+        tracks = @[newTrack(cstring "track", cstring "artist"), newTrack(cstring "track1", cstring "artist1")]
         newTracks = to(apiListens)
       check newTracks == tracks
+
+    test "Convert `APIListen` to `Track` to `APIListen`":
+      let
+        trackName = "track"
+        artistName = "artist"
+        apiListen = newAPIListen(trackMetadata = newTrackMetadata(trackName, artistName))
+        preMirror = some true
+        track = to(apiListen, preMirror)
+        newAPIListen = to track
+      check newAPIListen.listenedAt == apiListen.listenedAt
+      check  newAPIListen.insertedAt == apiListen.insertedAt
+      check newAPIListen.userName == apiListen.userName
+      check newAPIListen.listenedAtIso == apiListen.listenedAtIso
+      check newAPIListen.recordingMsid == apiListen.recordingMsid
+      check newAPIListen.playingNow == apiListen.playingNow
+      check newAPIListen.trackMetadata.trackName == apiListen.trackMetadata.trackName
+      check newAPIListen.trackMetadata.artistName == apiListen.trackMetadata.artistName
+      check newAPIListen.trackMetadata.releaseName == apiListen.trackMetadata.releaseName
+      check get(newAPIListen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid == get(apiListen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid
+      check get(newAPIListen.trackMetadata.additionalInfo, AdditionalInfo()).releaseMbid == get(apiListen.trackMetadata.additionalInfo, AdditionalInfo()).releaseMbid
+      check get(newAPIListen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids == get(apiListen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids
+      check get(newAPIListen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber == get(apiListen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber
 
   suite "API tools":
     setup:
@@ -103,3 +162,8 @@ suite "ListenBrainz source":
     #   var endInt = 10
     #   discard lb.pageUser(user, endInt, inc)
     #   check endInt == 20
+
+    # test "Submit mirror queue":
+    #   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
+    #   user.listenHistory = @[newTrack("track 1", "artist", preMirror = some false, mirrored = some false)]
+    #   discard lb.submitMirrorQueue(user)
