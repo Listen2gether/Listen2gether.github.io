@@ -2,7 +2,6 @@ import
   pkg/karax/[karax, karaxdsl, vdom, kdom],
   std/[strutils, uri, sequtils, tables],
   ../types,
-  pkg/listenbrainz,
   home, mirror, share
 
 proc home: Vnode =
