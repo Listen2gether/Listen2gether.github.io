@@ -44,11 +44,21 @@ suite "ListenBrainz source":
       let
         trackName = "track"
         artistName = "artist"
-        track = newTrack(cstring trackName, cstring artistName)
         listenedAt = some 1
+        track = newTrack(cstring trackName, cstring artistName, listenedAt = listenedAt)
         apiListen = newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))
-        newAPIListen = to(track, listenedAt)
+        newAPIListen = to track
       check newAPIListen.listenedAt == apiListen.listenedAt and newAPIListen.trackMetadata.trackName == apiListen.trackMetadata.trackName and newAPIListen.trackMetadata.artistName == apiListen.trackMetadata.artistName
+
+    test "Convert `seq[Track]` to `seq[APIListen]` (Simple)":
+      let
+        trackName = "track"
+        artistName = "artist"
+        listenedAt = some 1
+        tracks = @[newTrack(cstring trackName, cstring artistName, listenedAt = listenedAt)]
+        apiListens = @[newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))]
+        newAPIListens = to tracks
+      check newAPIListens[0].listenedAt == apiListens[0].listenedAt and newAPIListens[0].trackMetadata.trackName == apiListens[0].trackMetadata.trackName and newAPIListens[0].trackMetadata.artistName == apiListens[0].trackMetadata.artistName
 
     test "Convert `APIListen` to `Track` (Simple)":
       let

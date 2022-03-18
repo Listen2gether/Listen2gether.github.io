@@ -42,9 +42,7 @@ proc to*(val: Option[string]): Option[cstring] =
   else:
     result = none cstring
 
-proc to*(
-  track: Track,
-  listenedAt: Option[int]): APIListen =
+proc to*(track: Track): APIListen =
   ## Convert a `Track` object to a `Listen` object
   let
     additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
@@ -56,8 +54,13 @@ proc to*(
                                   artistName: $track.artistName,
                                   releaseName: some $track.releaseName,
                                   additionalInfo: some additionalInfo)
-  result = APIListen(listenedAt: listenedAt,
+  result = APIListen(listenedAt: track.listenedAt,
                      trackMetadata: trackMetadata)
+
+proc to*(tracks: seq[Track]): seq[APIListen] =
+  ## Convert a sequence of `Track` objects to a sequence of `APIListen` objects
+  for track in tracks:
+    result.add to track
 
 proc to*(
   listen: APIListen,
@@ -146,8 +149,6 @@ proc pageUser*(
   user.listenHistory = user.listenHistory & newTracks
   endInd += inc
 
-# index history by listenedAt
-# on init: get now playing and history set tracks as premirror
-# on update: get listens, add to history if greater than lastUpdateTs, set as mirrored only when submitted succesfully
-
-# def submitMirrorQueue*
+# proc submitMirrorQueue*(
+#   lb: AsyncListenBrainz,
+#   user: var User) {.async.} =
