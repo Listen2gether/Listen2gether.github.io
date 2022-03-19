@@ -102,17 +102,26 @@ proc to*(
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
+func `==`*(a, b: Track): bool =
+  ## does not include `mirrored` or `preMirror`
+  return a.trackName == b.trackName and
+    a.artistName == b.artistName and
+    a.releaseName == b.releaseName and
+    a.artistMbids == b.artistMbids and
+    a.trackNumber == b.trackNumber
+
 proc getNowPlaying*(
   lb: AsyncListenBrainz,
-  username: cstring): Future[Option[Track]] {.async.} =
+  username: cstring,
+  preMirror: bool = true): Future[Option[Track]] {.async.} =
   ## Return a ListenBrainz user's now playing
   let
     nowPlaying = await lb.getUserPlayingNow($username)
     payload = nowPlaying.payload
   if payload.count == 1:
-    result = some(to(payload.listens[0]))
+    result = some to(payload.listens[0], preMirror = some preMirror)
   else:
-    result = none(Track)
+    result = none Track
 
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
@@ -122,7 +131,7 @@ proc getRecentTracks*(
   count: int = 100): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
   let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
-  result = to(userListens.payload.listens, some preMirror)
+  result = to(userListens.payload.listens, some preMirror, mirrored = some false)
 
 proc initUser*(
   lb: AsyncListenBrainz,
@@ -140,11 +149,15 @@ proc initUser*(
 proc updateUser*(
   lb: AsyncListenBrainz,
   user: User,
-  preMirror = true): Future[User] {.async.} =
+  resetLastUpdate,
+  preMirror = false): Future[User] {.async.} =
   ## Updates user's now playing, recent tracks, and latest listen timestamp
   var updatedUser = user
-  updatedUser.lastUpdateTs = int toUnix getTime()
-  updatedUser.playingNow = await lb.getNowPlaying(user.services[listenBrainzService].username)
+  if resetLastUpdate or user.listenHistory.len > 0:
+    updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
+  else:
+    updatedUser.lastUpdateTs = int toUnix getTime()
+  updatedUser.playingNow = await lb.getNowPlaying(user.services[listenBrainzService].username, preMirror = false)
   let newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror, minTs = user.lastUpdateTs)
   updatedUser.listenHistory = newTracks & user.listenHistory
   return updatedUser
@@ -164,13 +177,21 @@ proc pageUser*(
 proc submitMirrorQueue*(
   lb: AsyncListenBrainz,
   user: var User) {.async.} =
-  ## Submits user's listens that are not mirrored or preMirror
-  let
-    listens = to(user.listenHistory, toMirror = true)
-    payload = newSubmitListens(listenType = ListenType.single, listens)
-    resp = await lb.submitListens(payload)
+  ## Submits user's now playing and listen history that are not mirrored or preMirror
+  if isSome user.playingNow:
+    let
+      listen = to get user.playingNow
+      playingNow = newSubmitListens(listenType = ListenType.playingNow, @[listen])
+    discard lb.submitListens(playingNow)
 
-  let mirroredTracks = to(listens, preMirror = some false, mirrored = some false)
-  for idx, track in user.listenHistory[0..^1]:
-    if track in mirroredTracks:
-      user.listenHistory[idx].mirrored = some true
+  let listens = to(user.listenHistory, toMirror = true)
+  if listens.len > 0:
+    try:
+      let payload = newSubmitListens(listenType = ListenType.import, listens)
+      discard lb.submitListens(payload)
+      let mirroredTracks = to listens
+      for idx, track in user.listenHistory[0..^1]:
+        if track in mirroredTracks:
+          user.listenHistory[idx].mirrored = some true
+    except:
+      echo "ERROR: There was a problem submitting your listens!"
