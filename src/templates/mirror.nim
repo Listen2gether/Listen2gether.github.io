@@ -21,18 +21,23 @@ proc setTimeoutAsync(ms: int): Future[void] =
     discard setTimeout(res, ms)
   return promise
 
-proc timeToUpdate(lastUpdateTs: int, ms: int = 30000): bool =
+proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## Returns true if it is time to update the user again.
   let nextUpdateTs = lastUpdateTs + (ms div 1000)
   if int(toUnix getTime()) >= nextUpdateTs: return true
 
-proc longPoll(service: Service, ms: int = 30000) {.async.} =
-  ## Updates the mirrorUser every 30 seconds and stores to the database
+proc longPoll(service: Service, ms: int = 60000) {.async.} =
+  ## Updates the mirrorUser every 60 seconds and stores to the database
   await setTimeoutAsync(ms)
   if timeToUpdate(mirrorUser.lastUpdateTs, ms):
+    echo "Updating and submitting..."
     case service:
     of Service.listenBrainzService:
       mirrorUser = await lbClient.updateUser(mirrorUser)
+      try:
+        discard lbClient.submitMirrorQueue(mirrorUser)
+      except HttpRequestError:
+        echo "ERROR: There was a problem submitting your listens!"
     of Service.lastFmService:
       mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
@@ -44,13 +49,12 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   let userId = cstring($service & ":" & $username)
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
-    if timeToUpdate(mirrorUser.lastUpdateTs):
-      case service:
-      of Service.listenBrainzService:
-        mirrorUser = await lbClient.updateUser(mirrorUser)
-      of Service.lastFmService:
-        mirrorUser = nil
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+    case service:
+    of Service.listenBrainzService:
+      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true)
+    of Service.lastFmService:
+      mirrorUser = nil
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
     redraw()
   else:
@@ -122,7 +126,11 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                 if idx == 0:
                   preMirrorSplit = true
                 else:
-                  hr()
+                  tdiv(class = "mirror-bar"):
+                    hr()
+                    p:
+                      text "Mirroring..."
+                    hr()
                   preMirrorSplit = true
 
             if today != cleanDate:
