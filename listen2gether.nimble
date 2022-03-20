@@ -21,7 +21,6 @@ requires "karax"
 
 task sass, "Generate css":
   exec "mkdir -p public/css"
-  exec "sass --style=compressed --no-source-map ~/.nimble/pkgs/simple_matrix_client-0.1.0/simple_matrix_client/sass/index.sass public/css/simple_matrix_chat.css"
   exec "sass --style=compressed --no-source-map src/templates/sass/index.sass public/css/style.css"
 
 task buildjs, "compile templates":
