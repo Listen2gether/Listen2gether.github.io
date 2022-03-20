@@ -13,6 +13,7 @@ requires "nim >= 1.7.1"
 requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 # requires "https://gitlab.com/tandy1000/lastfm-nim#head"
+requires "https://github.com/tandy-1000/simple-matrix-client == 0.1.0"
 when defined(c):
   requires "prologue"
 requires "jsony"
@@ -20,6 +21,7 @@ requires "karax"
 
 task sass, "Generate css":
   exec "mkdir -p public/css"
+  exec "sass --style=compressed --no-source-map ~/.nimble/pkgs/simple_matrix_client-0.1.0/simple_matrix_client/sass/index.sass public/css/simple_matrix_chat.css"
   exec "sass --style=compressed --no-source-map src/templates/sass/index.sass public/css/style.css"
 
 task buildjs, "compile templates":
