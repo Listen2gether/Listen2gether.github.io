@@ -1,6 +1,7 @@
 import
   std/[dom, times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom],
+  pkg/simple_matrix_client/client,
   pkg/listenbrainz,
   ../sources/[lb],
   ../types, home, share
@@ -166,7 +167,7 @@ proc mirrorError*(message: string): Vnode =
         errorMessage("Uh Oh!")
         errorMessage(message)
 
-proc mainSection*(service: Service): Vnode =
+proc mirror*(service: Service): Vnode =
   var username, userUrl: cstring
   mirrorUserService = service
 
@@ -182,15 +183,17 @@ proc mainSection*(service: Service): Vnode =
       # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
-    tdiv:
+    main:
       case mirrorMirrorView:
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
         discard longPoll(service)
-        tdiv(id = "mirror"):
-          p:
-            text "You are mirroring "
-            a(href = userUrl):
-              text $username & "!"
-        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
+        matrixClient(renderChatList = false, renderChatInfo = false)
+        tdiv(id = "mirror-container"):
+          tdiv(id = "mirror"):
+            p:
+              text "You are mirroring "
+              a(href = userUrl):
+                text $username & "!"
+          renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)

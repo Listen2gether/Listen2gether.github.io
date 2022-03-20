@@ -1,6 +1,6 @@
 import
-  pkg/karax/[karax, karaxdsl, vdom, kdom],
   std/[strutils, uri, sequtils, tables],
+  pkg/karax/[karax, karaxdsl, vdom, kdom],
   ../types,
   home, mirror, share
 
@@ -9,12 +9,6 @@ proc home: Vnode =
   result = buildHtml:
     main:
       mainSection()
-
-proc mirror(service: Service): Vnode =
-  ## Generates main section for Mirror page.
-  result = buildHtml:
-    main:
-      mainSection(service)
 
 proc createDom(): VNode =
   var
