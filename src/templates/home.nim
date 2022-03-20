@@ -167,7 +167,8 @@ proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vn
         text "🔙"
         proc onclick(ev: kdom.Event; n: VNode) =
           serviceView = ServiceView.none
-          signinView = SigninView.returningUser
+          if storedClientUsers.len > 0:
+            signinView = SigninView.returningUser
 
 
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
