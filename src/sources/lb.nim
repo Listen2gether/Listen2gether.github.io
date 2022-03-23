@@ -115,13 +115,16 @@ proc getNowPlaying*(
   username: cstring,
   preMirror: bool = true): Future[Option[Track]] {.async.} =
   ## Return a ListenBrainz user's now playing
-  let
-    nowPlaying = await lb.getUserPlayingNow($username)
-    payload = nowPlaying.payload
-  if payload.count == 1:
-    result = some to(payload.listens[0], preMirror = some preMirror)
-  else:
-    result = none Track
+  try:
+    let
+      nowPlaying = await lb.getUserPlayingNow($username)
+      payload = nowPlaying.payload
+    if payload.count == 1:
+      result = some to(payload.listens[0], preMirror = some preMirror)
+    else:
+      result = none Track
+  except HttpRequestError:
+    echo "Error: There was a problem getting " & $username & "'s now playing!"
 
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
@@ -130,8 +133,11 @@ proc getRecentTracks*(
   maxTs, minTs: int = 0,
   count: int = 100): Future[seq[Track]] {.async.} =
   ## Return a ListenBrainz user's listen history
-  let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
-  result = to(userListens.payload.listens, some preMirror, mirrored = some false)
+  try:
+    let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
+    result = to(userListens.payload.listens, some preMirror, mirrored = some false)
+  except HttpRequestError:
+    echo "ERROR: There was a problem getting " & $username & "'s listens!"
 
 proc initUser*(
   lb: AsyncListenBrainz,
@@ -149,8 +155,7 @@ proc initUser*(
 proc updateUser*(
   lb: AsyncListenBrainz,
   user: User,
-  resetLastUpdate,
-  preMirror = false): Future[User] {.async.} =
+  resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates user's now playing, recent tracks, and latest listen timestamp
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
@@ -182,7 +187,10 @@ proc submitMirrorQueue*(
     let
       listen = to get user.playingNow
       playingNow = newSubmitListens(listenType = ListenType.playingNow, @[listen])
-    discard lb.submitListens(playingNow)
+    try:
+      discard lb.submitListens(playingNow)
+    except HttpRequestError:
+      echo "ERROR: There was a problem submitting your now playing!"
 
   let listens = to(user.listenHistory, toMirror = true)
   if listens.len > 0:
@@ -193,5 +201,5 @@ proc submitMirrorQueue*(
       for idx, track in user.listenHistory[0..^1]:
         if track in mirroredTracks:
           user.listenHistory[idx].mirrored = some true
-    except:
+    except HttpRequestError:
       echo "ERROR: There was a problem submitting your listens!"
