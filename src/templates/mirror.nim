@@ -170,7 +170,7 @@ proc mirrorError*(message: string): Vnode =
         errorMessage("Uh Oh!")
         errorMessage(message)
 
-proc mainSection*(service: Service): Vnode =
+proc mirror*(service: Service): Vnode =
   var username, userUrl: cstring
   mirrorUserService = service
 
@@ -186,7 +186,7 @@ proc mainSection*(service: Service): Vnode =
       # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
-    tdiv:
+    main:
       case mirrorMirrorView:
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
