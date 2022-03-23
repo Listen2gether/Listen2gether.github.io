@@ -24,12 +24,16 @@ proc initialLoad =
         if mirrorUser.isNil and globalView != ClientView.errorView:
           globalView = ClientView.loadingView
           discard getMirrorUser(username, service)
+        elif globalView == ClientView.errorView:
+          echo "Error!"
+        else:
+          globalView = ClientView.mirrorView
       except ValueError:
         mirrorErrorMessage = "Invalid service!"
         globalView = ClientView.errorView
 
 proc createDom(): VNode =
-  if username.isNil:
+  if username.isNil or globalView == ClientView.homeView:
     initialLoad()
 
   result = buildHtml(tdiv):
