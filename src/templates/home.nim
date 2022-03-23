@@ -10,7 +10,7 @@ type
   ServiceView* = enum
     none, listenBrainzService, lastFmService
   SigninView* = enum
-    loadingUsers, returningUser, newUser
+    loadingUsers, returningUser, newUser, loadingRoom
 
 var
   homeServiceView: ServiceView = ServiceView.none
@@ -75,6 +75,7 @@ proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   var username = getElementById("username-input").value
   let serviceSwitch = getElementById("service_switch").checked
+  homeSigninView = SigninView.loadingRoom
 
   ## client user nil error
   if clientUser.isNil:
@@ -286,6 +287,8 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
         returnModal(signinView, mirror)
       of SigninView.newUser:
         loginModal(serviceView, signinView, mirror)
+      of SigninView.loadingRoom:
+        loadingModal(cstring "Loading room...")
 
 proc descriptionCol: Vnode =
   result = buildHtml:
