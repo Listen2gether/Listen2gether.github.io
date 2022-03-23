@@ -193,7 +193,6 @@ proc mainSection*(service: Service): Vnode =
       of MirrorView.mirroring:
         if not polling:
           discard longPoll(service)
-        matrixClient(renderChatList = false, renderChatInfo = false)
         tdiv(id = "mirror-container"):
           tdiv(id = "mirror"):
             p:
