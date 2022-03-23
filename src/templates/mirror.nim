@@ -15,6 +15,7 @@ var
   mirrorServiceView = ServiceView.none
   mirrorUserService: Service
   listenEndInd: int = 10
+  polling: bool = false
 
 proc setTimeoutAsync(ms: int): Future[void] =
   let promise = newPromise() do (res: proc(): void):
@@ -23,21 +24,22 @@ proc setTimeoutAsync(ms: int): Future[void] =
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## Returns true if it is time to update the user again.
-  let nextUpdateTs = lastUpdateTs + (ms div 1000)
-  if int(toUnix getTime()) >= nextUpdateTs: return true
+  let
+    currentTs = int(toUnix getTime())
+    nextUpdateTs = lastUpdateTs + (ms div 1000)
+  if currentTs >= nextUpdateTs: return true
 
 proc longPoll(service: Service, ms: int = 60000) {.async.} =
   ## Updates the mirrorUser every 60 seconds and stores to the database
+  if not polling:
+    polling = true
   await setTimeoutAsync(ms)
   if timeToUpdate(mirrorUser.lastUpdateTs, ms):
     echo "Updating and submitting..."
     case service:
     of Service.listenBrainzService:
       mirrorUser = await lbClient.updateUser(mirrorUser)
-      try:
-        discard lbClient.submitMirrorQueue(mirrorUser)
-      except HttpRequestError:
-        echo "ERROR: There was a problem submitting your listens!"
+      discard lbClient.submitMirrorQueue(mirrorUser)
     of Service.lastFmService:
       mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
@@ -56,6 +58,7 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
+    globalView = ClientView.mirrorView
     redraw()
   else:
     try:
@@ -66,6 +69,7 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
         mirrorUser = nil
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
       mirrorMirrorView = MirrorView.login
+      globalView = ClientView.mirrorView
       redraw()
     except HttpRequestError:
       mirrorErrorMessage = "The requested user is not valid!"
@@ -187,10 +191,13 @@ proc mainSection*(service: Service): Vnode =
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
-        discard longPoll(service)
-        tdiv(id = "mirror"):
-          p:
-            text "You are mirroring "
-            a(href = userUrl):
-              text $username & "!"
-        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
+        if not polling:
+          discard longPoll(service)
+        matrixClient(renderChatList = false, renderChatInfo = false)
+        tdiv(id = "mirror-container"):
+          tdiv(id = "mirror"):
+            p:
+              text "You are mirroring "
+              a(href = userUrl):
+                text $username & "!"
+          renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
