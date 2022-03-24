@@ -34,6 +34,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
   lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken($token)
   if res.valid:
+    clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     if store:
       clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
@@ -136,12 +137,12 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirro
                 let
                   userId = n.id
                   service = parseEnum[Service]($n.getAttr("title"))
-                if currentUser.isNil:
+                if currentUser == storedUsers[userId]:
+                  currentUser = nil
+                else:
                   currentUser = storedUsers[userId]
                   if not mirror:
                     discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
-                else:
-                  currentUser = nil
 
 proc mirrorUserModal: Vnode =
   result = buildHtml:
