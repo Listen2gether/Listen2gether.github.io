@@ -1,6 +1,6 @@
 import
   std/[asyncjs, jsffi, tables],
-  pkg/karax/[karaxdsl, vdom],
+  pkg/karax/[karax, karaxdsl, vdom, kdom],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   ../types
@@ -53,6 +53,14 @@ proc loadingModal*(message: cstring): Vnode =
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
 
+proc darkModeToggle: Vnode =
+  result = buildHtml:
+    label(class = "switch"):
+      input(`type` = "checkbox", id = "dark-mode-switch"):
+        proc onclick(ev: kdom.Event; n: VNode) =
+          document.body.classList.toggle("dark-mode")
+      span(id = "dark-mode-slider", class = "slider")
+
 proc footerSection*(): Vnode =
   ## Produces footer section to be used on all pages.
   result = buildHtml(footer):
@@ -60,3 +68,4 @@ proc footerSection*(): Vnode =
       img(src = "/assets/agpl.svg", id = "agpl", class = "icon", alt = "GNU AGPL icon")
     a(href = "https://github.com/Listen2gether/Listen2gether.github.io"):
       img(src = "/assets/github-logo.svg", class = "icon", alt = "GitHub Repository")
+    darkModeToggle()
