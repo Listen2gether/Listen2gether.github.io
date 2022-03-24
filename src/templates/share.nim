@@ -1,6 +1,6 @@
 import
-  std/[asyncjs, jsffi, tables],
-  pkg/karax/[karax, karaxdsl, vdom, kdom],
+  std/[asyncjs, jsffi, tables, strutils],
+  pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   pkg/nodejs/jsindexeddb,
   pkg/listenbrainz,
   ../types
@@ -21,6 +21,7 @@ var
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
   clientErrorMessage*, mirrorErrorMessage*: string
+  darkMode: bool = false
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
   let objStore = await getAll(db, dbStore, dbOptions)
@@ -53,12 +54,24 @@ proc loadingModal*(message: cstring): Vnode =
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
 
+proc toChecked(checked: bool): cstring =
+  if checked:
+    return cstring "checked"
+
 proc darkModeToggle: Vnode =
+  if hasItem(cstring "dark-mode"):
+    darkMode = parseBool $getItem(cstring "dark-mode")
+    if darkMode:
+      if not document.body.classList.contains("dark-mode"):
+        document.body.classList.toggle("dark-mode")
+
   result = buildHtml:
     label(class = "switch"):
-      input(`type` = "checkbox", id = "dark-mode-switch"):
+      input(`type` = "checkbox", id = "dark-mode-switch", checked = toChecked darkMode):
         proc onclick(ev: kdom.Event; n: VNode) =
           document.body.classList.toggle("dark-mode")
+          darkMode = not darkMode
+          setItem(cstring "dark-mode", cstring $darkMode)
       span(id = "dark-mode-slider", class = "slider")
 
 proc footerSection*(): Vnode =
