@@ -175,7 +175,10 @@ proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vn
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = getElementById("listenbrainz-token").value
-    discard validateLBToken token
+    if token != "":
+      discard validateLBToken token
+    else:
+      clientErrorMessage = "Please enter a token!"
 
 proc submitButton(service: Service): Vnode =
   let buttonId = $service & "-token"
