@@ -51,10 +51,9 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
 
 proc serviceToggle: Vnode =
   result = buildHtml:
-    tdiv:
-      label(class = "switch"):
-        input(`type` = "checkbox", id = "service_switch")
-        span(class = "slider")
+    label(class = "switch"):
+      input(`type` = "checkbox", id = "service-switch")
+      span(id = "service-slider", class = "slider")
 
 proc loadMirror(service: Service, username: cstring) =
   ## Sets the window url and sends information to the mirror view.
@@ -75,7 +74,7 @@ proc validateLBUser(username: string) {.async.} =
 proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   var username = getElementById("username-input").value
-  let serviceSwitch = getElementById("service_switch").checked
+  let serviceSwitch = getElementById("service-switch").checked
 
   ## client user nil error
   if clientUser.isNil:
