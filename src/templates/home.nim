@@ -76,7 +76,6 @@ proc onMirror(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   var username = getElementById("username-input").value
   let serviceSwitch = getElementById("service_switch").checked
-  homeSigninView = SigninView.loadingRoom
 
   ## client user nil error
   if clientUser.isNil:
@@ -100,6 +99,7 @@ proc onMirror(ev: kdom.Event; n: VNode) =
       if clientUser.services[Service.listenBrainzService].username == username:
         mirrorErrorMessage = "Please enter a different user!"
       else:
+        homeSigninView = SigninView.loadingRoom
         discard validateLBUser($username)
 
 proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirror = false): Vnode =
