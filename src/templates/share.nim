@@ -80,5 +80,5 @@ proc footerSection*(): Vnode =
     a(href = "https://www.gnu.org/licenses/agpl-3.0.html"):
       img(src = "/assets/agpl.svg", id = "agpl", class = "icon", alt = "GNU AGPL icon")
     a(href = "https://github.com/Listen2gether/Listen2gether.github.io"):
-      img(src = "/assets/github-logo.svg", class = "icon", alt = "GitHub Repository")
+      img(id = "github", src = "/assets/github-logo.svg", class = "icon", alt = "GitHub Repository")
     darkModeToggle()
