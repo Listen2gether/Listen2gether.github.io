@@ -65,7 +65,6 @@
 
 #service-slider
   &:before
-    border: 0.01rem solid v.$fg
     border-radius: 50%
     background-image: url(../assets/listenbrainz-logo.svg)
     background: v.$listenbrainz
@@ -73,10 +72,10 @@
 .dark-mode
   #service-slider
     border: 0.01rem solid v.$dark-fg
-    background-image: url(../assets/listenbrainz-logo.svg)
 
     &:before
       border: 0.01rem solid v.$dark-fg
+      background-image: url(../assets/listenbrainz-logo.svg)
 
 input
   &:checked + #service-slider:before
