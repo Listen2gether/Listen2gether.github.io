@@ -47,21 +47,11 @@
 .body
   font: normal 1.2rem v.$font
 
-#demo
-  width: 35em
-  border: 0.01rem solid v.$inner-border-color
-
 .textbox
   flex-grow: 1
   justify-content: space-between
   width: 21em
   max-width: 21em
-
-// .error-message
-//   padding-top: .5rem
-
-input
-  min-width: 13em
 
 .text-input
   background: none
@@ -70,58 +60,35 @@ input
   font: normal 1.1rem v.$font
   flex-grow: 1
 
-.switch
-  position: relative
-  display: inline-block
-  width: 3.75em
-  height: 2.125em
+.text-input, #service-switch
+  min-width: 13em
 
-  input
-    opacity: 0
-    width: 0
-    height: 0
-
-.slider
-  position: absolute
-  cursor: pointer
-  top: 0
-  left: 0
-  right: 0
-  bottom: 0
-  background-color: white
-  border: 0.01rem solid v.$inner-border-color
-  border-radius: 2.125em
-  -webkit-transition: 0.4s
-  transition: 0.4s
-
+#service-slider
   &:before
-    position: absolute
-    display: block
-    content: ""
-    background-image: url(../assets/listenbrainz-logo.svg)
-    background-size: 1.25em
-    background-position: center
-    background-repeat: no-repeat
-    height: 1.625em
-    width: 1.625em
-    left: 0.2em
-    bottom: 0.2em
-    background-color: v.$listenbrainz
-    border: 0.01rem solid v.$inner-border-color
+    border: 0.01rem solid v.$fg
     border-radius: 50%
-    -webkit-transition: 0.4s
-    transition: 0.4s
+
+.dark-mode
+  #service-slider
+    border: 0.01rem solid v.$dark-fg
+
+    &:before
+      border: 0.01rem solid v.$dark-fg
+
+#service-slider
+  &:before
+    background-image: url(../assets/listenbrainz-logo.svg)
+    background: v.$listenbrainz
 
 input
-  &:focus + .slider
-    box-shadow: 0 0 0.0625em v.$fg_color
-
-  &:checked + .slider:before
+  &:checked + #service-slider:before
     background-image: url(../assets/lastfm-logo.svg)
-    background-color: v.$red
-    -webkit-transform: translateX(1.65em)
-    -ms-transform: translateX(1.65em)
-    transform: translateX(1.65em)
+    background: v.$red
+
+.dark-mode
+  input
+    &:focus + .slider
+      box-shadow: 0 0 0.0625em v.$dark-fg
 
 #lastfm-auth > p
   padding: 1em
@@ -147,15 +114,19 @@ input
   padding: .5em
   display: flex
   align-items: center
-  border: 0.01rem solid v.$inner-border-color
+  border: 0.01rem solid v.$fg
   border-radius: 50%
 
+.dark-mode
+  .service-logo-button
+    border: 0.01rem solid v.$dark-fg
+
 #listenbrainz > .service-logo-button, #listenbrainz-icon
-  background-color: v.$listenbrainz
+  background: v.$listenbrainz
 
 
 #lastfm > .service-logo-button, #lastfm-icon
-  background-color: v.$lastfm
+  background: v.$lastfm
 
 .login-button
   margin: 0.5em
@@ -165,13 +136,17 @@ input
   width: 2em
 
 .service-icon
-  border: 0.01rem solid v.$inner-border-color
+  border: 0.01rem solid v.$fg
   border-radius: 50%
   height: 1.625em
   width: 1.625em
   margin-right: .5em
   display: flex
   align-items: center
+
+.dark-mode
+  .service-icon
+    border: 0.01rem solid v.$dark-fg
 
 #button-modal
   display: flex
@@ -187,7 +162,7 @@ input
   width: fit-content
 
 #mirror-button:hover
-  background-color: v.$red
+  background: v.$red
 
 #link
   text-decoration: underline
@@ -199,4 +174,8 @@ input
   padding: .125em
 
 .selected
-  background-color: v.$accent_color
+  background: v.$accent
+
+.dark-mode
+  .selected
+    background: v.$dark-accent
