@@ -82,10 +82,13 @@ input
     background-image: url(../assets/lastfm-logo.svg)
     background: v.$red
 
+  &:focus + .slider
+    box-shadow: 0 0 0.0625em v.$dark-fg
+
 .dark-mode
   input
-    &:focus + .slider
-      box-shadow: 0 0 0.0625em v.$dark-fg
+    &:checked + #service-slider:before
+      background-image: url(../assets/lastfm-logo.svg)
 
 #lastfm-auth > p
   padding: 1em
