@@ -216,6 +216,7 @@ footer
     transition: 0.4s
     -webkit-transition: 0.4s
     border: 0.01rem solid v.$fg
+    border-radius: 50%
 
 .dark-mode
   .slider
@@ -233,10 +234,19 @@ input
     -webkit-transform: translateX(1.65em)
     -ms-transform: translateX(1.65em)
 
-  &:checked + #dark-mode-slider:before
-    background-image: url(../assets/moon.svg)
-    filter: invert(100%)
-
 #dark-mode-slider
   &:before
+    border: none
+    background: #ffdd4f
+    background-size: 1.25em
+    background-position: center
+    background-repeat: no-repeat
     background-image: url(../assets/sun.svg)
+
+input
+  &:checked + #dark-mode-slider:before
+    background-size: 1.25em
+    background-position: center
+    background-repeat: no-repeat
+    background-image: url(../assets/moon.svg)
+    filter: invert(100%)
