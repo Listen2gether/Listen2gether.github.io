@@ -15,13 +15,6 @@ html, body
 *, ::after, ::before
   box-sizing: border-box
 
-::placeholder
-  color: v.$placeholder
-
-.dark-mode
-  ::placeholder
-    color: v.$dark-placeholder
-
 #ROOT
   display: flex
   flex-direction: column
@@ -42,6 +35,27 @@ header
     border: 0.01rem solid v.$dark-border
     border-bottom: none
     color: v.$dark-fg
+
+a
+  :link
+    color: v.$link
+
+  :visited
+    color: v.$link-visited
+
+  :hover
+    color: v.$link-hover
+
+.dark-mode
+  a
+    :link
+      color: v.$dark-link
+
+    :visited
+      color: v.$dark-link-visited
+
+    :hover
+      color: v.$dark-link-hover
 
 .header
   color: v.$fg
@@ -96,6 +110,13 @@ main
 
 p
   margin: 0
+
+::placeholder
+  color: v.$placeholder
+
+.dark-mode
+  ::placeholder
+    color: v.$dark-placeholder
 
 .row
   display: flex
