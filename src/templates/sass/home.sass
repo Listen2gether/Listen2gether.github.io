@@ -66,8 +66,11 @@
 #service-slider
   &:before
     border-radius: 50%
-    background-image: url(../assets/listenbrainz-logo.svg)
     background: v.$listenbrainz
+    background-size: 1.25em
+    background-position: center
+    background-repeat: no-repeat
+    background-image: url(../assets/listenbrainz-logo.svg)
 
 .dark-mode
   #service-slider
@@ -79,8 +82,11 @@
 
 input
   &:checked + #service-slider:before
-    background-image: url(../assets/lastfm-logo.svg)
     background: v.$red
+    background-size: 1.25em
+    background-position: center
+    background-repeat: no-repeat
+    background-image: url(../assets/lastfm-logo.svg)
 
   &:focus + .slider
     box-shadow: 0 0 0.0625em v.$dark-fg
