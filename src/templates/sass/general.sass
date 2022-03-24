@@ -2,14 +2,25 @@
 
 html, body
   font: normal .9rem v.$body-font
-  color: v.$fg_color
-  background: v.$bg_color
+  color: v.$fg
+  background: v.$bg
   padding: 0
   margin: 0
   overflow-x: hidden
 
+.dark-mode
+  color: v.$dark-fg
+  background: v.$dark-bg
+
 *, ::after, ::before
   box-sizing: border-box
+
+::placeholder
+  color: v.$placeholder
+
+.dark-mode
+  ::placeholder
+    color: v.$dark-placeholder
 
 #ROOT
   display: flex
@@ -20,26 +31,42 @@ header
   padding: 2.5% 0% 1% 0%
   border: 0.01rem solid v.$border
   border-bottom: none
-  box-sizing: border-box
   font: normal 2.5rem v.$body-font
   font-weight: 600
   text-align: center
-  color: v.$fg_color
+  color: v.$fg
+
+.dark-mode
+  header
+    border: 0.01rem solid v.$dark-border
+    border-bottom: none
+    color: v.$dark-fg
 
 .header
-  color: v.$fg_color
+  color: v.$fg
   text-decoration: none
 
   &:visited
-    color: v.$fg_color
+    color: v.$fg
     text-decoration: none
 
   > span
     color: v.$red
 
+.dark-mode
+  .header
+    color: v.$dark-fg
+
+  &:visited
+    color: v.$dark-fg
+
 main
   border: 0.01rem solid v.$border
   flex: 1 0 auto
+
+.dark-mode
+  main
+    border: 0.01rem solid v.$dark-border
 
 .container
   display: flex
@@ -72,7 +99,7 @@ p
   display: flex
   align-items: center
   margin: 0.75rem
-  border: 0.01rem solid v.$fg_color
+  border: 0.01rem solid v.$fg
   box-sizing: border-box
   box-shadow: 0 0.05em 0.05em hsl(0deg 0% 0% / 0.15), 0 0.1em 0.1em hsl(0deg 0% 0% / 0.2), 0 0.2em 0.2em hsl(0deg 0% 0% / 0.15), 0 0.4em 0.4em hsl(0deg 0% 0% / 0.1)
 
@@ -84,11 +111,24 @@ p
   /* border-radius: 2rem
    padding: 0.4rem 0.5rem 0.4rem 1rem */
 
+.dark-mode
+  .row
+    border: 0.01rem solid v.$dark-fg
+
 button
-  background-color: v.$bg_color
+  background: v.$bg
+  color: v.$fg
 
 button:hover
-  background-color: v.$accent_color
+  background: v.$accent
+
+.dark-mode
+  button
+    background: v.$dark-bg
+    color: v.$dark-fg
+
+  button:hover
+    background: v.$dark-accent
 
 .error-message:empty
   display: none
@@ -108,11 +148,71 @@ footer
   padding: 1em 0
   border: 0.01rem solid v.$border
   border-top: none
-  box-sizing: border-box
+
+.dark-mode
+  footer
+    border: 0.01rem solid v.$dark-border
+    border-top: none
 
 .icon
   display: block
   height: 1rem
-
-#agpl
   margin-right: .5rem
+
+.switch
+  position: relative
+  display: inline-block
+  width: 3.75em
+  height: 2.125em
+
+  input
+    opacity: 0
+    width: 0
+    height: 0
+
+.slider
+  position: absolute
+  cursor: pointer
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  -webkit-transition: 0.4s
+  transition: 0.4s
+  border: 0.01rem solid v.$fg
+  border-radius: 2.125em
+
+  &:before
+    position: absolute
+    display: block
+    content: ""
+    background-size: 1.25em
+    background-position: center
+    background-repeat: no-repeat
+    height: 1.625em
+    width: 1.625em
+    left: 0.2em
+    bottom: 0.2em
+    -webkit-transition: 0.4s
+    transition: 0.4s
+
+.dark-mode
+  .slider
+    border: 0.01rem solid v.$dark-fg
+
+input
+  &:focus + .slider
+    box-shadow: 0 0 0.0625em v.$fg
+
+  &:checked + .slider:before
+    -webkit-transform: translateX(1.65em)
+    -ms-transform: translateX(1.65em)
+    transform: translateX(1.65em)
+
+  &:checked + #dark-mode-slider:before
+    background-image: url(../assets/moon.svg)
+    filter: invert(100%)
+
+#dark-mode-slider
+  &:before
+    background-image: url(../assets/sun.svg)
