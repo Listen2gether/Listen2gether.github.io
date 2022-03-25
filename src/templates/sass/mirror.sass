@@ -40,6 +40,20 @@
   > p
     padding-right: .5em
 
+#mirror-slider
+  &:before
+    border: none
+    background: v.$fg
+
+#mirror-switch
+  &:checked + #mirror-slider:before
+    background: v.$red
+
+.dark-mode
+  #mirror-slider
+    &:before
+      background: v.$dark-fg
+
 .listens
   display: flex
   justify-content: center

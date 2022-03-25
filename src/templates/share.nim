@@ -64,7 +64,7 @@ proc darkModeToggle: Vnode =
 
   result = buildHtml:
     label(class = "switch"):
-      input(`type` = "checkbox", id = "dark-mode-switch", checked = toChecked darkMode):
+      input(`type` = "checkbox", id = "dark-mode-switch", class = "toggle", checked = toChecked darkMode):
         proc onclick(ev: kdom.Event; n: VNode) =
           document.body.classList.toggle("dark-mode")
           darkMode = not darkMode
