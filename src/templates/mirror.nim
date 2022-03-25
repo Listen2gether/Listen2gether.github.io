@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, tables],
-  pkg/karax/[karax, karaxdsl, vdom],
+  pkg/karax/[karax, karaxdsl, vdom, kdom],
   pkg/listenbrainz,
   ../sources/[lb],
   ../types, home, share
@@ -13,8 +13,8 @@ var
   mirrorMirrorView = MirrorView.login
   mirrorSigninView = SigninView.loadingUsers
   mirrorServiceView = ServiceView.none
-  mirrorUserService: Service
   listenEndInd: int = 10
+  mirrorToggle: bool = true
   polling: bool = false
 
 proc setTimeoutAsync(ms: int): Future[void] =
@@ -38,8 +38,10 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
     echo "Updating and submitting..."
     case service:
     of Service.listenBrainzService:
-      mirrorUser = await lbClient.updateUser(mirrorUser)
-      discard lbClient.submitMirrorQueue(mirrorUser)
+      let preMirror = not mirrorToggle
+      mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
+      if mirrorToggle:
+        discard lbClient.submitMirrorQueue(mirrorUser)
     of Service.lastFmService:
       mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
@@ -51,9 +53,11 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   let userId = cstring($service & ":" & $username)
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
-    case service:
+    mirrorService = service
+    case mirrorService:
     of Service.listenBrainzService:
-      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true)
+      let preMirror = not mirrorToggle
+      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       mirrorUser = nil
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
@@ -65,6 +69,7 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       case service:
       of Service.listenBrainzService:
         mirrorUser = await lbClient.initUser(username)
+        mirrorService = service
       of Service.lastFmService:
         mirrorUser = nil
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
@@ -84,7 +89,7 @@ proc pageListens(ev: Event; n: VNode) =
 
   if d != nil and ((d.scrollHeight - d.scrollTop) == d.offsetHeight):
     if (mirrorUser.listenHistory.len - 1) <= (listenEndInd + increment):
-      case mirrorUserService:
+      case mirrorService:
       of Service.listenBrainzService:
         discard lbClient.pageUser(mirrorUser, listenEndInd)
       of Service.lastFmService:
@@ -94,6 +99,7 @@ proc pageListens(ev: Event; n: VNode) =
       listenEndInd += increment
 
 proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd: int): Vnode =
+  let dateFormat = "ddd d MMMM YYYY"
   var
     trackName, artistName: cstring
     preMirrorSplit: bool = false
@@ -117,11 +123,12 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
                   text artistName
               span:
                 text "Playing now"
+
         if listenHistory.len > 0:
           for idx, track in listenHistory[0..endInd]:
-            today = getTime().format("dddd, d MMMM YYYY")
+            today = getTime().format(dateFormat)
             listenTime = fromUnix get listenHistory[idx].listenedAt
-            cleanDate = listenTime.format("dddd, d MMMM YYYY")
+            cleanDate = listenTime.format(dateFormat)
             detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
             time = listenTime.format("HH:mm")
 
@@ -139,7 +146,7 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
 
             if today != cleanDate:
               if idx != 0:
-                lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format("dddd, d MMMM YYYY")
+                lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format(dateFormat)
               if idx == 0 or (lastCleanDate != "" and lastCleanDate != cleanDate):
                 tdiv(class = "listen-date"):
                   p:
@@ -170,19 +177,39 @@ proc mirrorError*(message: string): Vnode =
         errorMessage("Uh Oh!")
         errorMessage(message)
 
-proc mirror*(service: Service): Vnode =
+proc mirrorSwitch: Vnode =
+  result = buildHtml:
+    tdiv(id = "mirror-toggle"):
+      p:
+        text "Toggle mirroring: "
+      label(class = "switch"):
+        input(`type` = "checkbox", id = "mirror-switch", checked = toChecked(mirrorToggle)):
+          proc onclick(ev: kdom.Event; n: VNode) =
+            if mirrorUser.services[mirrorService].username == clientUser.services[clientService].username:
+              if not mirrorToggle:
+                if window.confirm("Are you sure you want to mirror your own listens?"):
+                  mirrorToggle = true
+                else:
+                  getElementById("mirror-switch").checked = mirrorToggle
+              redraw()
+            else:
+              mirrorToggle = not mirrorToggle
+        span(id = "mirror-slider", class = "slider")
+
+proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
   var username, userUrl: cstring
-  mirrorUserService = service
 
   if not mirrorUser.isNil:
     if not clientUser.isNil:
+      if clientUser.services[clientService].username == mirrorUser.services[mirrorService].username:
+        mirrorToggle = false
       mirrorMirrorView = MirrorView.mirroring
-    case service:
+    case mirrorService:
     of Service.listenBrainzService:
-      username = mirrorUser.services[Service.listenBrainzService].username
+      username = mirrorUser.services[mirrorService].username
       userUrl = cstring(lb.userBaseUrl & $username)
     of Service.lastFmService:
-      username = mirrorUser.services[Service.lastFmService].username
+      username = mirrorUser.services[mirrorService].username
       # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
@@ -192,11 +219,12 @@ proc mirror*(service: Service): Vnode =
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
         if not polling:
-          discard longPoll(service)
+          discard longPoll(mirrorUserService)
         tdiv(id = "mirror-container"):
           tdiv(id = "mirror"):
             p:
               text "You are mirroring "
               a(href = userUrl):
                 text $username & "!"
+            mirrorSwitch()
           renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
