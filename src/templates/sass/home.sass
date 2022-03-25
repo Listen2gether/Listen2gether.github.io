@@ -1,4 +1,5 @@
 @use 'include/_variables' as v
+@use 'include/_themes' as t
 
 #title-container
   flex-direction: column
@@ -21,8 +22,8 @@
 .logo
   height: 7em
 
-.dark-mode
-  #matrix-logo
+#matrix-logo
+  @include t.dark
     filter: invert(100%)
 
 #demo-container
@@ -74,6 +75,8 @@
     background-position: center
     background-repeat: no-repeat
     background-image: url(../assets/listenbrainz-logo.svg)
+    @include t.dark
+      border-color: v.$dark-fg
 
 #service-switch
   &:checked + #service-slider:before
@@ -82,13 +85,6 @@
     background-position: center
     background-repeat: no-repeat
     background-image: url(../assets/lastfm-logo.svg)
-
-.dark-mode
-  #service-slider
-    border-color: v.$dark-fg
-
-    &:before
-      border-color: v.$dark-fg
 
 #lastfm-auth > p
   padding: 1em
@@ -116,9 +112,7 @@
   align-items: center
   border: 0.01rem solid v.$fg
   border-radius: 50%
-
-.dark-mode
-  .service-logo-button
+  @include t.dark
     border-color: v.$dark-fg
 
 #listenbrainz > .service-logo-button, #listenbrainz-icon
@@ -131,8 +125,8 @@
   margin: 0.5em
   font-size: 1.2em
 
-.dark-mode
-  #return-button
+#return-button
+  @include t.dark
     filter: invert(100%)
 
 .service-logo
@@ -146,10 +140,8 @@
   margin-right: .5em
   display: flex
   align-items: center
-
-.dark-mode
-  .service-icon
-    border: 0.01rem solid v.$dark-fg
+  @include t.dark
+    border-color: v.$dark-fg
 
 #button-modal
   display: flex
@@ -178,7 +170,5 @@
 
 .selected
   background: v.$accent
-
-.dark-mode
-  .selected
+  @include t.dark
     background: v.$dark-accent

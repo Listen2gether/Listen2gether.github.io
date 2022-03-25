@@ -1,4 +1,5 @@
 @use 'include/_variables' as v
+@use 'include/_themes' as t
 
 #mirror-container
   display: flex
@@ -10,8 +11,8 @@
   width: 50%
   border-right: 0.01rem solid v.$border
 
-.dark-mode
-  #matrix-client
+#matrix-client
+  @include t.dark
     border-color: v.$dark-border
 
 .mirror-grid
@@ -48,15 +49,12 @@
   &:before
     border: none
     background: v.$fg
+    @include t.dark
+      background: v.$dark-fg
 
 #mirror-switch
   &:checked + #mirror-slider:before
     background: v.$red
-
-.dark-mode
-  #mirror-slider
-    &:before
-      background: v.$dark-fg
 
 .listens
   display: flex
