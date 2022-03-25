@@ -167,7 +167,8 @@ proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vn
   result = buildHtml:
     tdiv:
       button(id = "return", class = "row login-button"):
-        text "🔙"
+        p(id = "return-button"):
+          text "🔙"
         proc onclick(ev: kdom.Event; n: VNode) =
           serviceView = ServiceView.none
           if storedClientUsers.len > 0:
