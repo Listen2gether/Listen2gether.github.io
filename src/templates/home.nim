@@ -66,12 +66,12 @@ proc validateLBUser(username: string) {.async.} =
     mirrorUser = await lbClient.initUser(username)
     discard storeUser(db, mirrorUsersDbStore, mirrorUser)
     mirrorErrorMessage = ""
-    loadMirror(Service.listenBrainzService, username)
+    loadMirror(mirrorService, username)
   except:
     mirrorErrorMessage = "Please enter a valid user!"
   redraw()
 
-proc onMirror(ev: kdom.Event; n: VNode) =
+proc onMirrorClick(ev: kdom.Event; n: VNode) =
   ## Routes to mirror page on token enter
   var username = getElementById("username-input").value
   let serviceSwitch = getElementById("service-switch").checked
@@ -89,19 +89,20 @@ proc onMirror(ev: kdom.Event; n: VNode) =
     mirrorErrorMessage = ""
 
   if not mirrorUser.isNil and username == "":
-    username = mirrorUser.services[Service.listenBrainzService].username
+    username = mirrorUser.services[mirrorService].username
 
   if serviceSwitch:
-    mirrorErrorMessage = "Last.fm users are not supported yet.."
+    mirrorErrorMessage = "Last.fm users are not supported yet..."
   else:
     if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
-      if clientUser.services[Service.listenBrainzService].username == username:
-        mirrorErrorMessage = "Please enter a different user!"
+      if clientUser.services[mirrorService].username == username:
+        homeSigninView = SigninView.loadingRoom
+        discard validateLBUser($username)
       else:
         homeSigninView = SigninView.loadingRoom
         discard validateLBUser($username)
 
-proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirror = false): Vnode =
+proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, currentService: var Service, mirror = false): Vnode =
   var
     secret, serviceIconId: cstring
     buttonClass: string
@@ -140,6 +141,7 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, mirro
                   currentUser = nil
                 else:
                   currentUser = storedUsers[userId]
+                  currentService = service
                   if not mirror:
                     discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
 
@@ -149,16 +151,16 @@ proc mirrorUserModal: Vnode =
       if storedMirrorUsers.len > 0:
         p(id = "modal-text", class = "body"):
           text "Select a user to mirror..."
-        renderUsers(storedMirrorUsers, mirrorUser, mirror = true)
+        renderUsers(storedMirrorUsers, mirrorUser, mirrorService, mirror = true)
       else:
         p(id = "modal-text", class = "body"):
           text "Enter a username and select a service."
 
       tdiv(id = "username", class = "row textbox"):
-        input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirror)
+        input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirrorClick)
         serviceToggle()
       errorMessage mirrorErrorMessage
-      button(id = "mirror-button", class = "row login-button", onclick = onMirror):
+      button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
         text "Start mirroring!"
 
 proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vnode =
@@ -170,7 +172,6 @@ proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vn
           serviceView = ServiceView.none
           if storedClientUsers.len > 0:
             signinView = SigninView.returningUser
-
 
 proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
@@ -241,7 +242,7 @@ proc returnModal*(view: var SigninView, mirror: bool): Vnode =
           text "Not you?"
           proc onclick(ev: kdom.Event; n: VNode) =
             view = SigninView.newUser
-        renderUsers(storedClientUsers, clientUser)
+        renderUsers(storedClientUsers, clientUser, clientService)
         errorMessage(clientErrorMessage)
       if mirror:
         mirrorUserModal()
