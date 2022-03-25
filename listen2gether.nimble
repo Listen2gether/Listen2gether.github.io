@@ -19,6 +19,9 @@ when defined(c):
 requires "jsony"
 requires "karax"
 
+task docs, "generate docs!":
+  exec "nim doc --project --git.commit:develop --git.url:https://github.com/listen2gether/listen2gether.github.io --outdir:public/docs src/sources/lb.nim"
+
 task sass, "Generate css":
   exec "mkdir -p public/css"
   exec "sass --style=compressed --no-source-map src/templates/sass/index.sass public/css/style.css"
