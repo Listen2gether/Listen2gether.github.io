@@ -15,16 +15,30 @@
   grid-template-columns: 1fr 1.5fr
   height: 100%
 
+#mirror-container
+  display: flex
+  flex-direction: column
+
 #mirror
-  font-size: 1.25rem
+  font-size: 1.1rem
   text-align: center
+  display: flex
+  margin: auto
+  flex-direction: column
 
   > p
-    font-size: 1.1rem
     margin: 1em 0 .5em
 
     > a
       font-style: italic
+
+#mirror-toggle
+  display: flex
+  align-items: center
+  justify-content: center
+
+  > p
+    padding-right: .5em
 
 .listens
   display: flex
@@ -52,8 +66,8 @@ hr
 
 .listen-date
   hr
-    margin: 0 0 0 0.25em
-    width: 50%
+    margin: 0 0 0 1em
+    width: 60%
 
 .mirror-bar
   hr
