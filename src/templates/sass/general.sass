@@ -190,7 +190,7 @@ footer
   width: 3.75em
   height: 2.125em
 
-  input
+  .toggle
     opacity: 0
     width: 0
     height: 0
@@ -227,7 +227,7 @@ footer
     &:before
       border: 0.01rem solid v.$dark-fg
 
-input
+.toggle
   &:focus + .slider
     box-shadow: 0 0 0.0625em v.$fg
 
@@ -245,7 +245,7 @@ input
     background-repeat: no-repeat
     background-image: url(../assets/sun.svg)
 
-input
+#dark-mode-switch
   &:checked + #dark-mode-slider:before
     background-size: 1.25em
     background-position: center

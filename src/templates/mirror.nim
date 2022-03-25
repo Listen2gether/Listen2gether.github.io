@@ -183,7 +183,7 @@ proc mirrorSwitch: Vnode =
       p:
         text "Toggle mirroring: "
       label(class = "switch"):
-        input(`type` = "checkbox", id = "mirror-switch", checked = toChecked(mirrorToggle)):
+        input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
           proc onclick(ev: kdom.Event; n: VNode) =
             if mirrorUser.services[mirrorService].username == clientUser.services[clientService].username:
               if not mirrorToggle:

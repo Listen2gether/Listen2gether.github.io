@@ -52,7 +52,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
 proc serviceToggle: Vnode =
   result = buildHtml:
     label(class = "switch"):
-      input(`type` = "checkbox", id = "service-switch")
+      input(`type` = "checkbox", id = "service-switch", class = "toggle")
       span(id = "service-slider", class = "slider")
 
 proc loadMirror(service: Service, username: cstring) =
