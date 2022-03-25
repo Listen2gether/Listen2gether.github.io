@@ -91,7 +91,7 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
   if not mirrorUser.isNil and username == "":
     username = mirrorUser.services[mirrorService].username
 
-  if serviceSwitch:
+  if serviceSwitch and mirrorUser.isNil:
     mirrorErrorMessage = "Last.fm users are not supported yet..."
   else:
     if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
