@@ -62,9 +62,13 @@ proc setDataTheme(darkMode: bool) =
     document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "light")
 
 proc darkModeToggle: Vnode =
+  if window.matchMedia("(prefers-color-scheme: dark)").matches:
+    darkMode = true
+  else:
+    darkMode = false
   if hasItem(cstring "dark-mode"):
     darkMode = parseBool $getItem(cstring "dark-mode")
-    setDataTheme(darkMode)
+  setDataTheme(darkMode)
 
   result = buildHtml:
     label(class = "switch"):
