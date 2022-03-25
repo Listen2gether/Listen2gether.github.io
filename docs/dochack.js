@@ -1931,7 +1931,7 @@ function HEX3Aanonymous_486539991(a_486539996, b_486539997) {
     if (((db_486539926[0]).length == 0)) {
     var stuff_486539940 = null;
         var request = new XMLHttpRequest();
-    request.open("GET", "theindex.html", false);
+    request.open("GET", "index.html", false);
     request.send(null);
 
     var doc = document.implementation.createHTMLDocument("theindex");
