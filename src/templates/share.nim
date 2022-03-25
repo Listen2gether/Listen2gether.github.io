@@ -55,19 +55,23 @@ proc loadingModal*(message: cstring): Vnode =
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
 
+proc setDataTheme(darkMode: bool) =
+  if darkMode:
+    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "dark")
+  else:
+    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "light")
+
 proc darkModeToggle: Vnode =
   if hasItem(cstring "dark-mode"):
     darkMode = parseBool $getItem(cstring "dark-mode")
-    if darkMode:
-      if not document.body.classList.contains("dark-mode"):
-        document.body.classList.toggle("dark-mode")
+    setDataTheme(darkMode)
 
   result = buildHtml:
     label(class = "switch"):
       input(`type` = "checkbox", id = "dark-mode-switch", class = "toggle", checked = toChecked darkMode):
         proc onclick(ev: kdom.Event; n: VNode) =
-          document.body.classList.toggle("dark-mode")
           darkMode = not darkMode
+          setDataTheme(darkMode)
           setItem(cstring "dark-mode", cstring $darkMode)
       span(id = "dark-mode-slider", class = "slider")
 
