@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, tables],
-  pkg/karax/[karax, karaxdsl, vdom],
+  pkg/karax/[karax, karaxdsl, vdom, kdom],
   pkg/simple_matrix_client/client,
   pkg/listenbrainz,
   ../sources/[lb],
@@ -221,6 +221,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       of MirrorView.mirroring:
         if not polling:
           discard longPoll(mirrorUserService)
+        matrixClient(chatList = false, chatInfo = false)
         tdiv(id = "mirror-container"):
           tdiv(id = "mirror"):
             p:
