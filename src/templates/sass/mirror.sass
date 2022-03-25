@@ -8,7 +8,11 @@
 
 #matrix-client
   width: 50%
-  border-right: 0.01rem solid v.$border-color
+  border-right: 0.01rem solid v.$border
+
+.dark-mode
+  #matrix-client
+    border-right: 0.01rem solid v.$dark-border
 
 .mirror-grid
   display: grid
@@ -66,7 +70,7 @@ ul
   max-width: 30em
   flex-grow: 1
   overflow-y: auto
-  height: 775px
+  height: 720px
 
 hr
   margin: 1.25em 1.5em
