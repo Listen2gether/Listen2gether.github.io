@@ -57,9 +57,9 @@ proc loadingModal*(message: cstring): Vnode =
 
 proc setDataTheme(darkMode: bool) =
   if darkMode:
-    document.body.setAttribute(cstring "data-theme", cstring "dark")
+    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "dark")
   else:
-    document.body.setAttribute(cstring "data-theme", cstring "light")
+    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "light")
 
 proc darkModeToggle: Vnode =
   if hasItem(cstring "dark-mode"):
