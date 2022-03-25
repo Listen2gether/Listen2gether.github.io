@@ -19,6 +19,9 @@ when defined(c):
 requires "jsony"
 requires "karax"
 
+task docs, "generate docs!":
+  exec "nim doc --project --git.commit:develop --git.url:https://github.com/listen2gether/listen2gether.github.io --outdir:public/docs src/sources/lb.nim"
+
 task sass, "Generate css":
   exec "mkdir -p public/css"
   exec "cp -r ~/.nimble/pkgs/simple_matrix_client-0.1.0/simple_matrix_client/sass/simple_matrix_client src/templates/sass/"
