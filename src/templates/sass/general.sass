@@ -1,4 +1,5 @@
 @use 'include/_variables' as v
+@use 'include/_themes' as t
 
 html, body
   font: normal .9rem v.$body-font
@@ -7,10 +8,9 @@ html, body
   padding: 0
   margin: 0
   overflow-x: hidden
-
-.dark-mode
-  color: v.$dark-fg
-  background: v.$dark-bg
+  @include t.dark
+    color: v.$dark-fg
+    background: v.$dark-bg
 
 *, ::after, ::before
   box-sizing: border-box
@@ -28,59 +28,46 @@ header
   font-weight: 600
   text-align: center
   color: v.$fg
-
-.dark-mode
-  header
-    border: 0.01rem solid v.$dark-border
-    border-bottom: none
+  @include t.dark
+    border-color: v.$dark-border
     color: v.$dark-fg
 
 a
   &:link
     color: v.$link
+    @include t.dark
+      color: v.$dark-link
 
   &:visited
     color: v.$link-visited
+    @include t.dark
+      color: v.$dark-link-visited
 
   &:hover
     color: v.$link-hover
-
-.dark-mode
-  a
-    &:link
-      color: v.$dark-link
-
-    &:visited
-      color: v.$dark-link-visited
-
-    &:hover
+    @include t.dark
       color: v.$dark-link-hover
 
 .header
-  color: v.$fg
   text-decoration: none
+  color: v.$fg
+  @include t.dark
+    color: v.$dark-fg
 
   &:visited
-    color: v.$fg
     text-decoration: none
+    color: v.$fg
+    @include t.dark
+      color: v.$dark-fg
 
   > span
     color: v.$red
 
-.dark-mode
-  .header
-    color: v.$dark-fg
-
-    &:visited
-      color: v.$dark-fg
-
 main
   border: 0.01rem solid v.$border
   flex: 1 0 auto
-
-.dark-mode
-  main
-    border: 0.01rem solid v.$dark-border
+  @include t.dark
+    border-color: v.$dark-border
 
 .container
   display: flex
@@ -111,9 +98,7 @@ p
 
 ::placeholder
   color: v.$placeholder
-
-.dark-mode
-  ::placeholder
+  @include t.dark
     color: v.$dark-placeholder
 
 .row
@@ -132,30 +117,24 @@ p
   /* border-radius: 2rem
    padding: 0.4rem 0.5rem 0.4rem 1rem */
 
-.dark-mode
-  .row
-    border: 0.01rem solid v.$dark-fg
+  @include t.dark
+    border-color: v.$dark-fg
 
 button
   background: v.$bg
   color: v.$fg
-
-button:hover
-  background: v.$accent
-
-.dark-mode
-  button
+  @include t.dark
     background: v.$dark-bg
     color: v.$dark-fg
 
-  button:hover
+button:hover
+  background: v.$accent
+  @include t.dark
     background: v.$dark-accent
 
 input
   color: v.$fg
-
-.dark-mode
-  input
+  @include t.dark
     color: v.$dark-fg
 
 .error-message:empty
@@ -176,19 +155,16 @@ footer
   padding: 1em 0
   border: 0.01rem solid v.$border
   border-top: none
-
-.dark-mode
-  footer
-    border: 0.01rem solid v.$dark-border
-    border-top: none
+  @include t.dark
+    border-color: v.$dark-border
 
 .icon
   display: block
   height: 1rem
   margin-right: .5rem
 
-.dark-mode
-  #github
+#github
+  @include t.dark
     filter: invert(100%)
 
 .switch
@@ -213,6 +189,8 @@ footer
   -webkit-transition: 0.4s
   border: 0.01rem solid v.$fg
   border-radius: 2.125em
+  @include t.dark
+    border-color: v.$dark-fg
 
   &:before
     position: absolute
@@ -226,13 +204,8 @@ footer
     -webkit-transition: 0.4s
     border: 0.01rem solid v.$fg
     border-radius: 50%
-
-.dark-mode
-  .slider
-    border: 0.01rem solid v.$dark-fg
-
-    &:before
-      border: 0.01rem solid v.$dark-fg
+    @include t.dark
+      border-color: v.$dark-fg
 
 .toggle
   &:checked + .slider:before
