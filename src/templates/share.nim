@@ -20,6 +20,7 @@ var
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
+  clientService*, mirrorService*: Service
   clientErrorMessage*, mirrorErrorMessage*: string
   darkMode: bool = false
 
@@ -53,10 +54,6 @@ proc loadingModal*(message: cstring): Vnode =
       p(id = "body"):
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
-
-proc toChecked(checked: bool): cstring =
-  if checked:
-    return cstring "checked"
 
 proc darkModeToggle: Vnode =
   if hasItem(cstring "dark-mode"):
