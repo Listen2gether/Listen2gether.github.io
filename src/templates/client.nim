@@ -4,9 +4,7 @@ import
   ../types,
   home, mirror, share
 
-var
-  service: Service
-  username: cstring
+var mirrorUsername: cstring
 
 proc home: Vnode =
   ## Generates main section for Home page.
@@ -19,11 +17,11 @@ proc initialLoad =
     let params = toTable toSeq decodeQuery(($window.location.search).split("?")[1])
     if "username" in params and "service" in params:
       try:
-        username = cstring params["username"]
-        service = parseEnum[Service]($params["service"])
+        mirrorUsername = cstring params["username"]
+        mirrorService = parseEnum[Service]($params["service"])
         if mirrorUser.isNil and globalView != ClientView.errorView:
           globalView = ClientView.loadingView
-          discard getMirrorUser(username, service)
+          discard getMirrorUser(mirrorUsername, mirrorService)
         elif globalView == ClientView.errorView:
           echo "Error!"
         else:
@@ -33,7 +31,7 @@ proc initialLoad =
         globalView = ClientView.errorView
 
 proc createDom(): VNode =
-  if username.isNil or globalView == ClientView.homeView:
+  if mirrorUsername.isNil or globalView == ClientView.homeView:
     initialLoad()
 
   result = buildHtml(tdiv):
@@ -43,11 +41,11 @@ proc createDom(): VNode =
       home()
     of ClientView.loadingView:
       main:
-        loadingModal(cstring("Loading " & $username & "'s listens..."))
+        loadingModal(cstring("Loading " & $mirrorUsername & "'s listens..."))
     of ClientView.errorView:
       mirrorError(mirrorErrorMessage)
     of ClientView.mirrorView:
-      mirror(service)
+      mirror(clientService, mirrorService)
     footerSection()
 
 setRenderer createDom
