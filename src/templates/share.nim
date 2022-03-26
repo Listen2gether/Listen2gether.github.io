@@ -22,7 +22,7 @@ var
   clientUser*, mirrorUser*: User
   clientService*, mirrorService*: Service
   clientErrorMessage*, mirrorErrorMessage*: string
-  darkMode: bool = false
+  darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
   let objStore = await getAll(db, dbStore, dbOptions)
@@ -62,10 +62,6 @@ proc setDataTheme(darkMode: bool) =
     document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "light")
 
 proc darkModeToggle: Vnode =
-  if window.matchMedia("(prefers-color-scheme: dark)").matches:
-    darkMode = true
-  else:
-    darkMode = false
   if hasItem(cstring "dark-mode"):
     darkMode = parseBool $getItem(cstring "dark-mode")
   setDataTheme(darkMode)
