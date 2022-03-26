@@ -37,7 +37,7 @@ jobs:
         run: nimble buildjs
 
       - name: Minify JS
-        run: google-closure-compiler public/js/client.js --js_output_file public/js/client.js
+        run: google-closure-compiler --warning_level QUIET -js public/js/client.js --js_output_file public/js/client.js
 
       - name: Minify HTML
         run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html && html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/mirror/index.html -o public/mirror/index.html
