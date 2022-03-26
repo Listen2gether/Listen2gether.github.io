@@ -8,7 +8,7 @@ import
 
 type
   ServiceView* = enum
-    none, listenBrainzService, lastFmService
+    none, loading, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingRoom
 
@@ -16,13 +16,14 @@ var
   homeServiceView: ServiceView = ServiceView.none
   homeSigninView: SigninView = SigninView.loadingUsers
 
-proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
+proc getClientUsers(db: IndexedDB, signinView: var SigninView, serviceView: var ServiceView, dbStore = clientUsersDbStore) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
   storedClientUsers = await db.getUsers(dbStore)
   if storedClientUsers.len != 0:
-    view = SigninView.returningUser
+    serviceView = ServiceView.none
+    signinView = SigninView.returningUser
   else:
-    view = SigninView.newUser
+    signinView = SigninView.newUser
   redraw()
 
 proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
@@ -39,8 +40,9 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     if store:
       clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
       discard storeUser(db, clientUsersDbStore, clientUser)
-      discard db.getClientUsers(homeSigninView)
+      discard db.getClientUsers(homeSigninView, homeServiceView)
   else:
+    homeServiceView = ServiceView.listenBrainzService
     if store:
       clientErrorMessage = "Please enter a valid token!"
     else:
@@ -178,6 +180,7 @@ proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = getElementById("listenbrainz-token").value
     if token != "":
+      homeServiceView = ServiceView.loading
       discard validateLBToken token
     else:
       clientErrorMessage = "Please enter a token!"
@@ -257,6 +260,8 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
         case serviceView:
         of ServiceView.none:
           serviceModal(serviceView)
+        of ServiceView.loading:
+          loadingModal("Authenticating...")
         of ServiceView.listenBrainzService:
           errorMessage(clientErrorMessage)
           listenBrainzModal()
@@ -285,7 +290,7 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
     tdiv(id = "signin-container", class = "col"):
       case signinView:
       of SigninView.loadingUsers:
-        discard db.getClientUsers(signinView)
+        discard db.getClientUsers(signinView, serviceView)
         discard db.getMirrorUsers()
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
