@@ -9,7 +9,7 @@ var mirrorUsername: cstring
 proc home: Vnode =
   ## Generates main section for Home page.
   result = buildHtml:
-    main:
+    tdiv(id = "main"):
       mainSection()
 
 proc initialLoad =
@@ -40,7 +40,7 @@ proc createDom(): VNode =
     of ClientView.homeView:
       home()
     of ClientView.loadingView:
-      main:
+      tdiv(id = "main"):
         loadingModal(cstring("Loading " & $mirrorUsername & "'s listens..."))
     of ClientView.errorView:
       mirrorError(mirrorErrorMessage)

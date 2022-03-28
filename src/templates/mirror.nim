@@ -1,7 +1,6 @@
 import
   std/[dom, times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom],
-  pkg/simple_matrix_client/client,
   pkg/listenbrainz,
   ../sources/[lb],
   ../types, home, share
@@ -173,7 +172,7 @@ proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd
 
 proc mirrorError*(message: string): Vnode =
   result = buildHtml:
-    main:
+    tdiv(id = "main"):
       tdiv(id = "mirror-error"):
         errorMessage("Uh Oh!")
         errorMessage(message)
@@ -197,6 +196,16 @@ proc mirrorSwitch: Vnode =
               mirrorToggle = not mirrorToggle
         span(id = "mirror-slider", class = "slider")
 
+proc prepend(parent, kid: Element) =
+  parent.insertBefore(kid, parent.firstChild)
+
+proc loadModule(jsfilename: cstring; kxi: KaraxInstance = kxi) =
+  let s = document.createElement("script")
+  s.setAttr "type", "module"
+  s.setAttr "src", jsfilename
+  document.body.prepend(s)
+  redraw(kxi)
+
 proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
   var username, userUrl: cstring
 
@@ -205,6 +214,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       if clientUser.services[clientService].username == mirrorUser.services[mirrorService].username:
         mirrorToggle = false
       mirrorMirrorView = MirrorView.mirroring
+      loadModule("/src/main.js")
     case mirrorService:
     of Service.listenBrainzService:
       username = mirrorUser.services[mirrorService].username
@@ -214,14 +224,14 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       # userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
-    main:
+    tdiv(id = "main"):
       case mirrorMirrorView:
       of MirrorView.login:
         signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
       of MirrorView.mirroring:
         if not polling:
           discard longPoll(mirrorUserService)
-        matrixClient(chatList = false, chatInfo = false)
+        tdiv(id = "app", class = "hydrogen matrix-client")
         tdiv(id = "mirror-container"):
           tdiv(id = "mirror"):
             p:
