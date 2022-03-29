@@ -22,9 +22,7 @@ task docs, "generate docs!":
   exec "grep -rl theindex.html public/docs | xargs sed -i 's/theindex.html/index.html/g'"
 
 task sass, "Generate css":
-  exec "cp -r ~/.nimble/pkgs/simple_matrix_client-0.1.0/simple_matrix_client/sass/simple_matrix_client src/templates/sass/"
   exec "sass --style=compressed --no-source-map src/templates/sass/index.sass src/style.css"
-  exec "rm -rf src/templates/sass/simple_matrix_client"
 
 task buildjs, "compile templates":
   exec "nim -o:src/client.js js src/templates/client.nim"
