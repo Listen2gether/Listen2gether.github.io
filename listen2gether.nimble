@@ -5,7 +5,6 @@ author        = "tandy-1000"
 description   = "Sync your listens on Last.fm and ListenBrainz with other people "
 license       = "AGPLv3.0"
 srcDir        = "src"
-bin           = @["server"]
 
 
 # Dependencies
@@ -13,9 +12,7 @@ requires "nim >= 1.7.1"
 requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 # requires "https://gitlab.com/tandy1000/lastfm-nim#head"
-requires "https://github.com/tandy-1000/simple-matrix-client == 0.1.0"
-when defined(c):
-  requires "prologue"
+# requires "https://github.com/tandy-1000/simple-matrix-client == 0.1.0"
 requires "jsony"
 requires "karax"
 
@@ -25,11 +22,9 @@ task docs, "generate docs!":
   exec "grep -rl theindex.html public/docs | xargs sed -i 's/theindex.html/index.html/g'"
 
 task sass, "Generate css":
-  exec "mkdir -p public/css"
   exec "cp -r ~/.nimble/pkgs/simple_matrix_client-0.1.0/simple_matrix_client/sass/simple_matrix_client src/templates/sass/"
-  exec "sass --style=compressed --no-source-map src/templates/sass/index.sass public/css/style.css"
+  exec "sass --style=compressed --no-source-map src/templates/sass/index.sass src/style.css"
   exec "rm -rf src/templates/sass/simple_matrix_client"
 
 task buildjs, "compile templates":
-  exec "mkdir -p public/js"
-  exec "nim -o:public/js/client.js js src/templates/client.nim"
+  exec "nim -o:src/client.js js src/templates/client.nim"
