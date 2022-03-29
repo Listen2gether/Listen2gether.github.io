@@ -5,6 +5,7 @@ author        = "tandy-1000"
 description   = "Sync your listens on Last.fm and ListenBrainz with other people "
 license       = "AGPLv3.0"
 srcDir        = "src"
+skipFiles     = @["types.nim"]
 
 
 # Dependencies
