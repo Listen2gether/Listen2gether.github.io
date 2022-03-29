@@ -37,16 +37,16 @@ jobs:
         run: nimble buildjs
 
       - name: Minify JS
-        run: google-closure-compiler public/js/client.js --js_output_file public/js/client.js || true
-
-      - name: Minify HTML
-        run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html && html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/mirror/index.html -o public/mirror/index.html
+        run: google-closure-compiler src/client.js --js_output_file src/client.js || true
 
       - name: Generate docs
         run: nimble docs
+
+      - name: Yarn build
+        run: yarn && yarn build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages # The branch the action should deploy to.
-          folder: public # The folder the action should deploy.
+          folder: dist # The folder the action should deploy.
