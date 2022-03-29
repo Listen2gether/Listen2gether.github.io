@@ -18,7 +18,8 @@ Run the following commands:
 ```
 nimble sass
 nimble buildjs
-nim r src/server.nim
+yarn
+yarn build
 ```
 
 ### Documentation
