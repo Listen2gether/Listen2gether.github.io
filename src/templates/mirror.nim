@@ -204,7 +204,6 @@ proc loadModule(jsfilename: cstring; kxi: KaraxInstance = kxi) =
   s.setAttr "type", "module"
   s.setAttr "src", jsfilename
   document.body.prepend(s)
-  redraw(kxi)
 
 proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
   var username, userUrl: cstring
