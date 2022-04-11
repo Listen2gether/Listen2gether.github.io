@@ -163,6 +163,7 @@ suite "ListenBrainz source":
     #   discard lb.pageUser(user, endInt, inc)
     #   check endInt == 20
 
+    ## Cannot be tested outside JS backend
     # test "Submit mirror queue":
     #   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
     #   user.listenHistory = @[newTrack("track 1", "artist", preMirror = some false, mirrored = some false)]
