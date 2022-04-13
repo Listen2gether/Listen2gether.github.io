@@ -1,53 +1,19 @@
 when defined(js):
   import std/asyncjs
 else:
-  import
-    std/asyncdispatch
+  import std/asyncdispatch
 
 import
   std/[times, strutils],
   pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
+  utils,
   ../types
 
 include pkg/listenbrainz/utils/tools
 
 const userBaseUrl* = "https://listenbrainz.org/user/"
-
-proc to*(val: Option[seq[cstring]]): Option[seq[string]] =
-  ## Convert `Option[seq[cstring]]` to `Option[seq[string]]`
-  if isSome val:
-    var list: seq[string]
-    for item in val.get():
-      list.add $item
-    result = some list
-  else:
-    result = none seq[string]
-
-proc to*(val: Option[seq[string]]): Option[seq[cstring]] =
-  ## Convert `Option[seq[string]]` to `Option[seq[cstring]]`
-  if isSome val:
-    var list: seq[cstring]
-    for item in val.get():
-      list.add cstring item
-    result = some list
-  else:
-    result = none seq[cstring]
-
-proc to*(val: Option[string]): Option[cstring] =
-  ## Convert `Option[string]` to `Option[cstring]`
-  if isSome val:
-    result = some cstring get val
-  else:
-    result = none cstring
-
-proc to*(val: Option[cstring]): Option[string] =
-  ## Convert `Option[cstring]` to `Option[string]`
-  if isSome val:
-    result = some $get(val)
-  else:
-    result = none string
 
 proc to*(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
