@@ -7,16 +7,11 @@ renameHook	lb.html#renameHook,TrackExtension,string	lb: renameHook(v: var TrackE
 dumpHook	lb.html#dumpHook,string,PlaylistExtension	lb: dumpHook(s: var string; v: PlaylistExtension)	
 dumpHook	lb.html#dumpHook,string,TrackExtension	lb: dumpHook(s: var string; v: TrackExtension)	
 userBaseUrl	lb.html#userBaseUrl	lb: userBaseUrl	
-to	lb.html#to,Option[seq[cstring]]	lb: to(val: Option[seq[cstring]]): Option[seq[string]]	
-to	lb.html#to,Option[seq[string]]	lb: to(val: Option[seq[string]]): Option[seq[cstring]]	
-to	lb.html#to,Option[string]	lb: to(val: Option[string]): Option[cstring]	
-to	lb.html#to,Option[cstring]	lb: to(val: Option[cstring]): Option[string]	
 to	lb.html#to,Listen	lb: to(track: Listen): APIListen	
 to	lb.html#to,seq[Listen]	lb: to(tracks: seq[Listen]; toMirror = false): seq[APIListen]	
 to	lb.html#to,APIListen,Option[bool],Option[bool]	lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen	
 to	lb.html#to,seq[APIListen],Option[bool],Option[bool]	lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[\n    Listen]	
 to	lb.html#to,UserListens,ListenType	lb: to(userListens: UserListens; listenType: ListenType): SubmitListens	
-`==`	lb.html#==,Listen,Listen	lb: `==`(a, b: Listen): bool	
 getNowPlaying	lb.html#getNowPlaying,AsyncListenBrainz,cstring,bool	lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[\n    Option[Listen]]	
 getRecentTracks	lb.html#getRecentTracks,AsyncListenBrainz,cstring,bool,int,int,int	lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;\n                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]	
 initUser	lb.html#initUser,AsyncListenBrainz,cstring,cstring	lb: initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[\n    User]	
