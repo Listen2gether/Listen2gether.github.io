@@ -17,11 +17,11 @@ type
   User* = ref object
     userId*: cstring
     services*: array[Service, ServiceUser]
-    playingNow*: Option[Track]
-    listenHistory*: seq[Track]
+    playingNow*: Option[Listen]
+    listenHistory*: seq[Listen]
     lastUpdateTs*: int
 
-  Track* = object
+  Listen* = object
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
@@ -45,8 +45,8 @@ func newServiceUser*(
 func newUser*(
   userId: cstring = $toUnix(getTime()),
   services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
-  playingNow: Option[Track] = none(Track),
-  listenHistory: seq[Track] = @[],
+  playingNow: Option[Listen] = none(Listen),
+  listenHistory: seq[Listen] = @[],
   lastUpdateTs: int = 0): User =
   ## Create new User object
   new(result)
@@ -57,14 +57,14 @@ func newUser*(
   result.lastUpdateTs = lastUpdateTs
 
 
-func newTrack*(
+func newListen*(
   trackName, artistName: cstring,
   releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
   artistMbids: Option[seq[cstring]] = none(seq[cstring]),
   trackNumber: Option[int] = none(int),
   listenedAt: Option[int] = none(int),
-  mirrored, preMirror: Option[bool] = none(bool)): Track =
-  ## Create new Track object
+  mirrored, preMirror: Option[bool] = none(bool)): Listen =
+  ## Create new Listen object
   result.trackName = trackName
   result.artistName = artistName
   result.releaseName = releaseName

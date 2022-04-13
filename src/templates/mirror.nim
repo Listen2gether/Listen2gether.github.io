@@ -98,7 +98,7 @@ proc pageListens(ev: Event; n: VNode) =
     else:
       listenEndInd += increment
 
-proc renderListens*(playingNow: Option[Track], listenHistory: seq[Track], endInd: int): Vnode =
+proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endInd: int): Vnode =
   let dateFormat = "ddd d MMMM YYYY"
   var
     trackName, artistName: cstring

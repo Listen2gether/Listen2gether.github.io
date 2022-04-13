@@ -77,8 +77,8 @@ proc getVal(node: JsonNode, index: string): Option[string] =
   result = checkString(val)
 
 
-proc to*(fmTrack: FMTrack): Track =
-  ## Convert an `FMTrack` object to a `Track` object
+proc to*(fmTrack: FMTrack): Listen =
+  ## Convert an `FMTrack` object to a `Listen` object
   var
     date: Option[int]
     artistMbid: string
@@ -94,7 +94,7 @@ proc to*(fmTrack: FMTrack): Track =
     artistMbids = some(@[artistMbid])
   else:
     artistMbids = none(seq[string])
-  result = newTrack(trackName = get(fmTrack.name),
+  result = newListen(trackName = get(fmTrack.name),
                     artistName = get(getVal(fmTrack.artist, "#text")),
                     releaseName = getVal(fmTrack.album, "#text"),
                     recordingMbid = checkString(get(fmTrack.mbid)),
@@ -103,15 +103,15 @@ proc to*(fmTrack: FMTrack): Track =
                     listenedAt = date)
 
 
-proc to*(fmTracks: seq[FMTrack]): seq[Track] =
-  ## Convert a sequence of `FMTrack` objects to a sequence of `Track` objects
+proc to*(fmTracks: seq[FMTrack]): seq[Listen] =
+  ## Convert a sequence of `FMTrack` objects to a sequence of `Listen` objects
   for fmTrack in fmTracks:
     result.add(to(fmTrack))
 
 
-proc to*(scrobble: Scrobble): Track =
-  ## Convert an `Scrobble` object to a `Track` object
-  result = newTrack(trackName = scrobble.track,
+proc to*(scrobble: Scrobble): Listen =
+  ## Convert an `Scrobble` object to a `Listen` object
+  result = newListen(trackName = scrobble.track,
                     artistName = scrobble.artist,
                     releaseName = scrobble.album,
                     artistMbids = some(@[get(scrobble.mbid)]),
@@ -122,11 +122,11 @@ proc to*(scrobble: Scrobble): Track =
 proc getRecentTracks*(
   fm: AsyncLastFM,
   user: User,
-  limit: int = 7): Future[(Option[Track], seq[Track])] {.async.} =
+  limit: int = 7): Future[(Option[Listen], seq[Listen])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
-    playingNow: Option[Track]
-    listenHistory: seq[Track]
+    playingNow: Option[Listen]
+    listenHistory: seq[Listen]
   let
     recentTracks = await fm.userRecentTracks(user = $user.services[lastFmService].username, limit = limit)
     tracks = recentTracks["recenttracks"]["track"]

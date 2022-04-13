@@ -24,10 +24,10 @@ suite "Last.FM source":
     check objJson == fmTrackJson
 
 
-  test "jsony - FMTrack > Track":
+  test "jsony - FMTrack > Listen":
     let
       recentTracksJson = jsonNode["RecentTracks"]
-      track = newTrack(
+      track = newListen(
         trackName = "A Wongga Dance Song",
         artistName = "Ryuichi Sakamoto",
         releaseName = some("Esperanto"),

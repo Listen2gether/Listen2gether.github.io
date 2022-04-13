@@ -49,8 +49,8 @@ proc to*(val: Option[cstring]): Option[string] =
   else:
     result = none string
 
-proc to*(track: Track): APIListen =
-  ## Convert a `Track` object to a `Listen` object
+proc to*(track: Listen): APIListen =
+  ## Convert a `Listen` object to an `APIListen` object
   let
     additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
                                     trackMbid: to track.recordingMbid,
@@ -64,8 +64,8 @@ proc to*(track: Track): APIListen =
   result = APIListen(listenedAt: track.listenedAt,
                      trackMetadata: trackMetadata)
 
-proc to*(tracks: seq[Track], toMirror = false): seq[APIListen] =
-  ## Convert a sequence of `Track` objects to a sequence of `APIListen` objects.
+proc to*(tracks: seq[Listen], toMirror = false): seq[APIListen] =
+  ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
     if toMirror:
@@ -76,9 +76,9 @@ proc to*(tracks: seq[Track], toMirror = false): seq[APIListen] =
 
 proc to*(
   listen: APIListen,
-  preMirror, mirrored: Option[bool] = none(bool)): Track =
-  ## Convert a `Listen` object to a `Track` object.
-  result = newTrack(trackName = cstring listen.trackMetadata.trackName,
+  preMirror, mirrored: Option[bool] = none(bool)): Listen =
+  ## Convert an `APIListen` object to a `Listen` object.
+  result = newListen(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
                     releaseName = to listen.trackMetadata.releaseName,
                     recordingMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid,
@@ -91,8 +91,8 @@ proc to*(
 
 proc to*(
   listens: seq[APIListen],
-  preMirror, mirrored: Option[bool] = none(bool)): seq[Track] =
-  ## Convert a sequence of `Listen` objects to a sequence of `Track` objects
+  preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+  ## Convert a sequence of `APIListen` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
 
@@ -102,7 +102,7 @@ proc to*(
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
-func `==`*(a, b: Track): bool =
+func `==`*(a, b: Listen): bool =
   ## does not include `mirrored` or `preMirror`
   return a.trackName == b.trackName and
     a.artistName == b.artistName and
@@ -113,7 +113,7 @@ func `==`*(a, b: Track): bool =
 proc getNowPlaying*(
   lb: AsyncListenBrainz,
   username: cstring,
-  preMirror: bool = true): Future[Option[Track]] {.async.} =
+  preMirror: bool = true): Future[Option[Listen]] {.async.} =
   ## Return a ListenBrainz user's now playing
   try:
     let
@@ -122,7 +122,7 @@ proc getNowPlaying*(
     if payload.count == 1:
       result = some to(payload.listens[0], preMirror = some preMirror)
     else:
-      result = none Track
+      result = none Listen
   except HttpRequestError:
     echo "Error: There was a problem getting " & $username & "'s now playing!"
 
@@ -131,7 +131,7 @@ proc getRecentTracks*(
   username: cstring,
   preMirror: bool,
   maxTs, minTs: int = 0,
-  count: int = 100): Future[seq[Track]] {.async.} =
+  count: int = 100): Future[seq[Listen]] {.async.} =
   ## Return a ListenBrainz user's listen history
   try:
     let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
