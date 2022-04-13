@@ -11,14 +11,14 @@ to	lb.html#to,Option[seq[cstring]]	lb: to(val: Option[seq[cstring]]): Option[seq
 to	lb.html#to,Option[seq[string]]	lb: to(val: Option[seq[string]]): Option[seq[cstring]]	
 to	lb.html#to,Option[string]	lb: to(val: Option[string]): Option[cstring]	
 to	lb.html#to,Option[cstring]	lb: to(val: Option[cstring]): Option[string]	
-to	lb.html#to,Track	lb: to(track: Track): APIListen	
-to	lb.html#to,seq[Track]	lb: to(tracks: seq[Track]; toMirror = false): seq[APIListen]	
-to	lb.html#to,APIListen,Option[bool],Option[bool]	lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Track	
-to	lb.html#to,seq[APIListen],Option[bool],Option[bool]	lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[\n    Track]	
+to	lb.html#to,Listen	lb: to(track: Listen): APIListen	
+to	lb.html#to,seq[Listen]	lb: to(tracks: seq[Listen]; toMirror = false): seq[APIListen]	
+to	lb.html#to,APIListen,Option[bool],Option[bool]	lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen	
+to	lb.html#to,seq[APIListen],Option[bool],Option[bool]	lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[\n    Listen]	
 to	lb.html#to,UserListens,ListenType	lb: to(userListens: UserListens; listenType: ListenType): SubmitListens	
-`==`	lb.html#==,Track,Track	lb: `==`(a, b: Track): bool	
-getNowPlaying	lb.html#getNowPlaying,AsyncListenBrainz,cstring,bool	lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[\n    Option[Track]]	
-getRecentTracks	lb.html#getRecentTracks,AsyncListenBrainz,cstring,bool,int,int,int	lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;\n                maxTs, minTs: int = 0; count: int = 100): Future[seq[Track]]	
+`==`	lb.html#==,Listen,Listen	lb: `==`(a, b: Listen): bool	
+getNowPlaying	lb.html#getNowPlaying,AsyncListenBrainz,cstring,bool	lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[\n    Option[Listen]]	
+getRecentTracks	lb.html#getRecentTracks,AsyncListenBrainz,cstring,bool,int,int,int	lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;\n                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]	
 initUser	lb.html#initUser,AsyncListenBrainz,cstring,cstring	lb: initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[\n    User]	
 updateUser	lb.html#updateUser,AsyncListenBrainz,User	lb: updateUser(lb: AsyncListenBrainz; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
 pageUser	lb.html#pageUser,AsyncListenBrainz,User,int,int	lb: pageUser(lb: AsyncListenBrainz; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	

@@ -22,49 +22,6 @@
 
 <script type="text/javascript" src="dochack.js"></script>
 
-<script type="text/javascript">
-function main() {
-  var pragmaDots = document.getElementsByClassName("pragmadots");
-  for (var i = 0; i < pragmaDots.length; i++) {
-    pragmaDots[i].onclick = function(event) {
-      // Hide tease
-      event.target.parentNode.style.display = "none";
-      // Show actual
-      event.target.parentNode.nextElementSibling.style.display = "inline";
-    }
-  }
-
-  function switchTheme(e) {
-      if (e.target.checked) {
-          document.documentElement.setAttribute('data-theme', 'dark');
-          localStorage.setItem('theme', 'dark');
-      } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-          localStorage.setItem('theme', 'light');
-      }
-  }
-
-  const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
-  if (toggleSwitch !== null) {
-    toggleSwitch.addEventListener('change', switchTheme, false);
-  }
-
-  var currentTheme = localStorage.getItem('theme');
-  if (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    currentTheme = 'dark';
-  }
-  if (currentTheme) {
-    document.documentElement.setAttribute('data-theme', currentTheme);
-
-    if (currentTheme === 'dark' && toggleSwitch !== null) {
-      toggleSwitch.checked = true;
-    }
-  }
-}
-
-window.addEventListener('DOMContentLoaded', main);
-</script>
-
 </head>
 <body>
 <div class="document" id="documentId">
@@ -73,7 +30,7 @@ window.addEventListener('DOMContentLoaded', main);
     Modules: <a href="_._/types.html">../types</a>, <a href="lb.html">lb</a>.<br/><p /><h2>API symbols</h2>
 <dl><dt><a name="%60%3D%3D%60" href="#%60%3D%3D%60"><span>`==`:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="lb: `==`(a, b: Track): bool" href="lb.html#%3D%3D%2CTrack%2CTrack">lb: `==`(a, b: Track): bool</a></li>
+          data-doc-search-tag="lb: `==`(a, b: Listen): bool" href="lb.html#%3D%3D%2CListen%2CListen">lb: `==`(a, b: Listen): bool</a></li>
           </ul></dd>
 <dt><a name="camel2snake" href="#camel2snake"><span>camel2snake:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -96,14 +53,14 @@ window.addEventListener('DOMContentLoaded', main);
 <dt><a name="getNowPlaying" href="#getNowPlaying"><span>getNowPlaying:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[
-    Option[Track]]" href="lb.html#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool">lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[
-    Option[Track]]</a></li>
+    Option[Listen]]" href="lb.html#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool">lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[
+    Option[Listen]]</a></li>
           </ul></dd>
 <dt><a name="getRecentTracks" href="#getRecentTracks"><span>getRecentTracks:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;
-                maxTs, minTs: int = 0; count: int = 100): Future[seq[Track]]" href="lb.html#getRecentTracks%2CAsyncListenBrainz%2Ccstring%2Cbool%2Cint%2Cint%2Cint">lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;
-                maxTs, minTs: int = 0; count: int = 100): Future[seq[Track]]</a></li>
+                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]" href="lb.html#getRecentTracks%2CAsyncListenBrainz%2Ccstring%2Cbool%2Cint%2Cint%2Cint">lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;
+                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]</a></li>
           </ul></dd>
 <dt><a name="initUser" href="#initUser"><span>initUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -115,39 +72,43 @@ window.addEventListener('DOMContentLoaded', main);
 <li><a class="reference external"
           data-doc-search-tag="Service.lastFmService" href="_._/types.html#lastFmService">Service.lastFmService</a></li>
           </ul></dd>
+<dt><a name="Listen" href="#Listen"><span>Listen:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: Listen" href="_._/types.html#Listen">types: Listen</a></li>
+          </ul></dd>
 <dt><a name="listenBrainzService" href="#listenBrainzService"><span>listenBrainzService:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="Service.listenBrainzService" href="_._/types.html#listenBrainzService">Service.listenBrainzService</a></li>
           </ul></dd>
+<dt><a name="newListen" href="#newListen"><span>newListen:</span></a></dt><dd><ul class="simple">
+<li><a class="reference external"
+          data-doc-search-tag="types: newListen(trackName, artistName: cstring; releaseName, recordingMbid,
+    releaseMbid: Option[cstring] = none(cstring);
+          artistMbids: Option[seq[cstring]] = none(seq[cstring]);
+          trackNumber: Option[int] = none(int);
+          listenedAt: Option[int] = none(int);
+          mirrored, preMirror: Option[bool] = none(bool)): Listen" href="_._/types.html#newListen%2Ccstring%2Ccstring%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bseq%5Bcstring%5D%5D%2COption%5Bint%5D%2COption%5Bint%5D%2COption%5Bbool%5D%2COption%5Bbool%5D">types: newListen(trackName, artistName: cstring; releaseName, recordingMbid,
+    releaseMbid: Option[cstring] = none(cstring);
+          artistMbids: Option[seq[cstring]] = none(seq[cstring]);
+          trackNumber: Option[int] = none(int);
+          listenedAt: Option[int] = none(int);
+          mirrored, preMirror: Option[bool] = none(bool)): Listen</a></li>
+          </ul></dd>
 <dt><a name="newServiceUser" href="#newServiceUser"><span>newServiceUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser" href="_._/types.html#newServiceUser%2CService%2Ccstring%2Ccstring%2Ccstring">types: newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser</a></li>
-          </ul></dd>
-<dt><a name="newTrack" href="#newTrack"><span>newTrack:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: newTrack(trackName, artistName: cstring; releaseName, recordingMbid, releaseMbid: Option[
-    cstring] = none(cstring);
-         artistMbids: Option[seq[cstring]] = none(seq[cstring]);
-         trackNumber: Option[int] = none(int);
-         listenedAt: Option[int] = none(int);
-         mirrored, preMirror: Option[bool] = none(bool)): Track" href="_._/types.html#newTrack%2Ccstring%2Ccstring%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bseq%5Bcstring%5D%5D%2COption%5Bint%5D%2COption%5Bint%5D%2COption%5Bbool%5D%2COption%5Bbool%5D">types: newTrack(trackName, artistName: cstring; releaseName, recordingMbid, releaseMbid: Option[
-    cstring] = none(cstring);
-         artistMbids: Option[seq[cstring]] = none(seq[cstring]);
-         trackNumber: Option[int] = none(int);
-         listenedAt: Option[int] = none(int);
-         mirrored, preMirror: Option[bool] = none(bool)): Track</a></li>
           </ul></dd>
 <dt><a name="newUser" href="#newUser"><span>newUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
     ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
                     lastFmService: newServiceUser(lastFmService)];
-        playingNow: Option[Track] = none(Track);
-        listenHistory: seq[Track] = @[]; lastUpdateTs: int = 0): User" href="_._/types.html#newUser%2Ccstring%2Carray%5BService%2CServiceUser%5D%2COption%5BTrack%5D%2Cseq%5BTrack%5D%2Cint">types: newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
+        playingNow: Option[Listen] = none(Listen);
+        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User" href="_._/types.html#newUser%2Ccstring%2Carray%5BService%2CServiceUser%5D%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint">types: newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
     ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
                     lastFmService: newServiceUser(lastFmService)];
-        playingNow: Option[Track] = none(Track);
-        listenHistory: seq[Track] = @[]; lastUpdateTs: int = 0): User</a></li>
+        playingNow: Option[Listen] = none(Listen);
+        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User</a></li>
           </ul></dd>
 <dt><a name="pageUser" href="#pageUser"><span>pageUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -175,7 +136,9 @@ window.addEventListener('DOMContentLoaded', main);
           </ul></dd>
 <dt><a name="to" href="#to"><span>to:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Track" href="lb.html#to%2CAPIListen%2COption%5Bbool%5D%2COption%5Bbool%5D">lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Track</a></li>
+          data-doc-search-tag="lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen" href="lb.html#to%2CAPIListen%2COption%5Bbool%5D%2COption%5Bbool%5D">lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen</a></li>
+          <li><a class="reference external"
+          data-doc-search-tag="lb: to(track: Listen): APIListen" href="lb.html#to%2CListen">lb: to(track: Listen): APIListen</a></li>
           <li><a class="reference external"
           data-doc-search-tag="lb: to(val: Option[cstring]): Option[string]" href="lb.html#to%2COption%5Bcstring%5D">lb: to(val: Option[cstring]): Option[string]</a></li>
           <li><a class="reference external"
@@ -186,18 +149,12 @@ window.addEventListener('DOMContentLoaded', main);
           data-doc-search-tag="lb: to(val: Option[string]): Option[cstring]" href="lb.html#to%2COption%5Bstring%5D">lb: to(val: Option[string]): Option[cstring]</a></li>
           <li><a class="reference external"
           data-doc-search-tag="lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[
-    Track]" href="lb.html#to%2Cseq%5BAPIListen%5D%2COption%5Bbool%5D%2COption%5Bbool%5D">lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[
-    Track]</a></li>
+    Listen]" href="lb.html#to%2Cseq%5BAPIListen%5D%2COption%5Bbool%5D%2COption%5Bbool%5D">lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[
+    Listen]</a></li>
           <li><a class="reference external"
-          data-doc-search-tag="lb: to(tracks: seq[Track]; toMirror = false): seq[APIListen]" href="lb.html#to%2Cseq%5BTrack%5D">lb: to(tracks: seq[Track]; toMirror = false): seq[APIListen]</a></li>
-          <li><a class="reference external"
-          data-doc-search-tag="lb: to(track: Track): APIListen" href="lb.html#to%2CTrack">lb: to(track: Track): APIListen</a></li>
+          data-doc-search-tag="lb: to(tracks: seq[Listen]; toMirror = false): seq[APIListen]" href="lb.html#to%2Cseq%5BListen%5D">lb: to(tracks: seq[Listen]; toMirror = false): seq[APIListen]</a></li>
           <li><a class="reference external"
           data-doc-search-tag="lb: to(userListens: UserListens; listenType: ListenType): SubmitListens" href="lb.html#to%2CUserListens%2CListenType">lb: to(userListens: UserListens; listenType: ListenType): SubmitListens</a></li>
-          </ul></dd>
-<dt><a name="Track" href="#Track"><span>Track:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: Track" href="_._/types.html#Track">types: Track</a></li>
           </ul></dd>
 <dt><a name="updateUser" href="#updateUser"><span>updateUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -218,7 +175,7 @@ window.addEventListener('DOMContentLoaded', main);
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-01 09:40:32 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-13 09:16:47 UTC</small>
       </div>
     </div>
   </div>
