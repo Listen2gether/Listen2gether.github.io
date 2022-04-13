@@ -71,7 +71,7 @@ proc to*(
 proc getNowPlaying*(
   lb: AsyncListenBrainz,
   username: cstring,
-  preMirror: bool = true): Future[Option[Listen]] {.async.} =
+  preMirror: bool): Future[Option[Listen]] {.async.} =
   ## Return a ListenBrainz user's now playing
   try:
     let
@@ -82,7 +82,7 @@ proc getNowPlaying*(
     else:
       result = none Listen
   except HttpRequestError:
-    echo "Error: There was a problem getting " & $username & "'s now playing!"
+    echo "ERROR: There was a problem getting " & $username & "'s now playing!"
 
 proc getRecentTracks*(
   lb: AsyncListenBrainz,
@@ -106,7 +106,7 @@ proc initUser*(
   let userId = cstring($Service.listenBrainzService & ":" & $username)
   var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username, token = token), Service.lastFmService: newServiceUser(Service.lastFmService)])
   user.lastUpdateTs = int toUnix getTime()
-  user.playingNow = await lb.getNowPlaying(username)
+  user.playingNow = await lb.getNowPlaying(username, preMirror = true)
   user.listenHistory = await lb.getRecentTracks(username, preMirror = true)
   return user
 
