@@ -68,14 +68,6 @@ proc to*(
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
-func `==`*(a, b: Listen): bool =
-  ## does not include `mirrored` or `preMirror`
-  return a.trackName == b.trackName and
-    a.artistName == b.artistName and
-    a.releaseName == b.releaseName and
-    a.artistMbids == b.artistMbids and
-    a.trackNumber == b.trackNumber
-
 proc getNowPlaying*(
   lb: AsyncListenBrainz,
   username: cstring,

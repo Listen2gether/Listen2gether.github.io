@@ -75,3 +75,11 @@ func newListen*(
   result.listenedAt = listenedAt
   result.mirrored = mirrored
   result.preMirror = preMirror
+
+func `==`*(a, b: Listen): bool =
+  ## does not include `mirrored` or `preMirror`
+  return a.trackName == b.trackName and
+    a.artistName == b.artistName and
+    a.releaseName == b.releaseName and
+    a.artistMbids == b.artistMbids and
+    a.trackNumber == b.trackNumber
