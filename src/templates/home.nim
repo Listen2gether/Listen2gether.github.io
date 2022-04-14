@@ -2,19 +2,26 @@ import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
   std/[asyncjs, tables, strutils, options],
   pkg/nodejs/jsindexeddb,
-  pkg/listenbrainz,
+  pkg/[listenbrainz, lastfm],
+  pkg/lastfm/auth,
   pkg/listenbrainz/core,
-  ../types, ../sources/lb, share
+  ../sources/[lb, lfm],
+  ../types,
+  share
 
 type
   ServiceView* = enum
     none, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingRoom
+  LastFMAuthView = enum
+    loading, signin, authorise
 
 var
   homeServiceView: ServiceView = ServiceView.none
   homeSigninView: SigninView = SigninView.loadingUsers
+  lastFMAuthView: LastFMAuthView = LastFMAuthView.loading
+  fmToken: string
 
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
@@ -92,7 +99,13 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
     username = mirrorUser.services[mirrorService].username
 
   if serviceSwitch and mirrorUser.isNil:
-    mirrorErrorMessage = "Last.fm users are not supported yet..."
+    if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
+      if clientUser.services[mirrorService].username == username:
+        homeSigninView = SigninView.loadingRoom
+      #   discard validateLBUser($username)
+      # else:
+      #   homeSigninView = SigninView.loadingRoom
+      #   discard validateLBUser($username)
   else:
     if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
       if clientUser.services[mirrorService].username == username:
@@ -143,7 +156,11 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
                   currentUser = storedUsers[userId]
                   currentService = service
                   if not mirror:
-                    discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
+                    if currentService == Service.listenBrainzService:
+                      discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
+                    elif currentService == Service.listenBrainzService:
+                      echo "here"
+                      discard fmClient.updateUser(currentUser, preMirror = true)
 
 proc mirrorUserModal: Vnode =
   result = buildHtml:
@@ -195,11 +212,60 @@ proc listenBrainzModal*: Vnode =
       tdiv(class = "row textbox"):
         input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
+proc getLFMToken(fm: AsyncLastFM) {.async.} =
+  let resp = await fm.getToken()
+  fmToken = resp.token
+  lastFMAuthView = LastFMAuthView.signin
+  redraw()
+
+proc getLFMSession(fm: AsyncLastFM, store = true) {.async.} =
+  try:
+    let resp = await fm.getSession($fmToken)
+    fm.sk = resp.session.key
+    clientErrorMessage = ""
+    if store:
+      clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
+      discard storeUser(db, clientUsersDbStore, clientUser)
+      discard db.getClientUsers(homeSigninView)
+  except:
+    if store:
+      clientErrorMessage = "AUthorisation failed!"
+    else:
+      clientErrorMessage = "Session no longer valid!"
+      clientUser = nil
+      # userId = "lastfm:" & resp.key
+      # discard db.delete(clientUsersDbStore, userId, dbOptions)
+    redraw()
+
 proc lastFmModal*: Vnode =
+  if fmToken == "":
+    discard fmClient.getLFMToken()
+
+  var
+    returned = true
+    clicked = false
+
+  if lastFMAuthView == LastFMAuthView.signin:
+    document.addEventListener("visibilitychange", proc (ev: Event) = returned = not returned)
+
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
-      p(class = "body"):
-        text "Last.fm users are not currently supported!"
+      case lastFMAuthView:
+      of LastFMAuthView.loading:
+        loadingModal(cstring "Loading...")
+      of LastFMAuthView.signin:
+        let link = cstring("http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken)
+        a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
+          text "Sign-in"
+          proc onclick(ev: kdom.Event; n: VNode) =
+            clicked = true
+            if clicked and returned:
+              lastFMAuthView = LastFMAuthView.authorise
+      of LastFMAuthView.authorise:
+        button(id = "auth-button", class = "row login-button"):
+          text "Authorise"
+          proc onclick(ev: kdom.Event; n: VNode) =
+            discard fmClient.getLFMSession()
 
 proc buttonModal*(service: Service, serviceView: var ServiceView, signinView: var SigninView): Vnode =
   result = buildHtml:
