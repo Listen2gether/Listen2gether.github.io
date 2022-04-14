@@ -23,7 +23,7 @@ type
     `@attr`*: Option[Attributes]
 
   FMDate = object
-    uts*: int
+    uts*: string
 
   Attributes = object
     nowplaying*: string
@@ -70,7 +70,7 @@ func getVal(node: JsonNode, index: string): Option[cstring] = to getStr node{ind
 func parseDate(date: Option[FMDate]): Option[int] =
   ## convert `Option[FMDate]` date to `Option[int]
   if isSome date:
-    result = some get(date).uts
+    result = some parseInt get(date).uts
   else:
     result = none int
 
@@ -140,26 +140,6 @@ func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
     else:
       result.add to track
 
-proc getRecentTracks(
-  fm: AsyncLastFM,
-  username: cstring,
-  preMirror: bool,
-  `from`, upTo = 0,
-  limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
-  ## Return a Last.FM user's listen history and now playing
-  var
-    playingNow: Option[Listen]
-    listenHistory: seq[Listen]
-  let
-    recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = upTo)
-    tracks = recentTracks["recenttracks"]["track"]
-  if tracks.len == limit:
-    listenHistory = to(fromJson($tracks, seq[FMTrack]), preMirror = some preMirror)
-  elif tracks.len == limit+1:
-    playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
-    listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror)
-  return (playingNow, listenHistory)
-
 proc setNowPlayingTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
@@ -191,6 +171,27 @@ proc scrobbleTracks(
   var futures: seq[JsonNode]
   for scrobble in scrobbles:
     futures.add await fm.scrobbleTrack(scrobble)
+
+proc getRecentTracks(
+  fm: AsyncLastFM,
+  username: cstring,
+  preMirror: bool,
+  `from`, upTo = 0,
+  limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
+  ## Return a Last.FM user's listen history and now playing
+  var
+    playingNow: Option[Listen]
+    listenHistory: seq[Listen]
+  let
+    recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = upTo)
+    tracks = recentTracks["recenttracks"]["track"]
+  if tracks.len == limit:
+    listenHistory = to(fromJson($tracks, seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
+  elif tracks.len == limit+1:
+    playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
+    # potential speedup: tracks[1..^1].mapIt(it.to(FMTrack))
+    listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
+  return (playingNow, listenHistory)
 
 proc initUser*(
   fm: AsyncLastFM,
@@ -229,7 +230,8 @@ proc pageUser*(
   ## Backfills user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
-    (_, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
+    (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
+  user.playingNow = playingNow
   user.listenHistory = user.listenHistory & listenHistory
   endInd += inc
 
@@ -238,10 +240,11 @@ proc submitMirrorQueue*(
   user: var User) {.async.} =
   ## Submits user's now playing and listen history that are not mirrored or preMirror
   if isSome user.playingNow:
-    try:
-      discard fm.setNowPlayingTrack(to get user.playingNow)
-    except HttpRequestError:
-      echo "ERROR: There was a problem submitting your now playing!"
+    if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
+      try:
+        discard fm.setNowPlayingTrack(to get user.playingNow)
+      except HttpRequestError:
+        echo "ERROR: There was a problem submitting your now playing!"
 
   let scrobbles = to(user.listenHistory, toMirror = true)
   if scrobbles.len > 0:
