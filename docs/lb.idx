@@ -12,7 +12,7 @@ to	lb.html#to,seq[Listen]	lb: to(tracks: seq[Listen]; toMirror = false): seq[API
 to	lb.html#to,APIListen,Option[bool],Option[bool]	lb: to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen	
 to	lb.html#to,seq[APIListen],Option[bool],Option[bool]	lb: to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[\n    Listen]	
 to	lb.html#to,UserListens,ListenType	lb: to(userListens: UserListens; listenType: ListenType): SubmitListens	
-getNowPlaying	lb.html#getNowPlaying,AsyncListenBrainz,cstring,bool	lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[\n    Option[Listen]]	
+getNowPlaying	lb.html#getNowPlaying,AsyncListenBrainz,cstring,bool	lb: getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool): Future[\n    Option[Listen]]	
 getRecentTracks	lb.html#getRecentTracks,AsyncListenBrainz,cstring,bool,int,int,int	lb: getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;\n                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]	
 initUser	lb.html#initUser,AsyncListenBrainz,cstring,cstring	lb: initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[\n    User]	
 updateUser	lb.html#updateUser,AsyncListenBrainz,User	lb: updateUser(lb: AsyncListenBrainz; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	

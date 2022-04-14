@@ -90,8 +90,8 @@
   </ul>
   <ul class="simple nested-toc-section">getNowPlaying
       <li><a class="reference" href="#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool"
-    title="getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[
-    Option[Listen]]">getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool = true): Future[
+    title="getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool): Future[
+    Option[Listen]]">getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool): Future[
     Option[Listen]]</a></li>
 
   </ul>
@@ -273,9 +273,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 <div id="getNowPlaying-procs-all">
 <div id="getNowPlaying,AsyncListenBrainz,cstring,bool">
-<dt><pre><span class="Keyword">proc</span> <a href="#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool"><span class="Identifier">getNowPlaying</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span>
-                   <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">true</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">Option</span><span class="Other">[</span><a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span><span class="Other">]</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
+<dt><pre><span class="Keyword">proc</span> <a href="#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool"><span class="Identifier">getNowPlaying</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
+    <span class="Identifier">Option</span><span class="Other">[</span><a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
+                      <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Return a ListenBrainz user's now playing
@@ -507,7 +507,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-13 21:26:10 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-14 08:30:58 UTC</small>
       </div>
     </div>
   </div>
