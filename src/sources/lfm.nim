@@ -47,8 +47,7 @@ func newFMTrack(
   result.url = url
   result.`@attr` = `@attr`
 
-func newAttributes(
-  nowplaying: string): Attributes =
+func newAttributes(nowplaying: string): Attributes =
   ## Create new `Attributes` object
   result.nowplaying = nowplaying
 
@@ -66,24 +65,22 @@ func newScrobble(
   result.trackNumber = trackNumber
   result.duration = duration
 
-proc getVal(node: JsonNode, index: string): Option[cstring] =
-  let val = getStr node{index}
-  result = to val
+func getVal(node: JsonNode, index: string): Option[cstring] = to getStr node{index}
 
-proc parseDate(date: Option[FMDate]): Option[int] =
+func parseDate(date: Option[FMDate]): Option[int] =
   ## convert `Option[FMDate]` date to `Option[int]
   if isSome date:
     result = some get(date).uts
   else:
     result = none int
 
-proc parseMbids(mbid: string): Option[seq[cstring]] =
+func parseMbids(mbid: string): Option[seq[cstring]] =
   if mbid.isEmptyOrWhitespace():
     result = some @[cstring mbid]
   else:
     result = none seq[cstring]
 
-proc to(
+func to(
   fmTrack: FMTrack,
   preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `FMTrack` object to a `Listen` object
@@ -97,14 +94,14 @@ proc to(
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to(
+func to(
   fmTracks: seq[FMTrack],
   preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `FMTrack` objects to a sequence of `Listen` objects
   for fmTrack in fmTracks:
     result.add to(fmTrack, preMirror, mirrored)
 
-proc to(scrobble: Scrobble,
+func to(scrobble: Scrobble,
   preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert a `Scrobble` object to a `Listen` object
   result = newListen(trackName = cstring scrobble.track,
@@ -116,14 +113,14 @@ proc to(scrobble: Scrobble,
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to(
+func to(
   listens: seq[Scrobble],
   preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `Scrobble` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
 
-proc to(listen: Listen): Scrobble =
+func to(listen: Listen): Scrobble =
   ## Convert a `Listen` object to a `Scrobble` object
   result = newScrobble(track = $listen.trackName,
                       artist = $listen.artistName,
@@ -133,7 +130,7 @@ proc to(listen: Listen): Scrobble =
                       albumArtist = some $listen.artistName,
                       trackNumber = listen.trackNumber)
 
-proc to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
+func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
   ## Convert a sequence of `Listen` objects to a sequence of `Scrobble` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
@@ -147,21 +144,21 @@ proc getRecentTracks(
   fm: AsyncLastFM,
   username: cstring,
   preMirror: bool,
-  `from`, to = 0,
+  `from`, upTo = 0,
   limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Listen]
     listenHistory: seq[Listen]
   let
-    recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = to)
+    recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = upTo)
     tracks = recentTracks["recenttracks"]["track"]
   if tracks.len == limit:
-    listenHistory = to fromJson($tracks, seq[FMTrack])
+    listenHistory = to(fromJson($tracks, seq[FMTrack]), preMirror = some preMirror)
   elif tracks.len == limit+1:
     playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
     listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror)
-  result = (playingNow, listenHistory)
+  return (playingNow, listenHistory)
 
 proc setNowPlayingTrack(
   fm: AsyncLastFM,
@@ -232,7 +229,7 @@ proc pageUser*(
   ## Backfills user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
-    (_, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, to = to)
+    (_, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
   user.listenHistory = user.listenHistory & listenHistory
   endInd += inc
 
