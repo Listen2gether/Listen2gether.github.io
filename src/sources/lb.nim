@@ -78,7 +78,7 @@ proc getNowPlaying(
       nowPlaying = await lb.getUserPlayingNow($username)
       payload = nowPlaying.payload
     if payload.count == 1:
-      result = some to(payload.listens[0], preMirror = some preMirror)
+      result = some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
     else:
       result = none Listen
   except HttpRequestError:
@@ -120,7 +120,7 @@ proc updateUser*(
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
   else:
     updatedUser.lastUpdateTs = int toUnix getTime()
-  updatedUser.playingNow = await lb.getNowPlaying(user.services[listenBrainzService].username, preMirror = false)
+  updatedUser.playingNow = await lb.getNowPlaying(user.services[listenBrainzService].username, preMirror = preMirror)
   let newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror, minTs = user.lastUpdateTs)
   updatedUser.listenHistory = newTracks & user.listenHistory
   return updatedUser
@@ -142,13 +142,15 @@ proc submitMirrorQueue*(
   user: var User) {.async.} =
   ## Submits user's now playing and listen history that are not mirrored or preMirror
   if isSome user.playingNow:
-    let
-      listen = to get user.playingNow
-      playingNow = newSubmitListens(listenType = ListenType.playingNow, @[listen])
-    try:
-      discard lb.submitListens(playingNow)
-    except HttpRequestError:
-      echo "ERROR: There was a problem submitting your now playing!"
+    if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
+      let
+        listen = to get user.playingNow
+        playingNow = newSubmitListens(listenType = ListenType.playingNow, @[listen])
+      try:
+        discard lb.submitListens(playingNow)
+        get(user.playingNow).mirrored = some true
+      except HttpRequestError:
+        echo "ERROR: There was a problem submitting your now playing!"
 
   let listens = to(user.listenHistory, toMirror = true)
   if listens.len > 0:
