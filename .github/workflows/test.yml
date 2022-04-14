@@ -29,6 +29,6 @@ jobs:
         run: nimble install -d:js -y
 
       - name: Run tests
-        env:
+        with:
           LISTENBRAINZ_USER: ${{ secrets.LISTENBRAINZ_USER }}
         run: nimble test -d:c -y
