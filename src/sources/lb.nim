@@ -15,7 +15,7 @@ include pkg/listenbrainz/utils/tools
 
 const userBaseUrl* = "https://listenbrainz.org/user/"
 
-proc to*(track: Listen): APIListen =
+proc to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
     additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
@@ -30,7 +30,7 @@ proc to*(track: Listen): APIListen =
   result = APIListen(listenedAt: track.listenedAt,
                      trackMetadata: trackMetadata)
 
-proc to*(tracks: seq[Listen], toMirror = false): seq[APIListen] =
+proc to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
   ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
@@ -40,7 +40,7 @@ proc to*(tracks: seq[Listen], toMirror = false): seq[APIListen] =
     else:
       result.add to track
 
-proc to*(
+proc to(
   listen: APIListen,
   preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `APIListen` object to a `Listen` object.
@@ -55,20 +55,20 @@ proc to*(
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to*(
+proc to(
   listens: seq[APIListen],
   preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `APIListen` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
 
-proc to*(
+proc to(
   userListens: UserListens,
   listenType: ListenType): SubmitListens =
   ## Convert a `UserListens` object to a `SubmitListens` object
   result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
 
-proc getNowPlaying*(
+proc getNowPlaying(
   lb: AsyncListenBrainz,
   username: cstring,
   preMirror: bool): Future[Option[Listen]] {.async.} =
@@ -84,7 +84,7 @@ proc getNowPlaying*(
   except HttpRequestError:
     echo "ERROR: There was a problem getting " & $username & "'s now playing!"
 
-proc getRecentTracks*(
+proc getRecentTracks(
   lb: AsyncListenBrainz,
   username: cstring,
   preMirror: bool,
