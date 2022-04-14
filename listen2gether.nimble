@@ -12,7 +12,7 @@ bin           = @["server"]
 requires "nim >= 1.7.1"
 requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
-# requires "https://gitlab.com/tandy1000/lastfm-nim#head"
+requires "https://gitlab.com/tandy1000/lastfm-nim#refactor"
 requires "https://github.com/tandy-1000/simple-matrix-client == 0.1.0"
 when defined(c):
   requires "prologue"
