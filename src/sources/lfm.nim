@@ -75,10 +75,10 @@ func parseDate(date: Option[FMDate]): Option[int] =
     result = none int
 
 func parseMbids(mbid: string): Option[seq[cstring]] =
-  if mbid.isEmptyOrWhitespace():
-    result = some @[cstring mbid]
-  else:
+  if isEmptyOrWhitespace mbid:
     result = none seq[cstring]
+  else:
+    result = some @[cstring mbid]
 
 func to(
   fmTrack: FMTrack,
