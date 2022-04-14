@@ -12,25 +12,25 @@ import
 
 const
   userBaseUrl* = "https://last.fm/user/"
-  apiKey* = ""
-  apiSecret* = ""
+  apiKey* = "f6cbd0de2ace1b377de4ed27f73af158"
+  apiSecret* = "6a037eaccb1957d1b63354b02a4eeb62"
 
 type
-  FMTrack* = object
+  FMTrack = object
     artist*, album*: JsonNode
     date*: Option[JsonNode]
     mbid*, name*, url*: Option[string]
     `@attr`*: Option[Attributes]
 
-  Attributes* = object
+  Attributes = object
     nowplaying*: string
 
-  Scrobble* = object
+  Scrobble = object
     track*, artist*: string
     album*, mbid*, albumArtist*: Option[string]
     timestamp*, trackNumber*, duration*: Option[int]
 
-func newFMTrack*(
+func newFMTrack(
   artist, album: JsonNode,
   date: Option[JsonNode] = none(JsonNode),
   mbid, name, url: Option[string] = none(string),
@@ -44,12 +44,12 @@ func newFMTrack*(
   result.url = url
   result.`@attr` = `@attr`
 
-func newAttributes*(
+func newAttributes(
   nowplaying: string): Attributes =
   ## Create new `Attributes` object
   result.nowplaying = nowplaying
 
-func newScrobble*(
+func newScrobble(
   track, artist: string,
   album, mbid, albumArtist: Option[string] = none(string),
   timestamp, trackNumber, duration: Option[int] = none(int)): Scrobble =
@@ -82,7 +82,7 @@ proc parseMbid(mbid: string): Option[seq[cstring]] =
   else:
     result = none seq[cstring]
 
-proc to*(
+proc to(
   fmTrack: FMTrack,
   preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `FMTrack` object to a `Listen` object
@@ -96,14 +96,14 @@ proc to*(
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to*(
+proc to(
   fmTracks: seq[FMTrack],
   preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `FMTrack` objects to a sequence of `Listen` objects
   for fmTrack in fmTracks:
     result.add to(fmTrack, preMirror, mirrored)
 
-proc to*(scrobble: Scrobble,
+proc to(scrobble: Scrobble,
   preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert a `Scrobble` object to a `Listen` object
   result = newListen(trackName = cstring scrobble.track,
@@ -115,14 +115,14 @@ proc to*(scrobble: Scrobble,
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to*(
+proc to(
   listens: seq[Scrobble],
   preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `Scrobble` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
 
-proc to*(listen: Listen): Scrobble =
+proc to(listen: Listen): Scrobble =
   ## Convert a `Listen` object to a `Scrobble` object
   result = newScrobble(track = $listen.trackName,
                       artist = $listen.artistName,
@@ -132,7 +132,7 @@ proc to*(listen: Listen): Scrobble =
                       albumArtist = some $listen.artistName,
                       trackNumber = listen.trackNumber)
 
-proc to*(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
+proc to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
   ## Convert a sequence of `Listen` objects to a sequence of `Scrobble` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
@@ -142,7 +142,7 @@ proc to*(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
     else:
       result.add to track
 
-proc getRecentTracks*(
+proc getRecentTracks(
   fm: AsyncLastFM,
   username: cstring,
   preMirror: bool,
@@ -162,7 +162,7 @@ proc getRecentTracks*(
     listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror)
   result = (playingNow, listenHistory)
 
-proc setNowPlayingTrack*(
+proc setNowPlayingTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Sets the current playing track on Last.FM
@@ -174,7 +174,7 @@ proc setNowPlayingTrack*(
                                   trackNumber = scrobble.trackNumber,
                                   duration = scrobble.duration)
 
-proc scrobbleTrack*(
+proc scrobbleTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Scrobble a track to Last.FM
@@ -187,11 +187,12 @@ proc scrobbleTrack*(
                              trackNumber = scrobble.trackNumber,
                              duration = scrobble.duration)
 
-proc scrobbleTracks*(
+proc scrobbleTracks(
   fm: AsyncLastFM,
   scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
+  var futures: seq[JsonNode]
   for scrobble in scrobbles:
-    result.add await fm.scrobbleTrack(scrobble)
+    futures.add await fm.scrobbleTrack(scrobble)
 
 proc initUser*(
   fm: AsyncLastFM,
