@@ -2,7 +2,8 @@ import
   std/[asyncjs, jsffi, tables, strutils],
   pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   pkg/nodejs/jsindexeddb,
-  pkg/listenbrainz,
+  pkg/[listenbrainz, lastfm],
+  ../sources/lfm,
   ../types
 from std/sugar import collect
 
@@ -12,6 +13,7 @@ type
 
 var
   globalView*: ClientView = ClientView.homeView
+  fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
   clientUsersDbStore*: cstring = "clientUsers"
