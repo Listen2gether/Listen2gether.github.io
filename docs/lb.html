@@ -88,20 +88,6 @@
     title="dumpHook[T](s: var string; v: Option[T])">dumpHook[T](s: var string; v: Option[T])</a></li>
 
   </ul>
-  <ul class="simple nested-toc-section">getNowPlaying
-      <li><a class="reference" href="#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool"
-    title="getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool): Future[
-    Option[Listen]]">getNowPlaying(lb: AsyncListenBrainz; username: cstring; preMirror: bool): Future[
-    Option[Listen]]</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">getRecentTracks
-      <li><a class="reference" href="#getRecentTracks%2CAsyncListenBrainz%2Ccstring%2Cbool%2Cint%2Cint%2Cint"
-    title="getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;
-                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]">getRecentTracks(lb: AsyncListenBrainz; username: cstring; preMirror: bool;
-                maxTs, minTs: int = 0; count: int = 100): Future[seq[Listen]]</a></li>
-
-  </ul>
   <ul class="simple nested-toc-section">initUser
       <li><a class="reference" href="#initUser%2CAsyncListenBrainz%2Ccstring%2Ccstring"
     title="initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[
@@ -126,21 +112,6 @@
   <ul class="simple nested-toc-section">submitMirrorQueue
       <li><a class="reference" href="#submitMirrorQueue%2CAsyncListenBrainz%2CUser"
     title="submitMirrorQueue(lb: AsyncListenBrainz; user: var User): owned(Future[void])">submitMirrorQueue(lb: AsyncListenBrainz; user: var User): owned(Future[void])</a></li>
-
-  </ul>
-  <ul class="simple nested-toc-section">to
-      <li><a class="reference" href="#to%2CAPIListen%2COption%5Bbool%5D%2COption%5Bbool%5D"
-    title="to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen">to(listen: APIListen; preMirror, mirrored: Option[bool] = none(bool)): Listen</a></li>
-  <li><a class="reference" href="#to%2Cseq%5BAPIListen%5D%2COption%5Bbool%5D%2COption%5Bbool%5D"
-    title="to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[
-    Listen]">to(listens: seq[APIListen]; preMirror, mirrored: Option[bool] = none(bool)): seq[
-    Listen]</a></li>
-  <li><a class="reference" href="#to%2CListen"
-    title="to(track: Listen): APIListen">to(track: Listen): APIListen</a></li>
-  <li><a class="reference" href="#to%2Cseq%5BListen%5D"
-    title="to(tracks: seq[Listen]; toMirror = false): seq[APIListen]">to(tracks: seq[Listen]; toMirror = false): seq[APIListen]</a></li>
-  <li><a class="reference" href="#to%2CUserListens%2CListenType"
-    title="to(userListens: UserListens; listenType: ListenType): SubmitListens">to(userListens: UserListens; listenType: ListenType): SubmitListens</a></li>
 
   </ul>
   <ul class="simple nested-toc-section">updateUser
@@ -271,43 +242,6 @@ class="link-seesrc" target="_blank">Source</a>
 
 </div>
 
-<div id="getNowPlaying-procs-all">
-<div id="getNowPlaying,AsyncListenBrainz,cstring,bool">
-<dt><pre><span class="Keyword">proc</span> <a href="#getNowPlaying%2CAsyncListenBrainz%2Ccstring%2Cbool"><span class="Identifier">getNowPlaying</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <span class="Identifier">Option</span><span class="Other">[</span><a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
-                      <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Return a ListenBrainz user's now playing
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L74"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L74" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-
-</div>
-
-<div id="getRecentTracks-procs-all">
-<div id="getRecentTracks,AsyncListenBrainz,cstring,bool,int,int,int">
-<dt><pre><span class="Keyword">proc</span> <a href="#getRecentTracks%2CAsyncListenBrainz%2Ccstring%2Cbool%2Cint%2Cint%2Cint"><span class="Identifier">getRecentTracks</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">bool</span><span class="Other">;</span>
-                     <span class="Identifier">maxTs</span><span class="Other">,</span> <span class="Identifier">minTs</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span> <span class="Identifier">count</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">100</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <span class="Identifier">seq</span><span class="Other">[</span><a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
-                   <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Return a ListenBrainz user's listen history
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L92"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L92" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-
-</div>
-
 <div id="initUser-procs-all">
 <div id="initUser,AsyncListenBrainz,cstring,cstring">
 <dt><pre><span class="Keyword">proc</span> <a href="#initUser%2CAsyncListenBrainz%2Ccstring%2Ccstring"><span class="Identifier">initUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
@@ -391,74 +325,6 @@ class="link-seesrc" target="_blank">Source</a>
 
 </div>
 
-<div id="to-procs-all">
-<div id="to,APIListen,Option[bool],Option[bool]">
-<dt><pre><span class="Keyword">proc</span> <a href="#to%2CAPIListen%2COption%5Bbool%5D%2COption%5Bbool%5D"><span class="Identifier">to</span></a><span class="Other">(</span><span class="Identifier">listen</span><span class="Other">:</span> <span class="Identifier">APIListen</span><span class="Other">;</span> <span class="Identifier">preMirror</span><span class="Other">,</span> <span class="Identifier">mirrored</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">bool</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">bool</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Convert an <tt class="docutils literal"><span class="pre"><span class="Identifier">APIListen</span></span></tt> object to a <tt class="docutils literal"><span class="pre"><span class="Identifier">Listen</span></span></tt> object.
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L43"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L43" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="to,seq[APIListen],Option[bool],Option[bool]">
-<dt><pre><span class="Keyword">proc</span> <a href="#to%2Cseq%5BAPIListen%5D%2COption%5Bbool%5D%2COption%5Bbool%5D"><span class="Identifier">to</span></a><span class="Other">(</span><span class="Identifier">listens</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">APIListen</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">preMirror</span><span class="Other">,</span> <span class="Identifier">mirrored</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">bool</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">bool</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span>
-    <a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Convert a sequence of <tt class="docutils literal"><span class="pre"><span class="Identifier">APIListen</span></span></tt> objects to a sequence of <tt class="docutils literal"><span class="pre"><span class="Identifier">Listen</span></span></tt> objects
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L58"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L58" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="to,Listen">
-<dt><pre><span class="Keyword">proc</span> <a href="#to%2CListen"><span class="Identifier">to</span></a><span class="Other">(</span><span class="Identifier">track</span><span class="Other">:</span> <a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">APIListen</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Convert a <tt class="docutils literal"><span class="pre"><span class="Identifier">Listen</span></span></tt> object to an <tt class="docutils literal"><span class="pre"><span class="Identifier">APIListen</span></span></tt> object
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L18"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L18" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="to,seq[Listen]">
-<dt><pre><span class="Keyword">proc</span> <a href="#to%2Cseq%5BListen%5D"><span class="Identifier">to</span></a><span class="Other">(</span><span class="Identifier">tracks</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="_._/types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">toMirror</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">APIListen</span><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Convert a sequence of <tt class="docutils literal"><span class="pre"><span class="Identifier">Listen</span></span></tt> objects to a sequence of <tt class="docutils literal"><span class="pre"><span class="Identifier">APIListen</span></span></tt> objects. When <tt class="docutils literal"><span class="pre"><span class="Identifier">toMirror</span></span></tt> is set, only tracks that have not been mirrored or are not pre-mirror are returned.
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L33"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L33" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="to,UserListens,ListenType">
-<dt><pre><span class="Keyword">proc</span> <a href="#to%2CUserListens%2CListenType"><span class="Identifier">to</span></a><span class="Other">(</span><span class="Identifier">userListens</span><span class="Other">:</span> <span class="Identifier">UserListens</span><span class="Other">;</span> <span class="Identifier">listenType</span><span class="Other">:</span> <span class="Identifier">ListenType</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">SubmitListens</span> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Convert a <tt class="docutils literal"><span class="pre"><span class="Identifier">UserListens</span></span></tt> object to a <tt class="docutils literal"><span class="pre"><span class="Identifier">SubmitListens</span></span></tt> object
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/lb.nim#L65"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/lb.nim#L65" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-
-</div>
-
 <div id="updateUser-procs-all">
 <div id="updateUser,AsyncListenBrainz,User">
 <dt><pre><span class="Keyword">proc</span> <a href="#updateUser%2CAsyncListenBrainz%2CUser"><span class="Identifier">updateUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">;</span>
@@ -507,7 +373,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-14 09:44:00 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-14 19:09:24 UTC</small>
       </div>
     </div>
   </div>
