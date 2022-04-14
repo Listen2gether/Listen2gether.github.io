@@ -2,7 +2,7 @@ import
   std/[dom, times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom],
   pkg/listenbrainz,
-  ../sources/[lb],
+  ../sources/[lb, lfm],
   ../types, home, share
 
 type
@@ -43,7 +43,10 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
       if mirrorToggle:
         discard lbClient.submitMirrorQueue(mirrorUser)
     of Service.lastFmService:
-      mirrorUser = nil
+      let preMirror = not mirrorToggle
+      mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
+      if mirrorToggle:
+        discard fmClient.submitMirrorQueue(mirrorUser)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
   discard longPoll(service, ms)
 
@@ -59,7 +62,8 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       let preMirror = not mirrorToggle
       mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
-      mirrorUser = nil
+      let preMirror = not mirrorToggle
+      mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     mirrorMirrorView = MirrorView.login
     globalView = ClientView.mirrorView
@@ -71,7 +75,8 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
         mirrorUser = await lbClient.initUser(username)
         mirrorService = service
       of Service.lastFmService:
-        mirrorUser = nil
+        mirrorUser = await fmClient.initUser(username)
+        mirrorService = service
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
       mirrorMirrorView = MirrorView.login
       globalView = ClientView.mirrorView
@@ -93,7 +98,7 @@ proc pageListens(ev: Event; n: VNode) =
       of Service.listenBrainzService:
         discard lbClient.pageUser(mirrorUser, listenEndInd)
       of Service.lastFmService:
-        mirrorUser = nil
+        discard fmClient.pageUser(mirrorUser, listenEndInd)
       discard db.storeUser(mirrorUsersDbStore, mirrorUser)
     else:
       listenEndInd += increment
