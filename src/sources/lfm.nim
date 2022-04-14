@@ -18,9 +18,12 @@ const
 type
   FMTrack = object
     artist*, album*: JsonNode
-    date*: Option[JsonNode]
+    date*: Option[FMDate]
     mbid*, name*, url*: Option[string]
     `@attr`*: Option[Attributes]
+
+  FMDate = object
+    uts*: int
 
   Attributes = object
     nowplaying*: string
@@ -32,7 +35,7 @@ type
 
 func newFMTrack(
   artist, album: JsonNode,
-  date: Option[JsonNode] = none(JsonNode),
+  date: Option[FMDate] = none(FMDate),
   mbid, name, url: Option[string] = none(string),
   `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
@@ -67,16 +70,14 @@ proc getVal(node: JsonNode, index: string): Option[cstring] =
   let val = getStr node{index}
   result = to val
 
-proc parseDate(date: Option[JsonNode]): Option[int] =
-  ## convert `string` date to `Option[int]
+proc parseDate(date: Option[FMDate]): Option[int] =
+  ## convert `Option[FMDate]` date to `Option[int]
   if isSome date:
-    let val = getStr get(date){"uts"}
-    if val.isEmptyOrWhitespace():
-      result = some parseInt val
-    else:
-      result = none int
+    result = some get(date).uts
+  else:
+    result = none int
 
-proc parseMbid(mbid: string): Option[seq[cstring]] =
+proc parseMbids(mbid: string): Option[seq[cstring]] =
   if mbid.isEmptyOrWhitespace():
     result = some @[cstring mbid]
   else:
@@ -91,7 +92,7 @@ proc to(
                     releaseName = getVal(fmTrack.album, "#text"),
                     recordingMbid = to fmTrack.mbid,
                     releaseMbid = getVal(fmTrack.album, "mbid"),
-                    artistMbids = parseMbid getStr fmTrack.artist{"mbid"},
+                    artistMbids = parseMbids getStr fmTrack.artist{"mbid"},
                     listenedAt = parseDate fmTrack.date,
                     preMirror = preMirror,
                     mirrored = mirrored)
@@ -147,7 +148,7 @@ proc getRecentTracks(
   username: cstring,
   preMirror: bool,
   `from`, to = 0,
-  limit = 7): Future[(Option[Listen], seq[Listen])] {.async.} =
+  limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Listen]
