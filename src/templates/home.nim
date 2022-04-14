@@ -143,22 +143,7 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
           if serviceUser.username != "":
             button(id = kstring userId, title = kstring $serviceUser.service, class = kstring buttonClass):
               serviceIconId = cstring($serviceUser.service & "-icon")
-              tdiv(id = kstring serviceIconId, class = "service-icon"):
-                case serviceUser.service:
-                of Service.listenBrainzService:
-                  secret = serviceUser.token
-                  img(src = "/assets/listenbrainz-logo.svg",
-                      id = "listenbrainz-logo",
-                      class = "user-icon",
-                      alt = "ListenBrainz.org logo"
-                  )
-                of Service.lastFmService:
-                  secret = serviceUser.sessionKey
-                  img(src = "/assets/lastfm-logo.svg",
-                      id = "lastfm-logo",
-                      class = "user-icon",
-                      alt = "last.fm logo"
-                  )
+              tdiv(id = kstring serviceIconId, class = "service-icon")
               text serviceUser.username
               proc onclick(ev: kdom.Event; n: VNode) =
                 let

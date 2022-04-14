@@ -122,10 +122,18 @@
     border-color: v.$dark-fg
 
 #listenbrainz > .service-logo-button, #listenbrainz-icon
-  background: v.$listenbrainz
+  background-color: v.$listenbrainz
+
+#listenbrainz-icon
+  background-size: 1.2em
+  background-image: url(/assets/listenbrainz-logo.svg)
 
 #lastfm > .service-logo-button, #lastfm-icon
-  background: v.$lastfm
+  background-color: v.$lastfm
+
+#lastfm-icon
+  background-size: 1.2em
+  background-image: url(/assets/lastfm-logo.svg)
 
 .login-button
   margin: 0.5em
@@ -144,8 +152,8 @@
   height: 1.625em
   width: 1.625em
   margin-right: .5em
-  display: flex
-  align-items: center
+  background-repeat: no-repeat
+  background-position: 50%
   @include t.dark
     border-color: v.$dark-fg
 
