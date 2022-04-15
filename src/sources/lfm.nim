@@ -144,26 +144,33 @@ proc setNowPlayingTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Sets the current playing track on Last.FM
-  result = await fm.setNowPlaying(track = scrobble.track,
-                                  artist = scrobble.artist,
-                                  album = get scrobble.album,
-                                  mbid = get scrobble.mbid,
-                                  albumArtist = get scrobble.albumArtist,
-                                  trackNumber = scrobble.trackNumber,
-                                  duration = scrobble.duration)
+  try:
+    result = await fm.setNowPlaying(track = scrobble.track,
+                              artist = scrobble.artist,
+                              album = get scrobble.album,
+                              mbid = get scrobble.mbid,
+                              albumArtist = get scrobble.albumArtist,
+                              trackNumber = scrobble.trackNumber,
+                              duration = scrobble.duration)
+  except:
+    logError "There was a problem setting your now playing!"
 
 proc scrobbleTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Scrobble a track to Last.FM
-  result = await fm.scrobble(track = scrobble.track,
-                             artist = scrobble.artist,
-                             timestamp = get scrobble.timestamp,
-                             album = get scrobble.album,
-                             mbid = get scrobble.mbid,
-                             albumArtist = get scrobble.albumArtist,
-                             trackNumber = scrobble.trackNumber,
-                             duration = scrobble.duration)
+  try:
+    result = await fm.scrobble(track = scrobble.track,
+      artist = scrobble.artist,
+      timestamp = get scrobble.timestamp,
+      album = get scrobble.album,
+      mbid = get scrobble.mbid,
+      albumArtist = get scrobble.albumArtist,
+      trackNumber = scrobble.trackNumber,
+      duration = scrobble.duration)
+  except:
+    logError "There was a problem scrobbling " & scrobble.track & " - " & scrobble.artist & "!"
+
 
 proc scrobbleTracks(
   fm: AsyncLastFM,
@@ -182,15 +189,18 @@ proc getRecentTracks(
   var
     playingNow: Option[Listen]
     listenHistory: seq[Listen]
-  let
-    recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = upTo)
-    tracks = recentTracks["recenttracks"]["track"]
-  if tracks.len == limit:
-    listenHistory = to(fromJson($tracks, seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
-  elif tracks.len == limit+1:
-    playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
-    # potential speedup: tracks[1..^1].mapIt(it.to(FMTrack))
-    listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
+  try:
+    let
+      recentTracks = await fm.userRecentTracks(user = $username, limit = limit, `from` = `from`, to = upTo)
+      tracks = recentTracks["recenttracks"]["track"]
+    if tracks.len == limit:
+      listenHistory = to(fromJson($tracks, seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
+    elif tracks.len == limit+1:
+      playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
+      # potential speedup: tracks[1..^1].mapIt(it.to(FMTrack))
+      listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
+  except:
+    logError "There was a problem getting " & $username & "'s listens!"
   return (playingNow, listenHistory)
 
 proc initUser*(
@@ -243,8 +253,8 @@ proc submitMirrorQueue*(
     if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
       try:
         discard fm.setNowPlayingTrack(to get user.playingNow)
-      except HttpRequestError:
-        echo "ERROR: There was a problem submitting your now playing!"
+      except:
+        logError "There was a problem submitting your now playing!"
 
   let scrobbles = to(user.listenHistory, toMirror = true)
   if scrobbles.len > 0:
@@ -254,5 +264,5 @@ proc submitMirrorQueue*(
       for idx, track in user.listenHistory[0..^1]:
         if track in mirroredTracks:
           user.listenHistory[idx].mirrored = some true
-    except HttpRequestError:
-      echo "ERROR: There was a problem submitting your scrobbles!"
+    except:
+      logError "There was a problem submitting your scrobbles!"
