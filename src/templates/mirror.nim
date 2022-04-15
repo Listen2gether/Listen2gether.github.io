@@ -215,7 +215,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       userUrl = cstring(lb.userBaseUrl & $username)
     of Service.lastFmService:
       username = mirrorUser.services[mirrorService].username
-      userUrl = cstring(lfm.userBaseUrl & username)
+      userUrl = cstring(lfm.userBaseUrl & $username)
 
   result = buildHtml:
     main:
