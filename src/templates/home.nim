@@ -181,7 +181,7 @@ proc mirrorUserModal: Vnode =
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirrorClick)
         serviceToggle()
-      errorMessage mirrorErrorMessage
+      errorMessage(mirrorErrorMessage)
       button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
         text "Start mirroring!"
 
@@ -326,6 +326,7 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
           listenBrainzModal()
           buttonModal(Service.listenBrainzService, serviceView, signinView)
         of ServiceView.lastFmService:
+          errorMessage(clientErrorMessage)
           lastFmModal()
           returnButton(serviceView, signinView)
 
