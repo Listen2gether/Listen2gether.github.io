@@ -1,6 +1,6 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, tables, strutils, options],
+  std/[asyncjs, tables, strutils, options, jsconsole],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   pkg/lastfm/auth,
@@ -37,7 +37,10 @@ proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDb
 
 proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   ## Gets mirror users from IndexedDB.
-  storedMirrorUsers = await db.getUsers(dbStore)
+  try:
+    storedMirrorUsers = await db.getUsers(dbStore)
+  except:
+    console.log "ERROR: IndexedDB open failed."
 
 
 proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
