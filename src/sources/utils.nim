@@ -1,4 +1,4 @@
-import std/[options, strutils]
+import std/[options, strutils, jsconsole]
 
 func to*(val: string): Option[cstring] =
   ## Convert `string` to `Option[cstring]`
@@ -40,3 +40,9 @@ func to*(val: Option[cstring]): Option[string] =
     result = some $get(val)
   else:
     result = none string
+
+proc logError*(msg: string) =
+  when defined(js):
+    console.log msg
+  else:
+    echo msg

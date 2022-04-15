@@ -1,5 +1,5 @@
 when defined(js):
-  import std/asyncjs
+  import std/[asyncjs, jsconsole]
 else:
   import std/asyncdispatch
 
@@ -82,7 +82,8 @@ proc getNowPlaying(
     else:
       result = none Listen
   except HttpRequestError:
-    echo "ERROR: There was a problem getting " & $username & "'s now playing!"
+    logError "ERROR: There was a problem getting " & $username & "'s now playing!"
+
 
 proc getRecentTracks(
   lb: AsyncListenBrainz,
@@ -95,7 +96,7 @@ proc getRecentTracks(
     let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
     result = to(userListens.payload.listens, some preMirror, mirrored = some false)
   except HttpRequestError:
-    echo "ERROR: There was a problem getting " & $username & "'s listens!"
+    logError "ERROR: There was a problem getting " & $username & "'s listens!"
 
 proc initUser*(
   lb: AsyncListenBrainz,
@@ -150,7 +151,7 @@ proc submitMirrorQueue*(
         discard lb.submitListens(playingNow)
         get(user.playingNow).mirrored = some true
       except HttpRequestError:
-        echo "ERROR: There was a problem submitting your now playing!"
+        logError "ERROR: There was a problem submitting your now playing!"
 
   let listens = to(user.listenHistory, toMirror = true)
   if listens.len > 0:
@@ -162,4 +163,4 @@ proc submitMirrorQueue*(
         if track in mirroredTracks:
           user.listenHistory[idx].mirrored = some true
     except HttpRequestError:
-      echo "ERROR: There was a problem submitting your listens!"
+      logError "ERROR: There was a problem submitting your listens!"
