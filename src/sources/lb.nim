@@ -1,5 +1,5 @@
 when defined(js):
-  import std/[asyncjs, jsconsole]
+  import std/asyncjs
 else:
   import std/asyncdispatch
 
