@@ -27,13 +27,12 @@ proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDb
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
   try:
     storedClientUsers = await db.getUsers(dbStore)
-    if storedClientUsers.len != 0:
-      view = SigninView.returningUser
-    else:
-      view = SigninView.newUser
   except:
-    view = SigninView.newUser
     logError "IndexedDB open failed."
+  if storedClientUsers.len != 0:
+    view = SigninView.returningUser
+  else:
+    view = SigninView.newUser
   redraw()
 
 proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
