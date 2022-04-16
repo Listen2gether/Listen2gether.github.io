@@ -11,16 +11,16 @@ import
 
 type
   ServiceView* = enum
-    none, listenBrainzService, lastFmService
+    none, loading, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingRoom
   LastFMAuthView = enum
-    loading, signin, authorise
+    signin, authorise
 
 var
   homeServiceView: ServiceView = ServiceView.none
   homeSigninView: SigninView = SigninView.loadingUsers
-  lastFMAuthView: LastFMAuthView = LastFMAuthView.loading
+  lastFMAuthView: LastFMAuthView = LastFMAuthView.signin
   fmToken: string
 
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
@@ -66,6 +66,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       clientUser = nil
       discard db.delete(clientUsersDbStore, userId, dbOptions)
     redraw()
+  homeServiceView = ServiceView.listenBrainzService
 
 proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
@@ -173,6 +174,7 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
                   currentService = service
                   if not mirror:
                     if currentService == Service.listenBrainzService:
+                      homeServiceView = ServiceView.loading
                       discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
                     elif currentService == Service.listenBrainzService:
                       discard validateFMSession(currentUser.services[service], currentUser.userId, store = false)
@@ -210,6 +212,7 @@ proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = getElementById("listenbrainz-token").value
     if token != "":
+      homeServiceView = ServiceView.loading
       discard validateLBToken token
     else:
       clientErrorMessage = "Please enter a token!"
@@ -230,7 +233,7 @@ proc listenBrainzModal*: Vnode =
 proc getLFMToken(fm: AsyncLastFM) {.async.} =
   let resp = await fm.getToken()
   fmToken = resp.token
-  lastFMAuthView = LastFMAuthView.signin
+  homeServiceView = ServiceView.lastFmService
   redraw()
 
 proc getLFMSession(fm: AsyncLastFM) {.async.} =
@@ -249,9 +252,6 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     redraw()
 
 proc lastFmModal*: Vnode =
-  if fmToken == "":
-    discard fmClient.getLFMToken()
-
   var
     returned = true
     clicked = false
@@ -262,8 +262,6 @@ proc lastFmModal*: Vnode =
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
       case lastFMAuthView:
-      of LastFMAuthView.loading:
-        loadingModal(cstring "Loading...")
       of LastFMAuthView.signin:
         let link = cstring("http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken)
         a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
@@ -308,7 +306,10 @@ proc serviceModal*(view: var ServiceView): Vnode =
             of Service.listenBrainzService:
               view = ServiceView.listenBrainzService
             of Service.lastFmService:
-              view = ServiceView.lastFmService
+              view = ServiceView.loading
+              if fmToken == "":
+                discard fmClient.getLFMToken()
+
 
 proc returnModal*(view: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
@@ -334,6 +335,8 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
         case serviceView:
         of ServiceView.none:
           serviceModal(serviceView)
+        of ServiceView.loading:
+          loadingModal("Loading...")
         of ServiceView.listenBrainzService:
           errorMessage(clientErrorMessage)
           listenBrainzModal()
