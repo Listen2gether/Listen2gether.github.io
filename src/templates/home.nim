@@ -65,6 +65,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       clientUser = nil
       discard db.delete(clientUsersDbStore, userId, dbOptions)
     redraw()
+  homeServiceView = ServiceView.none
 
 proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
@@ -86,6 +87,7 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
       clientUser = nil
       discard db.delete(clientUsersDbStore, userId, dbOptions)
     redraw()
+  homeServiceView = ServiceView.none
 
 proc serviceToggle: Vnode =
   result = buildHtml:
@@ -229,9 +231,13 @@ proc listenBrainzModal*: Vnode =
         input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
 proc getLFMToken(fm: AsyncLastFM) {.async.} =
-  let resp = await fm.getToken()
-  fmToken = resp.token
-  homeServiceView = ServiceView.lastFmService
+  try:
+    let resp = await fm.getToken()
+    fmToken = resp.token
+    homeServiceView = ServiceView.lastFmService
+  except:
+    clientErrorMessage = "Something went wrong. Try turning off your ad blocker."
+    homeServiceView = ServiceView.none
   redraw()
 
 proc getLFMSession(fm: AsyncLastFM) {.async.} =
@@ -305,6 +311,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
               view = ServiceView.listenBrainzService
             of Service.lastFmService:
               view = ServiceView.loading
+              clientErrorMessage = ""
               if fmToken == "":
                 discard fmClient.getLFMToken()
 
@@ -333,7 +340,9 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
         case serviceView:
         of ServiceView.none:
           serviceModal(serviceView)
+          errorMessage(clientErrorMessage)
         of ServiceView.loading:
+          errorMessage(clientErrorMessage)
           loadingModal("Loading...")
         of ServiceView.listenBrainzService:
           errorMessage(clientErrorMessage)
