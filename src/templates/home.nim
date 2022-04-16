@@ -26,7 +26,7 @@ var
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
   try:
-    storedUsers = await db.getUsers(dbStore)
+    let storedUsers = await db.getUsers(dbStore)
   except:
     logError "IndexedDB open failed."
   if storedUsers.len != 0:
@@ -39,9 +39,11 @@ proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDb
 proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   ## Gets mirror users from IndexedDB.
   try:
-    storedMirrorUsers = await db.getUsers(dbStore)
+    let storedUsers = await db.getUsers(dbStore)
   except:
     logError "IndexedDB open failed."
+  if storedUsers.len != 0:
+    storedMirrorUsers = storedUsers
 
 
 proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
