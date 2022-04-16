@@ -65,7 +65,6 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       clientUser = nil
       discard db.delete(clientUsersDbStore, userId, dbOptions)
     redraw()
-  homeServiceView = ServiceView.listenBrainzService
 
 proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
