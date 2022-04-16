@@ -63,7 +63,10 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     else:
       clientErrorMessage = "Token no longer valid!"
       clientUser = nil
-      discard db.delete(clientUsersDbStore, userId, dbOptions)
+      try:
+        discard db.delete(clientUsersDbStore, userId, dbOptions)
+      except:
+        storedClientUsers.del[userId]
     redraw()
   homeServiceView = ServiceView.none
 
@@ -85,7 +88,10 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
     else:
       clientErrorMessage = "Session no longer valid!"
       clientUser = nil
-      discard db.delete(clientUsersDbStore, userId, dbOptions)
+      try:
+        discard db.delete(clientUsersDbStore, userId, dbOptions)
+      except:
+        storedClientUsers.del[userId]
     redraw()
   homeServiceView = ServiceView.none
 
