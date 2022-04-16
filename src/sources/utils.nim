@@ -1,4 +1,6 @@
-import std/[options, strutils, jsconsole]
+when defined(js):
+  import std/jsconsole
+import std/[options, strutils]
 
 func to*(val: string): Option[cstring] =
   ## Convert `string` to `Option[cstring]`
