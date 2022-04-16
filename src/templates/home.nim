@@ -26,10 +26,11 @@ var
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `SigninView` if there are any existing users.
   try:
-    storedClientUsers = await db.getUsers(dbStore)
+    storedUsers = await db.getUsers(dbStore)
   except:
     logError "IndexedDB open failed."
-  if storedClientUsers.len != 0:
+  if storedUsers.len != 0:
+    storedClientUsers = storedUsers
     view = SigninView.returningUser
   else:
     view = SigninView.newUser
