@@ -1,11 +1,11 @@
 import
   pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
-  std/[asyncjs, tables, strutils, options, jsconsole],
+  std/[asyncjs, tables, strutils, options],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   pkg/lastfm/auth,
   pkg/listenbrainz/core,
-  ../sources/[lb, lfm],
+  ../sources/[lb, lfm, utils],
   ../types,
   share
 
@@ -33,6 +33,7 @@ proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDb
       view = SigninView.newUser
   except:
     view = SigninView.newUser
+    logError "IndexedDB open failed."
   redraw()
 
 proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
@@ -40,7 +41,7 @@ proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   try:
     storedMirrorUsers = await db.getUsers(dbStore)
   except:
-    console.log "ERROR: IndexedDB open failed."
+    logError "IndexedDB open failed."
 
 
 proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
@@ -52,7 +53,10 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     lbClient = newAsyncListenBrainz($token)
     if store:
       clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
-      discard storeUser(db, clientUsersDbStore, clientUser)
+      try:
+        discard storeUser(db, clientUsersDbStore, clientUser)
+      except:
+        storedClientUsers[userId] = clientUser
       discard db.getClientUsers(homeSigninView)
   else:
     if store:
@@ -70,7 +74,10 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     if store:
-      discard storeUser(db, clientUsersDbStore, clientUser)
+      try:
+        discard storeUser(db, clientUsersDbStore, clientUser)
+      except:
+        storedClientUsers[userId] = clientUser
       discard db.getClientUsers(homeSigninView)
   except:
     if store:
@@ -100,7 +107,10 @@ proc validateUser(username: string, service: Service) {.async.} =
       mirrorUser = await lbClient.initUser(username)
     of Service.lastFmService:
       mirrorUser = await fmClient.initUser(username)
-    discard storeUser(db, mirrorUsersDbStore, mirrorUser)
+    try:
+      discard storeUser(db, mirrorUsersDbStore, mirrorUser)
+    except:
+      storedMirrorUsers[mirrorUser.userId] = mirrorUser
     mirrorErrorMessage = ""
     loadMirror(service, username)
   except:
@@ -138,7 +148,7 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
 
 proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, currentService: var Service, mirror = false): Vnode =
   var
-    secret, serviceIconId: cstring
+    serviceIconId: cstring
     buttonClass: string
   result = buildHtml:
     tdiv(id = "stored-users"):
@@ -229,7 +239,10 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fm.sk = resp.session.key
     clientErrorMessage = ""
     clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard storeUser(db, clientUsersDbStore, clientUser)
+    try:
+      discard storeUser(db, clientUsersDbStore, clientUser)
+    except:
+      storedClientUsers[clientUser.userId] = clientUser
     discard db.getClientUsers(homeSigninView)
   except:
     clientErrorMessage = "Authorisation failed!"
