@@ -67,7 +67,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       try:
         discard db.delete(clientUsersDbStore, userId, dbOptions)
       except:
-        storedClientUsers.del[userId]
+        storedClientUsers.del(userId)
     redraw()
   homeServiceView = ServiceView.none
 
@@ -92,7 +92,7 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
       try:
         discard db.delete(clientUsersDbStore, userId, dbOptions)
       except:
-        storedClientUsers.del[userId]
+        storedClientUsers.del(userId)
     redraw()
   homeServiceView = ServiceView.none
 
