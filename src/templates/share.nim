@@ -3,7 +3,7 @@ import
   pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
-  ../sources/lfm,
+  ../sources/[lfm, utils],
   ../types
 from std/sugar import collect
 
@@ -33,7 +33,10 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
 
 proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
-  discard await put(db, dbStore, toJs user, dbOptions)
+  try:
+    discard await put(db, dbStore, toJs user, dbOptions)
+  except:
+    logError "Failed to store users."
 
 proc headerSection*(): Vnode =
   ## Produces header section to be used on all pages.
