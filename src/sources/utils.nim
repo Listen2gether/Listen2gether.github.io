@@ -43,6 +43,6 @@ func to*(val: Option[cstring]): Option[string] =
 
 proc logError*(msg: string) =
   when defined(js):
-    console.log "ERROR: " & msg
+    console.log cstring("ERROR: " & msg)
   else:
     echo "ERROR: " & msg
