@@ -115,7 +115,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     clientErrorMessage = ""
     clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
     try:
-      discard storeUser(db, clientUsersDbStore, clientUser, storedClientUsers)
+      discard storeUser(db, clientUsersDbStore, clientUser)
     except:
       storedClientUsers[clientUser.userId] = clientUser
     discard db.getClientUsers(homeSigninView)
