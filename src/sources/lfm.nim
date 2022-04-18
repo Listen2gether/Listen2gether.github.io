@@ -23,7 +23,7 @@ type
     `@attr`*: Option[Attributes]
 
   FMDate = object
-    uts*: string
+    uts*, text*: string
 
   Attributes = object
     nowplaying*: string
