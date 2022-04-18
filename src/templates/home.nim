@@ -56,7 +56,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     if store:
       clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
       try:
-        discard storeUser(db, clientUsersDbStore, clientUser)
+        discard db.storeUser(clientUsersDbStore, clientUser)
       except:
         storedClientUsers[userId] = clientUser
       discard db.getClientUsers(homeSigninView)
@@ -95,6 +95,32 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
         discard db.delete(clientUsersDbStore, userId, dbOptions)
       except:
         storedClientUsers.del(userId)
+    redraw()
+  homeServiceView = ServiceView.none
+
+proc getLFMToken(fm: AsyncLastFM) {.async.} =
+  try:
+    let resp = await fm.getToken()
+    fmToken = resp.token
+    homeServiceView = ServiceView.lastFmService
+  except:
+    clientErrorMessage = "Something went wrong. Try turning off your ad blocker."
+    homeServiceView = ServiceView.none
+  redraw()
+
+proc getLFMSession(fm: AsyncLastFM) {.async.} =
+  try:
+    let resp = await fm.getSession($fmToken)
+    fm.sk = resp.session.key
+    clientErrorMessage = ""
+    clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
+    try:
+      discard storeUser(db, clientUsersDbStore, clientUser, storedClientUsers)
+    except:
+      storedClientUsers[clientUser.userId] = clientUser
+    discard db.getClientUsers(homeSigninView)
+  except:
+    clientErrorMessage = "Authorisation failed!"
     redraw()
   homeServiceView = ServiceView.none
 
@@ -239,31 +265,6 @@ proc listenBrainzModal*: Vnode =
       tdiv(class = "row textbox"):
         input(`type` = "text", class = "text-input token-input", id = "listenbrainz-token", placeholder = "Enter your ListenBrainz token", onkeyupenter = onLBTokenEnter)
 
-proc getLFMToken(fm: AsyncLastFM) {.async.} =
-  try:
-    let resp = await fm.getToken()
-    fmToken = resp.token
-    homeServiceView = ServiceView.lastFmService
-  except:
-    clientErrorMessage = "Something went wrong. Try turning off your ad blocker."
-    homeServiceView = ServiceView.none
-  redraw()
-
-proc getLFMSession(fm: AsyncLastFM) {.async.} =
-  try:
-    let resp = await fm.getSession($fmToken)
-    fm.sk = resp.session.key
-    clientErrorMessage = ""
-    clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    try:
-      discard storeUser(db, clientUsersDbStore, clientUser)
-    except:
-      storedClientUsers[clientUser.userId] = clientUser
-    discard db.getClientUsers(homeSigninView)
-  except:
-    clientErrorMessage = "Authorisation failed!"
-    redraw()
-
 proc lastFmModal*: Vnode =
   var
     returned = true
@@ -323,7 +324,6 @@ proc serviceModal*(view: var ServiceView): Vnode =
               clientErrorMessage = ""
               if fmToken == "":
                 discard fmClient.getLFMToken()
-
 
 proc returnModal*(view: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
