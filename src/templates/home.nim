@@ -107,6 +107,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     let resp = await fm.getSession($fmToken)
     fm.sk = resp.session.key
     clientErrorMessage = ""
+    fmToken = ""
     clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
     discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
     discard db.getClientUsers(homeSigninView)
