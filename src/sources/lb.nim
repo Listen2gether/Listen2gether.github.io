@@ -62,12 +62,6 @@ func to(
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
 
-func to(
-  userListens: UserListens,
-  listenType: ListenType): SubmitListens =
-  ## Convert a `UserListens` object to a `SubmitListens` object
-  result = SubmitListens(listenType: listenType, payload: userListens.payload.listens)
-
 proc getNowPlaying(
   lb: AsyncListenBrainz,
   username: cstring,
