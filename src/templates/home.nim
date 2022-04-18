@@ -30,7 +30,7 @@ proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDb
     if storedUsers.len != 0:
       storedClientUsers = storedUsers
   except:
-    logError "IndexedDB open failed."
+    logError "Failed to get client users from IndexedDB."
   if storedClientUsers.len != 0:
     view = SigninView.returningUser
   else:
@@ -44,7 +44,7 @@ proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
     if storedUsers.len != 0:
       storedMirrorUsers = storedUsers
   except:
-    logError "IndexedDB open failed."
+    logError "Failed to get mirror users from IndexedDB."
 
 proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
