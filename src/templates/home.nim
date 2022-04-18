@@ -55,10 +55,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     lbClient = newAsyncListenBrainz($token)
     if store:
       clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
-      try:
-        discard db.storeUser(clientUsersDbStore, clientUser)
-      except:
-        storedClientUsers[userId] = clientUser
+      discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
       discard db.getClientUsers(homeSigninView)
   else:
     if store:
@@ -80,10 +77,7 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     if store:
-      try:
-        discard storeUser(db, clientUsersDbStore, clientUser)
-      except:
-        storedClientUsers[userId] = clientUser
+      discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
       discard db.getClientUsers(homeSigninView)
   except:
     if store:
@@ -114,10 +108,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fm.sk = resp.session.key
     clientErrorMessage = ""
     clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    try:
-      discard storeUser(db, clientUsersDbStore, clientUser)
-    except:
-      storedClientUsers[clientUser.userId] = clientUser
+    discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
     discard db.getClientUsers(homeSigninView)
   except:
     clientErrorMessage = "Authorisation failed!"
@@ -143,10 +134,7 @@ proc validateUser(username: string, service: Service) {.async.} =
       mirrorUser = await lbClient.initUser(username)
     of Service.lastFmService:
       mirrorUser = await fmClient.initUser(username)
-    try:
-      discard storeUser(db, mirrorUsersDbStore, mirrorUser)
-    except:
-      storedMirrorUsers[mirrorUser.userId] = mirrorUser
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorErrorMessage = ""
     loadMirror(service, username)
   except:

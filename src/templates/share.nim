@@ -27,14 +27,21 @@ var
   darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
-  let objStore = await getAll(db, dbStore, dbOptions)
-  result = collect:
-    for user in to(objStore, seq[User]): {user.userId: user}
+  result = initTable[cstring, User]()
+  try:
+    let objStore = await getAll(db, dbStore, dbOptions)
+    if not isNil objStore:
+      result = collect:
+        for user in to(objStore, seq[User]): {user.userId: user}
+  except:
+    logError "Failed to get stored users."
 
-proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, dbOptions: IDBOptions = dbOptions) {.async.} =
+proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, storedUsers: var Table[cstring, User], dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
   try:
-    discard await put(db, dbStore, toJs user, dbOptions)
+    let res =  await put(db, dbStore, toJs user, dbOptions)
+    if not res:
+      storedUsers[user.userId] = user
   except:
     logError "Failed to store users."
 

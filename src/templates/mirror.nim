@@ -47,7 +47,7 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
       mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
       if mirrorToggle:
         discard fmClient.submitMirrorQueue(mirrorUser)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
   discard longPoll(service, ms)
 
 proc getMirrorUser*(username: cstring, service: Service) {.async.} =
@@ -64,7 +64,7 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
     of Service.lastFmService:
       let preMirror = not mirrorToggle
       mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorMirrorView = MirrorView.login
     globalView = ClientView.mirrorView
     redraw()
@@ -77,7 +77,7 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       of Service.lastFmService:
         mirrorUser = await fmClient.initUser(username)
         mirrorService = service
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
       mirrorMirrorView = MirrorView.login
       globalView = ClientView.mirrorView
       redraw()
@@ -99,7 +99,7 @@ proc pageListens(ev: Event; n: VNode) =
         discard lbClient.pageUser(mirrorUser, listenEndInd)
       of Service.lastFmService:
         discard fmClient.pageUser(mirrorUser, listenEndInd)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser)
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     else:
       listenEndInd += increment
 
