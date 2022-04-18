@@ -318,7 +318,7 @@ proc returnModal*(view: var SigninView, mirror: bool): Vnode =
   result = buildHtml:
     tdiv(class = "login-container"):
       p(id = "modal-text", class = "body"):
-        text "Welcome back!"
+        text "Welcome!"
       tdiv(id = "returning-user"):
         a(id = "link"):
           text "Not you?"
