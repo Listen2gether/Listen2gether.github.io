@@ -113,8 +113,8 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
     detailedDate: cstring
 
   result = buildHtml:
-    tdiv(class = "listens"):
-      ul(onscroll = pageListens):
+    tdiv(class = "listens", onscroll = pageListens):
+      ul:
         if isSome playingNow:
           li(id = "now-playing", class = "row listen"):
             tdiv(id = "listen-details"):
