@@ -62,7 +62,7 @@ proc errorMessage*(message: string): Vnode =
 
 proc loadingModal*(message: cstring): Vnode =
   result = buildHtml:
-    tdiv(class = "col login-container"):
+    tdiv(id = "loading", class = "col login-container"):
       p(id = "body"):
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
