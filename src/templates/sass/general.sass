@@ -18,7 +18,8 @@ html, body
 #ROOT
   display: flex
   flex-direction: column
-  min-height: 100vh
+  height: 100vh
+  width: 100vw
 
 header
   padding: 2.5% 0% 1% 0%
@@ -65,8 +66,8 @@ a
 
 main
   border: 0.01rem solid v.$border
-  flex: 1 0 auto
-  margin-bottom: -4em
+  flex: 1
+  overflow-x: auto
   @include t.dark
     border-color: v.$dark-border
 
@@ -158,12 +159,8 @@ footer
   justify-content: center
   padding: 1em 0
   border: 0.01rem solid v.$border
-  background-color: v.$bg
-  height: 4em
-  z-index: 0
   @include t.dark
     border-color: v.$dark-border
-    background-color: v.$dark-bg
 
 .icon
   display: block
