@@ -24,7 +24,6 @@ html, body
 header
   padding: 2.5% 0% 1% 0%
   border: 0.01rem solid v.$border
-  border-bottom: none
   font: normal 2.5rem v.$body-font
   font-weight: 600
   text-align: center
@@ -66,8 +65,11 @@ a
 
 main
   border: 0.01rem solid v.$border
+  border-top: none
+  position: relative
   flex: 1
-  overflow-x: auto
+  overflow-x: hidden
+  overflow-y: auto
   @include t.dark
     border-color: v.$dark-border
 
@@ -160,6 +162,7 @@ footer
   padding: 1em 0
   border: 0.01rem solid v.$border
   border-top: none
+  min-height: 4.2em
   @include t.dark
     border-color: v.$dark-border
 

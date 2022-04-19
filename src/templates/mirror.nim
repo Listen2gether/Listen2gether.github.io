@@ -218,18 +218,18 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       userUrl = cstring(lfm.userBaseUrl & $username)
 
   result = buildHtml:
-    main:
-      case mirrorMirrorView:
-      of MirrorView.login:
-        signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
-      of MirrorView.mirroring:
-        if not polling:
-          discard longPoll(mirrorUserService)
-        tdiv(id = "mirror-container"):
-          tdiv(id = "mirror"):
-            p:
-              text "You are mirroring "
-              a(href = userUrl):
-                text $username & "!"
-            mirrorSwitch()
+    tdiv(id = "mirror-container"):
+      tdiv(id = "mirror"):
+        p:
+          text "You are mirroring "
+          a(href = userUrl):
+            text $username & "!"
+        mirrorSwitch()
+      main:
+        case mirrorMirrorView:
+        of MirrorView.login:
+          signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
+        of MirrorView.mirroring:
+          if not polling:
+            discard longPoll(mirrorUserService)
           renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
