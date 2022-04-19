@@ -199,9 +199,9 @@ proc getRecentTracks(
       playingNow = some to(fromJson($tracks[0], FMTrack), preMirror = some preMirror)
       # potential speedup: tracks[1..^1].mapIt(it.to(FMTrack))
       listenHistory = to(fromJson($tracks[1..^1], seq[FMTrack]), preMirror = some preMirror, mirrored = some false)
-  except:
+    return (playingNow, listenHistory)
+  except HttpRequestError:
     logError "There was a problem getting " & $username & "'s listens!"
-  return (playingNow, listenHistory)
 
 proc initUser*(
   fm: AsyncLastFM,
