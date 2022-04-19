@@ -67,7 +67,6 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
     discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorMirrorView = MirrorView.login
     globalView = ClientView.mirrorView
-    redraw()
   else:
     try:
       case service:
@@ -80,11 +79,10 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
       mirrorMirrorView = MirrorView.login
       globalView = ClientView.mirrorView
-      redraw()
-    except HttpRequestError:
+    except:
       mirrorErrorMessage = "The requested user is not valid!"
       globalView = ClientView.errorView
-      redraw()
+  redraw()
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
