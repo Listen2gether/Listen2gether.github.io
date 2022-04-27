@@ -14,13 +14,13 @@ type
     none, loading, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingRoom
-  LastFMAuthView = enum
+  LastFmAuthView = enum
     signin, authorise
 
 var
   homeServiceView: ServiceView = ServiceView.none
   homeSigninView: SigninView = SigninView.loadingUsers
-  lastFMAuthView: LastFMAuthView = LastFMAuthView.signin
+  LastFmAuthView: LastFmAuthView = LastFmAuthView.signin
   fmToken: string
 
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
@@ -259,21 +259,21 @@ proc lastFmModal*: Vnode =
     returned = true
     clicked = false
 
-  if lastFMAuthView == LastFMAuthView.signin:
+  if LastFmAuthView == LastFmAuthView.signin:
     document.addEventListener("visibilitychange", proc (ev: Event) = returned = not returned)
 
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
-      case lastFMAuthView:
-      of LastFMAuthView.signin:
+      case LastFmAuthView:
+      of LastFmAuthView.signin:
         let link = cstring("http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken)
         a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
           text "Sign-in"
           proc onclick(ev: kdom.Event; n: VNode) =
             clicked = true
             if clicked and returned:
-              lastFMAuthView = LastFMAuthView.authorise
-      of LastFMAuthView.authorise:
+              LastFmAuthView = LastFmAuthView.authorise
+      of LastFmAuthView.authorise:
         button(id = "auth-button", class = "row login-button"):
           text "Authorise"
           proc onclick(ev: kdom.Event; n: VNode) =
