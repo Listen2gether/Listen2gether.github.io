@@ -20,7 +20,7 @@ type
 var
   homeServiceView: ServiceView = ServiceView.none
   homeSigninView: SigninView = SigninView.loadingUsers
-  LastFmAuthView: LastFmAuthView = LastFmAuthView.signin
+  lastFmAuthView: LastFmAuthView = LastFmAuthView.signin
   fmToken: string
 
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
@@ -259,12 +259,12 @@ proc lastFmModal*: Vnode =
     returned = true
     clicked = false
 
-  if LastFmAuthView == LastFmAuthView.signin:
+  if lastFmAuthView == LastFmAuthView.signin:
     document.addEventListener("visibilitychange", proc (ev: Event) = returned = not returned)
 
   result = buildHtml:
     tdiv(id = "lastfm-auth"):
-      case LastFmAuthView:
+      case lastFmAuthView:
       of LastFmAuthView.signin:
         let link = cstring("http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken)
         a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
@@ -272,7 +272,7 @@ proc lastFmModal*: Vnode =
           proc onclick(ev: kdom.Event; n: VNode) =
             clicked = true
             if clicked and returned:
-              LastFmAuthView = LastFmAuthView.authorise
+              lastFmAuthView = LastFmAuthView.authorise
       of LastFmAuthView.authorise:
         button(id = "auth-button", class = "row login-button"):
           text "Authorise"
