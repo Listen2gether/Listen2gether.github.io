@@ -3,8 +3,6 @@ on:
   push:
     paths:
       - ".github/workflows/**"
-      - "src/**"
-      - "tests/**"
       - "**.nim"
       - "listen2gether.nimble"
 
