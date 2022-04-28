@@ -18,15 +18,15 @@ requires "https://gitlab.com/tandy1000/lastfm-nim#refactor"
 requires "jsony"
 requires "karax"
 
-task docs, "generate docs!":
+task docs, "Generate docs":
   exec "nim doc --project --git.commit:develop --git.url:https://github.com/listen2gether/listen2gether.github.io --outdir:public/docs src/sources/lb.nim"
   exec "mv public/docs/theindex.html public/docs/index.html"
   exec "grep -rl theindex.html public/docs | xargs sed -i 's/theindex.html/index.html/g'"
 
-task sass, "Generate css":
+task sass, "Generate CSS":
   exec "mkdir -p public/css"
   exec "sass --style=compressed --no-source-map src/sass/index.sass public/css/style.css"
 
-task buildjs, "compile templates":
+task buildjs, "Compile JS":
   exec "mkdir -p public/js"
   exec "nim -d:danger -o:public/js/client.js js src/client.nim"
