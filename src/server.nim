@@ -1,19 +1,20 @@
 import
   pkg/prologue,
-  pkg/prologue/middlewares/[staticfile, cors],
-  routes/urls
+  pkg/prologue/middlewares/staticfile
 
-let
-  env = loadPrologueEnv(".env")
-  settings = newSettings(
-    appName = env.getOrDefault("appName", "Listen2gether"),
-    debug = env.getOrDefault("debug", true),
-    port = Port(env.getOrDefault("port", 8080))
-  )
+proc index*(ctx: Context) {.async.} =
+  resp readFile("public/index.html")
 
-var app = newApp(settings = settings)
+proc mirror*(ctx: Context) {.async.} =
+  resp readFile("public/index.html")
 
-app.use(staticFileMiddleware(env.get("staticDir")))
-app.use(CorsMiddleware(allowOrigins = @[env.get("allowOrigins")], allowMethods = @[env.get("allowMethods")], allowHeaders = @[env.get("allowHeaders")]))
-app.addRoute(urls.urlPatterns, "")
+const urlPatterns* = @[
+  pattern("/", index),
+  pattern("/mirror", mirror),
+]
+
+var app = newApp(settings = newSettings(appName = "Listen2gether", debug = true, port = Port(8080)))
+
+app.use(staticFileMiddleware("public"))
+app.addRoute(urlPatterns, "")
 app.run()
