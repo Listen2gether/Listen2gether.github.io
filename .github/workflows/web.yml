@@ -30,10 +30,10 @@ jobs:
       - name: Install
         run: nimble install -d:js -y
 
-      - name: Build Sass
+      - name: Compile Sass
         run: nimble sass
 
-      - name: Compile release build
+      - name: Compile JS
         run: nimble buildjs
 
       - name: Minify JS
