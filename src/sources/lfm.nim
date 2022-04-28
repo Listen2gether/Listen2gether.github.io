@@ -170,7 +170,6 @@ proc scrobbleTrack(
   except:
     logError "There was a problem scrobbling " & scrobble.track & " - " & scrobble.artist & "!"
 
-
 proc scrobbleTracks(
   fm: AsyncLastFM,
   scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
