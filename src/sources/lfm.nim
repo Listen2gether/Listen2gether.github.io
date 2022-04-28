@@ -16,19 +16,19 @@ const
   apiSecret* = "6a037eaccb1957d1b63354b02a4eeb62"
 
 type
-  FMTrack = object
+  FMTrack* = object
     artist*, album*: JsonNode
     date*: Option[FMDate]
     mbid*, name*, url*: Option[string]
     `@attr`*: Option[Attributes]
 
-  FMDate = object
+  FMDate* = object
     uts*, text*: string
 
-  Attributes = object
+  Attributes* = object
     nowplaying*: string
 
-  Scrobble = object
+  Scrobble* = object
     track*, artist*: string
     album*, mbid*, albumArtist*: Option[string]
     timestamp*, trackNumber*, duration*: Option[int]
