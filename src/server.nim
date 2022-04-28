@@ -5,10 +5,7 @@ import
 proc index(ctx: Context) {.async.} =
   resp readFile("public/index.html")
 
-const urlPatterns = @[pattern("/", index), pattern("/mirror", index)]
-
 var app = newApp(settings = newSettings(appName = "Listen2gether", debug = true, port = Port(8080)))
-
 app.use(staticFileMiddleware("public"))
-app.addRoute(urlPatterns, "")
+app.addRoute(@[pattern("/", index), pattern("/mirror", index)], "")
 app.run()
