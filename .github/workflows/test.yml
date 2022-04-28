@@ -31,4 +31,5 @@ jobs:
       - name: Run tests
         env:
           LISTENBRAINZ_USER: ${{ secrets.LISTENBRAINZ_USER }}
+          LASTFM_USER: ${{ secrets.LASTFM_USER }}
         run: nimble test -d:c -y

@@ -1,4 +1,4 @@
-import std/unittest
+import std/[unittest, os]
 include ../src/sources/lfm
 
 suite "Last.FM source":
@@ -63,3 +63,12 @@ suite "Last.FM source":
       scrobListen.releaseMbid = none cstring
       check to(@[scrobble, scrobble]) == @[scrobListen, scrobListen]
 
+  suite "API tools":
+    setup:
+      let
+        fm = newAsyncLastFM(apiKey, apiSecret)
+        username = cstring os.getEnv("LASTFM_USER")
+
+    test "Get recent tracks":
+      let (nowplaying, recentTracks) = waitFor fm.getRecentTracks(username, preMirror = false)
+      check recentTracks.len == 100
