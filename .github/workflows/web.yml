@@ -1,4 +1,4 @@
-name: Web deployment
+name: Web Deployment
 on:
   push:
     paths:
