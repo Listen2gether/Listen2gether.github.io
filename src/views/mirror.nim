@@ -2,8 +2,8 @@ import
   std/[dom, times, options, asyncjs, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom],
   pkg/listenbrainz,
-  ../sources/[lb, lfm],
-  ../types, home, share
+  sources/[lb, lfm],
+  home, share, types
 
 type
   MirrorView* = enum

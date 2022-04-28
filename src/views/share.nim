@@ -3,8 +3,8 @@ import
   pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
-  ../sources/[lfm, utils],
-  ../types
+  sources/[lfm, utils],
+  types
 from std/sugar import collect
 
 type

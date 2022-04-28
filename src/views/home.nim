@@ -1,13 +1,13 @@
 import
-  pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
   std/[asyncjs, tables, strutils, options],
+  pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   pkg/lastfm/auth,
   pkg/listenbrainz/core,
-  ../sources/[lb, lfm, utils],
-  ../types,
-  share
+  sources/[lb, lfm, utils],
+  views/share,
+  types
 
 type
   ServiceView* = enum
