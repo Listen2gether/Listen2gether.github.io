@@ -8,8 +8,7 @@ import
   pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
-  utils,
-  ../types
+  types, utils
 
 include pkg/listenbrainz/utils/tools
 

@@ -7,8 +7,7 @@ import
   std/[json, options, strutils, times],
   pkg/[jsony, lastfm],
   pkg/lastfm/[track, user],
-  utils,
-  ../types
+  types, utils
 
 const
   userBaseUrl* = "https://last.fm/user/"
