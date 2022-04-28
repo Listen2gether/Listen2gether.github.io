@@ -1,7 +1,8 @@
 import
   pkg/karax/[karax, karaxdsl, vdom, kdom],
   std/[strutils, uri, sequtils, tables],
-  home, mirror, share, types
+  views/[home, mirror, share],
+  types
 
 var mirrorUsername: cstring
 
