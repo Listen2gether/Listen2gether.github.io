@@ -19,7 +19,7 @@ requires "jsony"
 requires "karax"
 
 task docs, "Generate docs":
-  exec "nim doc --project --git.commit:develop --git.url:https://github.com/listen2gether/listen2gether.github.io --outdir:public/docs src/sources/lb.nim"
+  exec "nim doc --project --git.commit:develop --git.url:https://github.com/listen2gether/listen2gether.github.io --outdir:public/docs src/listen2gether.nim"
   exec "mv public/docs/theindex.html public/docs/index.html"
   exec "grep -rl theindex.html public/docs | xargs sed -i 's/theindex.html/index.html/g'"
 
