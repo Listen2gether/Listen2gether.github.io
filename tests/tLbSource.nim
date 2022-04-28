@@ -3,7 +3,7 @@ include ../src/sources/lb
 
 suite "ListenBrainz source":
 
-  suite "to Helpers":
+  suite "Helpers":
 
     test "Convert `Listen` to `APIListen` (Simple)":
       let
