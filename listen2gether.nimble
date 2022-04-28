@@ -29,4 +29,4 @@ task sass, "Generate css":
 
 task buildjs, "compile templates":
   exec "mkdir -p public/js"
-  exec "nim -d:danger -o:public/js/client.js js src/views/client.nim"
+  exec "nim -d:danger -o:public/js/client.js js src/client.nim"
