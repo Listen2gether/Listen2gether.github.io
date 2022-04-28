@@ -7,7 +7,7 @@ on:
       - "listen2gether.nimble"
 
 jobs:
-  build:
+  test:
     strategy:
       fail-fast: false
 
