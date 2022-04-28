@@ -1,6 +1,0 @@
-to	utils.html#to,string	utils: to(val: string): Option[cstring]	
-to	utils.html#to,Option[seq[cstring]]	utils: to(val: Option[seq[cstring]]): Option[seq[string]]	
-to	utils.html#to,Option[seq[string]]	utils: to(val: Option[seq[string]]): Option[seq[cstring]]	
-to	utils.html#to,Option[string]	utils: to(val: Option[string]): Option[cstring]	
-to	utils.html#to,Option[cstring]	utils: to(val: Option[cstring]): Option[string]	
-logError	utils.html#logError,string	utils: logError(msg: string)	

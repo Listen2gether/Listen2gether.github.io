@@ -1,0 +1,13 @@
+camel2snake	sources/lb.html#camel2snake,string	lb: camel2snake(s: string): string	
+dumpKey	sources/lb.html#dumpKey.t,string,string	lb: dumpKey(s: var string; v: string)	
+dumpHook	sources/lb.html#dumpHook,string,Option[T]	lb: dumpHook[T](s: var string; v: Option[T])	
+dumpHook	sources/lb.html#dumpHook,string,	lb: dumpHook(s: var string; v: object)	
+renameHook	sources/lb.html#renameHook,PlaylistExtension,string	lb: renameHook(v: var PlaylistExtension; fieldName: var string)	
+renameHook	sources/lb.html#renameHook,TrackExtension,string	lb: renameHook(v: var TrackExtension; fieldName: var string)	
+dumpHook	sources/lb.html#dumpHook,string,PlaylistExtension	lb: dumpHook(s: var string; v: PlaylistExtension)	
+dumpHook	sources/lb.html#dumpHook,string,TrackExtension	lb: dumpHook(s: var string; v: TrackExtension)	
+userBaseUrl	sources/lb.html#userBaseUrl	lb: userBaseUrl	
+initUser	sources/lb.html#initUser,AsyncListenBrainz,cstring,cstring	lb: initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[\n    User]	
+updateUser	sources/lb.html#updateUser,AsyncListenBrainz,User	lb: updateUser(lb: AsyncListenBrainz; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
+pageUser	sources/lb.html#pageUser,AsyncListenBrainz,User,int,int	lb: pageUser(lb: AsyncListenBrainz; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	
+submitMirrorQueue	sources/lb.html#submitMirrorQueue,AsyncListenBrainz,User	lb: submitMirrorQueue(lb: AsyncListenBrainz; user: var User): owned(Future[void])	

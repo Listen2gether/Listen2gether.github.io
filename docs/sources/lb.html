@@ -18,9 +18,9 @@
 
 <!-- CSS -->
 <title>sources/lb</title>
-<link rel="stylesheet" type="text/css" href="nimdoc.out.css">
+<link rel="stylesheet" type="text/css" href="../nimdoc.out.css">
 
-<script type="text/javascript" src="dochack.js"></script>
+<script type="text/javascript" src="../dochack.js"></script>
 
 </head>
 <body>
@@ -39,7 +39,7 @@
   <div id="global-links">
     <ul class="simple">
     <li>
-      <a href="index.html">Index</a>
+      <a href="../index.html">Index</a>
     </li>
     </ul>
   </div>
@@ -151,7 +151,7 @@ class="link-seesrc" target="_blank">Source</a>
   <div class="section" id="6">
 <h1><a class="toc-backref" href="#6">Imports</a></h1>
 <dl class="item">
-<a class="reference external" href="utils.html">utils</a>, <a class="reference external" href="_._/types.html">../types</a>
+<a class="reference external" href="utils.html">utils</a>, <a class="reference external" href="../types.html">../types</a>
 </dl></div>
 <div class="section" id="10">
 <h1><a class="toc-backref" href="#10">Consts</a></h1>
@@ -245,7 +245,7 @@ class="link-seesrc" target="_blank">Source</a>
 <div id="initUser-procs-all">
 <div id="initUser,AsyncListenBrainz,cstring,cstring">
 <dt><pre><span class="Keyword">proc</span> <a href="#initUser%2CAsyncListenBrainz%2Ccstring%2Ccstring"><span class="Identifier">initUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">token</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span>
-    <a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
+    <a href="../types.html#User"><span class="Identifier">User</span></a><span class="Other">]</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
 Gets a given user's now playing, recent tracks, and latest listen timestamp. Returns a <tt class="docutils literal"><span class="pre"><span class="Identifier">User</span></span></tt> object
@@ -261,7 +261,7 @@ class="link-seesrc" target="_blank">Source</a>
 
 <div id="pageUser-procs-all">
 <div id="pageUser,AsyncListenBrainz,User,int,int">
-<dt><pre><span class="Keyword">proc</span> <a href="#pageUser%2CAsyncListenBrainz%2CUser%2Cint%2Cint"><span class="Identifier">pageUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">;</span> <span class="Identifier">endInd</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">int</span><span class="Other">;</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#pageUser%2CAsyncListenBrainz%2CUser%2Cint%2Cint"><span class="Identifier">pageUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="../types.html#User"><span class="Identifier">User</span></a><span class="Other">;</span> <span class="Identifier">endInd</span><span class="Other">:</span> <span class="Keyword">var</span> <span class="Identifier">int</span><span class="Other">;</span>
               <span class="Identifier">inc</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">10</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span><span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
@@ -309,7 +309,7 @@ class="link-seesrc" target="_blank">Source</a>
 
 <div id="submitMirrorQueue-procs-all">
 <div id="submitMirrorQueue,AsyncListenBrainz,User">
-<dt><pre><span class="Keyword">proc</span> <a href="#submitMirrorQueue%2CAsyncListenBrainz%2CUser"><span class="Identifier">submitMirrorQueue</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span>
+<dt><pre><span class="Keyword">proc</span> <a href="#submitMirrorQueue%2CAsyncListenBrainz%2CUser"><span class="Identifier">submitMirrorQueue</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <span class="Keyword">var</span> <a href="../types.html#User"><span class="Identifier">User</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">owned</span><span class="Other">(</span>
     <span class="Identifier">Future</span><span class="Other">[</span><span class="Identifier">void</span><span class="Other">]</span><span class="Other">)</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span>
                     <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
@@ -327,8 +327,8 @@ class="link-seesrc" target="_blank">Source</a>
 
 <div id="updateUser-procs-all">
 <div id="updateUser,AsyncListenBrainz,User">
-<dt><pre><span class="Keyword">proc</span> <a href="#updateUser%2CAsyncListenBrainz%2CUser"><span class="Identifier">updateUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">;</span>
-                <span class="Identifier">resetLastUpdate</span><span class="Other">,</span> <span class="Identifier">preMirror</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><a href="_._/types.html#User"><span class="Identifier">User</span></a><span class="Other">]</span> {.
+<dt><pre><span class="Keyword">proc</span> <a href="#updateUser%2CAsyncListenBrainz%2CUser"><span class="Identifier">updateUser</span></a><span class="Other">(</span><span class="Identifier">lb</span><span class="Other">:</span> <span class="Identifier">AsyncListenBrainz</span><span class="Other">;</span> <span class="Identifier">user</span><span class="Other">:</span> <a href="../types.html#User"><span class="Identifier">User</span></a><span class="Other">;</span>
+                <span class="Identifier">resetLastUpdate</span><span class="Other">,</span> <span class="Identifier">preMirror</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Future</span><span class="Other">[</span><a href="../types.html#User"><span class="Identifier">User</span></a><span class="Other">]</span> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">Exception</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Identifier">TimeEffect</span><span class="Other">,</span> <span class="Identifier">RootEffect</span><span class="Other">,</span> <span class="Identifier">ReadIOEffect</span><span class="Other">]</span></span>.}</pre></dt>
 <dd>
 
@@ -373,7 +373,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-28 21:18:45 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-04-28 21:43:39 UTC</small>
       </div>
     </div>
   </div>

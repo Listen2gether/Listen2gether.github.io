@@ -1,0 +1,11 @@
+userBaseUrl	sources/lfm.html#userBaseUrl	lfm: userBaseUrl	
+apiKey	sources/lfm.html#apiKey	lfm: apiKey	
+apiSecret	sources/lfm.html#apiSecret	lfm: apiSecret	
+FMTrack	sources/lfm.html#FMTrack	lfm: FMTrack	
+FMDate	sources/lfm.html#FMDate	lfm: FMDate	
+Attributes	sources/lfm.html#Attributes	lfm: Attributes	
+Scrobble	sources/lfm.html#Scrobble	lfm: Scrobble	
+initUser	sources/lfm.html#initUser,AsyncLastFM,cstring,cstring	lfm: initUser(fm: AsyncLastFM; username: cstring; sessionKey: cstring = &quot;&quot;): Future[\n    User]	
+updateUser	sources/lfm.html#updateUser,AsyncLastFM,User	lfm: updateUser(fm: AsyncLastFM; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
+pageUser	sources/lfm.html#pageUser,AsyncLastFM,User,int,int	lfm: pageUser(fm: AsyncLastFM; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	
+submitMirrorQueue	sources/lfm.html#submitMirrorQueue,AsyncLastFM,User	lfm: submitMirrorQueue(fm: AsyncLastFM; user: var User): owned(Future[void])	
