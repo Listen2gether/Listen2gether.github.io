@@ -2,16 +2,10 @@ import
   pkg/prologue,
   pkg/prologue/middlewares/staticfile
 
-proc index*(ctx: Context) {.async.} =
+proc index(ctx: Context) {.async.} =
   resp readFile("public/index.html")
 
-proc mirror*(ctx: Context) {.async.} =
-  resp readFile("public/index.html")
-
-const urlPatterns* = @[
-  pattern("/", index),
-  pattern("/mirror", mirror),
-]
+const urlPatterns = @[pattern("/", index), pattern("/mirror", index)]
 
 var app = newApp(settings = newSettings(appName = "Listen2gether", debug = true, port = Port(8080)))
 
