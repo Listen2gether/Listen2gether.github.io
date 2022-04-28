@@ -27,8 +27,8 @@ jobs:
       - name: Setup Dart Sass, UglifyJS, html-minifer
         run: npm install -g sass uglify-js html-minifier
 
-      - name: Install dependencies
-        run: nimble install -d:js -y --depsOnly
+      - name: Install
+        run: nimble install -d:js -y
 
       - name: Build Sass
         run: nimble sass
