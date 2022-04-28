@@ -57,3 +57,9 @@ suite "Last.FM source":
       scrobListen.releaseMbid = none cstring
       check to(scrobble) == scrobListen
 
+    test "Convert seq[Scrobble] to seq[Listen]":
+      var scrobListen = listen
+      scrobListen.recordingMbid = none cstring
+      scrobListen.releaseMbid = none cstring
+      check to(@[scrobble, scrobble]) == @[scrobListen, scrobListen]
+
