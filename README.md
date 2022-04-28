@@ -12,6 +12,7 @@ Currently deployed at https://listen2gether.github.io/.
 ### How to compile
 
 Requirements:
+ - Nim
  - Dart Sass
 
 Run the following commands:
