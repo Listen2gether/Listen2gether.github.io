@@ -44,6 +44,7 @@ func to*(val: Option[cstring]): Option[string] =
     result = none string
 
 proc logError*(msg: string) =
+  ## Log error messages to the JS console or stdout
   when defined(js):
     console.log cstring("ERROR: " & msg)
   else:

@@ -141,7 +141,7 @@ func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
 proc setNowPlayingTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
-  ## Sets the current playing track on Last.FM
+  ## Sets the current playing track on Last.fm
   try:
     result = await fm.setNowPlaying(track = scrobble.track,
                               artist = scrobble.artist,
@@ -156,7 +156,7 @@ proc setNowPlayingTrack(
 proc scrobbleTrack(
   fm: AsyncLastFM,
   scrobble: Scrobble): Future[JsonNode] {.async.} =
-  ## Scrobble a track to Last.FM
+  ## Scrobble a track to Last.fm
   try:
     result = await fm.scrobble(track = scrobble.track,
       artist = scrobble.artist,
@@ -172,6 +172,7 @@ proc scrobbleTrack(
 proc scrobbleTracks(
   fm: AsyncLastFM,
   scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
+  ## Scrobble many tracks to Last.fm
   var futures: seq[JsonNode]
   for scrobble in scrobbles:
     futures.add await fm.scrobbleTrack(scrobble)
@@ -204,7 +205,7 @@ proc initUser*(
   fm: AsyncLastFM,
   username: cstring,
   sessionKey: cstring = ""): Future[User] {.async.} =
-  ## Gets a given user's now playing, recent tracks, and latest listen timestamp.
+  ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let userId = cstring($Service.lastFmService & ":" & $username)
   var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService), Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)])
@@ -218,7 +219,7 @@ proc updateUser*(
   fm: AsyncLastFM,
   user: User,
   resetLastUpdate, preMirror = false): Future[User] {.async.} =
-  ## Updates user's now playing, recent tracks, and latest listen timestamp
+  ## Updates Last.fm user's now playing, recent tracks, and latest listen timestamp
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
@@ -234,7 +235,7 @@ proc pageUser*(
   user: var User,
   endInd: var int,
   inc: int = 10) {.async.} =
-  ## Backfills user's recent tracks
+  ## Backfills Last.fm user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
     (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
@@ -245,7 +246,7 @@ proc pageUser*(
 proc submitMirrorQueue*(
   fm: AsyncLastFM,
   user: var User) {.async.} =
-  ## Submits user's now playing and listen history that are not mirrored or preMirror
+  ## Submits Last.fm user's now playing and listen history that are not mirrored or preMirror
   if isSome user.playingNow:
     if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
       try:

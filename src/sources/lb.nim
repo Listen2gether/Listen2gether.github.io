@@ -30,7 +30,7 @@ func to(track: Listen): APIListen =
 
 func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
   ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
-  ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
+  ## When `toMirror` is set, only tracks that have not been `mirrored` or are not `preMirror` are returned.
   for track in tracks:
     if toMirror:
       if not get(track.mirrored) and not get(track.preMirror):
@@ -76,7 +76,6 @@ proc getNowPlaying(
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s now playing!"
 
-
 proc getRecentTracks(
   lb: AsyncListenBrainz,
   username: cstring,
@@ -94,7 +93,7 @@ proc initUser*(
   lb: AsyncListenBrainz,
   username: cstring,
   token: cstring = ""): Future[User] {.async.} =
-  ## Gets a given user's now playing, recent tracks, and latest listen timestamp.
+  ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let userId = cstring($Service.listenBrainzService & ":" & $username)
   var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username, token = token), Service.lastFmService: newServiceUser(Service.lastFmService)])
@@ -107,7 +106,7 @@ proc updateUser*(
   lb: AsyncListenBrainz,
   user: User,
   resetLastUpdate, preMirror = false): Future[User] {.async.} =
-  ## Updates user's now playing, recent tracks, and latest listen timestamp
+  ## Updates ListenBrainz user's now playing, recent tracks, and latest listen timestamp
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
@@ -123,7 +122,7 @@ proc pageUser*(
   user: var User,
   endInd: var int,
   inc: int = 10) {.async.} =
-  ## Backfills user's recent tracks
+  ## Backfills ListenBrainz user's recent tracks
   let
     maxTs = get user.listenHistory[^1].listenedAt
     newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror = true, maxTs = maxTs)
@@ -133,7 +132,7 @@ proc pageUser*(
 proc submitMirrorQueue*(
   lb: AsyncListenBrainz,
   user: var User) {.async.} =
-  ## Submits user's now playing and listen history that are not mirrored or preMirror
+  ## Submits ListenBrainz user's now playing and listen history that are not `mirrored` or `preMirror`
   if isSome user.playingNow:
     if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
       let
