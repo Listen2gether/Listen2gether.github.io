@@ -5,6 +5,10 @@ FMTrack	sources/lfm.html#FMTrack	lfm: FMTrack
 FMDate	sources/lfm.html#FMDate	lfm: FMDate	
 Attributes	sources/lfm.html#Attributes	lfm: Attributes	
 Scrobble	sources/lfm.html#Scrobble	lfm: Scrobble	
+`==`	sources/lfm.html#==,FMDate,FMDate	lfm: `==`(a, b: FMDate): bool	
+`==`	sources/lfm.html#==,FMTrack,FMTrack	lfm: `==`(a, b: FMTrack): bool	
+`==`	sources/lfm.html#==,Attributes,Attributes	lfm: `==`(a, b: Attributes): bool	
+`==`	sources/lfm.html#==,Scrobble,Scrobble	lfm: `==`(a, b: Scrobble): bool	
 initUser	sources/lfm.html#initUser,AsyncLastFM,cstring,cstring	lfm: initUser(fm: AsyncLastFM; username: cstring; sessionKey: cstring = &quot;&quot;): Future[\n    User]	
 updateUser	sources/lfm.html#updateUser,AsyncLastFM,User	lfm: updateUser(fm: AsyncLastFM; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
 pageUser	sources/lfm.html#pageUser,AsyncLastFM,User,int,int	lfm: pageUser(fm: AsyncLastFM; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	
