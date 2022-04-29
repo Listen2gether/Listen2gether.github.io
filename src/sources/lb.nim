@@ -30,7 +30,7 @@ func to(track: Listen): APIListen =
 
 func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
   ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
-  ## When `toMirror` is set, only tracks that have not been `mirrored` or are not `preMirror` are returned.
+  ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
     if toMirror:
       if not get(track.mirrored) and not get(track.preMirror):

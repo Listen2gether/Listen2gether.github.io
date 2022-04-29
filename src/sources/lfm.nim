@@ -65,15 +65,17 @@ func newScrobble(
   result.duration = duration
 
 func getVal(node: JsonNode, index: string): Option[cstring] = to getStr node{index}
+  ## Get an `Option[cstring]` value from a `JsonNode` and `index`
 
 func parseDate(date: Option[FMDate]): Option[int] =
-  ## convert `Option[FMDate]` date to `Option[int]
+  ## Convert `Option[FMDate]` date to `Option[int]
   if isSome date:
     result = some parseInt get(date).uts
   else:
     result = none int
 
 func parseMbids(mbid: string): Option[seq[cstring]] =
+  ## Convert `string` to `Option[seq[cstring]]`
   if isEmptyOrWhitespace mbid:
     result = none seq[cstring]
   else:
