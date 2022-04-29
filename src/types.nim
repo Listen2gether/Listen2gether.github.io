@@ -6,7 +6,7 @@ type
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
-  ServiceUser* = object
+  ServiceUser* = ref object
     username*: cstring
     case service*: Service
     of listenBrainzService:
@@ -14,7 +14,7 @@ type
     of lastFmService:
       sessionKey*: cstring
 
-  User* = object
+  User* = ref object
     userId*: cstring
     services*: array[Service, ServiceUser]
     playingNow*: Option[Listen]
@@ -49,6 +49,7 @@ func newUser*(
   listenHistory: seq[Listen] = @[],
   lastUpdateTs: int = 0): User =
   ## Create new User object
+  new(result)
   result.userId = userId
   result.services = services
   result.playingNow = playingNow
