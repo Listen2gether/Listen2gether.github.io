@@ -46,9 +46,25 @@ func newFMTrack(
   result.url = url
   result.`@attr` = `@attr`
 
+func `==`*(a, b: FMDate): bool =
+  return a.uts == b.uts and
+    a.text == b.text
+
+func `==`*(a, b: FMTrack): bool =
+  return a.artist == b.artist and
+    a.album == b.album and
+    a.date == b.date and
+    a.mbid == b.mbid and
+    a.name == b.name and
+    a.url == b.url and
+    a.`@attr` == b.`@attr`
+
 func newAttributes(nowplaying: string): Attributes =
   ## Create new `Attributes` object
   result.nowplaying = nowplaying
+
+func `==`*(a, b: Attributes): bool =
+  return a.nowplaying == b.nowplaying
 
 func newScrobble(
   track, artist: string,
@@ -63,6 +79,16 @@ func newScrobble(
   result.albumArtist = albumArtist
   result.trackNumber = trackNumber
   result.duration = duration
+
+func `==`*(a, b: Scrobble): bool =
+  return a.track == b.track and
+    a.artist == b.artist and
+    a.timestamp == b.timestamp and
+    a.album == b.album and
+    a.mbid == b.mbid and
+    a.albumArtist == b.albumArtist and
+    a.trackNumber == b.trackNumber and
+    a.duration == b.duration
 
 func getVal(node: JsonNode, index: string): Option[cstring] = to getStr node{index}
   ## Get an `Option[cstring]` value from a `JsonNode` and `index`
@@ -108,7 +134,7 @@ func to(scrobble: Scrobble,
   result = newListen(trackName = cstring scrobble.track,
                     artistName = cstring scrobble.artist,
                     releaseName = to scrobble.album,
-                    artistMbids = to some @[get scrobble.mbid],
+                    recordingMbid = to scrobble.mbid,
                     trackNumber = scrobble.trackNumber,
                     listenedAt = scrobble.timestamp,
                     preMirror = preMirror,
