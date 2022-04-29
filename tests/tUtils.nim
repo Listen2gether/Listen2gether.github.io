@@ -5,12 +5,13 @@ suite "Utils":
     setup:
       let
         someCstrSeq: Option[seq[cstring]] = some @[cstring "test!", cstring "test?"]
-        someStrSeq: Option[seq[string]] = some @["test!", "test?"]
         noneCstrSeq: Option[seq[cstring]] = none seq[cstring]
-        noneStrSeq: Option[seq[string]] = none seq[string]
         someCstr: Option[cstring] = some cstring ""
-        someStr: Option[string] = some ""
         noneCstr: Option[cstring] = none cstring
+
+        someStrSeq: Option[seq[string]] = some @["test!", "test?"]
+        noneStrSeq: Option[seq[string]] = none seq[string]
+        someStr: Option[string] = some ""
         noneStr: Option[string] = none string
 
     test "Convert some `Option[seq[cstring]]` to `Option[seq[string]]`":
