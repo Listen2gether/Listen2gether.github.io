@@ -4,12 +4,14 @@ include ../src/sources/lb
 suite "ListenBrainz source":
 
   suite "Helpers":
-
-    test "Convert `Listen` to `APIListen` (Simple)":
+    setup:
       let
         trackName = "track"
         artistName = "artist"
         listenedAt = some 1
+
+    test "Convert `Listen` to `APIListen` (Simple)":
+      let
         listen = newListen(cstring trackName, cstring artistName, listenedAt = listenedAt)
         apiListen = newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))
         newAPIListen = to listen
@@ -17,9 +19,6 @@ suite "ListenBrainz source":
 
     test "Convert `seq[Listen]` to `seq[APIListen]` (Simple)":
       let
-        trackName = "track"
-        artistName = "artist"
-        listenedAt = some 1
         listens = @[newListen(cstring trackName, cstring artistName, listenedAt = listenedAt)]
         apiListens = @[newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))]
         newAPIListens = to listens
@@ -27,9 +26,6 @@ suite "ListenBrainz source":
 
     test "Convert `Listen` to `APIListen` to `Listen`":
       let
-        trackName = "track"
-        artistName = "artist"
-        listenedAt = some 1
         listen = newListen(cstring trackName, cstring artistName, listenedAt = listenedAt)
         apiListen = to listen
         newListen = to apiListen
@@ -37,8 +33,6 @@ suite "ListenBrainz source":
 
     test "Convert `APIListen` to `Listen` (Simple)":
       let
-        trackName = "track"
-        artistName = "artist"
         apiListen = newAPIListen(trackMetadata = newTrackMetadata(trackName, artistName))
         preMirror = some true
         listen = newListen(cstring trackName, cstring artistName, preMirror = preMirror)
@@ -54,8 +48,6 @@ suite "ListenBrainz source":
 
     test "Convert `APIListen` to `Listen` to `APIListen`":
       let
-        trackName = "track"
-        artistName = "artist"
         apiListen = newAPIListen(trackMetadata = newTrackMetadata(trackName, artistName))
         preMirror = some true
         listen = to(apiListen, preMirror)
