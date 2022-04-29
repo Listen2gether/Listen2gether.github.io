@@ -17,17 +17,16 @@ const userBaseUrl* = "https://listenbrainz.org/user/"
 func to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
-    additionalInfo = AdditionalInfo(tracknumber: track.trackNumber,
-                                    trackMbid: to track.recordingMbid,
-                                    recordingMbid: to track.recordingMbid,
-                                    releaseMbid: to track.releaseMbid,
-                                    artistMbids: to track.artistMbids)
-    trackMetadata = TrackMetadata(trackName: $track.trackName,
-                                  artistName: $track.artistName,
-                                  releaseName: to track.releaseName,
-                                  additionalInfo: some additionalInfo)
-  result = APIListen(listenedAt: track.listenedAt,
-                     trackMetadata: trackMetadata)
+    additionalInfo = newAdditionalInfo(tracknumber = track.trackNumber,
+                                    trackMbid = to track.recordingMbid,
+                                    recordingMbid = to track.recordingMbid,
+                                    releaseMbid = to track.releaseMbid,
+                                    artistMbids = to track.artistMbids)
+    trackMetadata = newTrackMetadata(trackName = $track.trackName,
+                                  artistName = $track.artistName,
+                                  releaseName = to track.releaseName,
+                                  additionalInfo = some additionalInfo)
+  result = newAPIListen(listenedAt = track.listenedAt, trackMetadata = trackMetadata)
 
 func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
   ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
