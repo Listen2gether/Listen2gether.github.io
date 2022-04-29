@@ -135,7 +135,8 @@ func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
   ## Convert a sequence of `Listen` objects to a sequence of `Scrobble` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
-    if toMirror and not get(track.mirrored) and not get(track.preMirror):
+    if toMirror:
+      if not get(track.mirrored) and not get(track.preMirror):
         result.add to track
     else:
       result.add to track
