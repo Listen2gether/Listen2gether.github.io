@@ -6,7 +6,7 @@ type
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
-  ServiceUser* = ref object
+  ServiceUser* = object
     username*: cstring
     case service*: Service
     of listenBrainzService:
@@ -14,7 +14,7 @@ type
     of lastFmService:
       sessionKey*: cstring
 
-  User* = ref object
+  User* = object
     userId*: cstring
     services*: array[Service, ServiceUser]
     playingNow*: Option[Listen]
