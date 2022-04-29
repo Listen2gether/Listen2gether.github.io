@@ -13,7 +13,7 @@ requires "nim >= 1.7.1"
 when defined(c):
   requires "prologue"
 requires "nodejs"
-requires "https://gitlab.com/tandy1000/listenbrainz-nim"
+requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 requires "https://gitlab.com/tandy1000/lastfm-nim#refactor"
 requires "jsony"
 requires "karax"
