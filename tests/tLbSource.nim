@@ -43,7 +43,7 @@ suite "ListenBrainz source":
       let
         apiListens = @[newAPIListen(trackMetadata = newTrackMetadata("track", "artist")), newAPIListen(trackMetadata = newTrackMetadata("track1", "artist1"))]
         listens = @[newListen(cstring "track", cstring "artist"), newListen(cstring "track1", cstring "artist1")]
-        newListens = to(apiListens)
+        newListens = to apiListens
       check newListens == listens
 
     test "Convert `APIListen` to `Listen` to `APIListen`":
