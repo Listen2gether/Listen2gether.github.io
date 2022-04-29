@@ -49,7 +49,6 @@ func newUser*(
   listenHistory: seq[Listen] = @[],
   lastUpdateTs: int = 0): User =
   ## Create new User object
-  new(result)
   result.userId = userId
   result.services = services
   result.playingNow = playingNow
