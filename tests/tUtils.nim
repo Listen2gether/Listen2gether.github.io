@@ -4,12 +4,12 @@ import ../src/sources/utils
 suite "Utils":
     setup:
       let
-        someCstrSeq: Option[seq[cstring]] = some @[cstring "test!", cstring "test?"]
+        someCstrSeq: Option[seq[cstring]] = some @[cstring ""]
         noneCstrSeq: Option[seq[cstring]] = none seq[cstring]
         someCstr: Option[cstring] = some cstring ""
         noneCstr: Option[cstring] = none cstring
 
-        someStrSeq: Option[seq[string]] = some @["test!", "test?"]
+        someStrSeq: Option[seq[string]] = some @[""]
         noneStrSeq: Option[seq[string]] = none seq[string]
         someStr: Option[string] = some ""
         noneStr: Option[string] = none string
