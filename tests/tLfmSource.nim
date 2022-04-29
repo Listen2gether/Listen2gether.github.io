@@ -60,7 +60,7 @@ suite "Last.FM source":
     test "Convert `Scrobble` to `Listen` to `Scrobble`":
       check scrobble == to to scrobble
 
-    test "Convert seq[Scrobble] to seq[Listen]":
+    test "Convert `seq[Scrobble]` to `seq[Listen]`":
       var newListen = listen
       newListen.releaseMbid = none cstring
       newListen.artistMbids = none seq[cstring]
