@@ -24,6 +24,13 @@ suite "ListenBrainz source":
         newAPIListens = to listens
       check newAPIListens[0] == apiListens[0]
 
+    test "Convert `seq[Listen]` to `seq[APIListen]` with `toMirror = true`":
+      let
+        listens = @[newListen(cstring trackName, cstring artistName, listenedAt = listenedAt, mirrored = some false, preMirror = some false), newListen(cstring trackName, cstring artistName, listenedAt = listenedAt, mirrored = some true, preMirror = some false)]
+        apiListens = @[newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))]
+        newAPIListens = to(listens, toMirror = true)
+      check newAPIListens[0] == apiListens[0]
+
     test "Convert `Listen` to `APIListen` to `Listen`":
       let
         listen = newListen(cstring trackName, cstring artistName, listenedAt = listenedAt)
