@@ -63,7 +63,7 @@ proc initialLoad =
           globalView = ClientView.loadingView
           discard getMirrorUser(mirrorUsername, mirrorService)
         elif globalView == ClientView.errorView:
-          echo "Error!"
+          logError("Mirror user not found!")
         else:
           globalView = ClientView.mirrorView
       except ValueError:
