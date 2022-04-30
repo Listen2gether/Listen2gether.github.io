@@ -172,13 +172,6 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                 span(title = detailedDate):
                   text time
 
-proc mirrorError*(message: string): Vnode =
-  result = buildHtml:
-    main:
-      tdiv(id = "mirror-error"):
-        errorMessage("Uh Oh!")
-        errorMessage(message)
-
 proc mirrorSwitch: Vnode =
   result = buildHtml:
     tdiv(id = "mirror-toggle"):
