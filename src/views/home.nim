@@ -415,7 +415,7 @@ proc logoCol: Vnode =
 
 proc home*: Vnode =
   ## Generates main section for Home page.
-  result = buildHtml:
+  result = buildHtml(main):
     tdiv(class = "container"):
       titleCol()
       signinCol(homeSigninView, homeServiceView)

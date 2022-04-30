@@ -32,8 +32,7 @@ proc createDom: VNode =
     headerSection()
     case globalView:
     of ClientView.homeView:
-      main:
-        home()
+      home()
     of ClientView.loadingView:
       main:
         loadingModal(cstring("Loading " & $mirrorUsername & "'s listens..."))
