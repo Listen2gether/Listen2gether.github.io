@@ -5,7 +5,7 @@ import
   home, share, types
 
 type
-  MirrorView* = enum
+  MirrorView = enum
     login, mirroring
 
 var
@@ -101,6 +101,7 @@ proc pageListens(ev: Event; n: VNode) =
       listenEndInd += increment
 
 proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endInd: int): Vnode =
+  # TODO split into smaller procs
   let dateFormat = "ddd d MMMM YYYY"
   var
     trackName, artistName, detailedDate: cstring
