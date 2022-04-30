@@ -16,9 +16,9 @@ var
   fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
+  dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   clientUsersDbStore*: cstring = "clientUsers"
   mirrorUsersDbStore*: cstring = "mirrorUsers"
-  dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
