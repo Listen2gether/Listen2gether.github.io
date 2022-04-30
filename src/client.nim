@@ -30,7 +30,7 @@ proc initialLoad =
         mirrorErrorMessage = "Invalid service!"
         globalView = ClientView.errorView
 
-proc createDom(): VNode =
+proc createDom: VNode =
   if mirrorUsername.isNil or globalView == ClientView.homeView:
     initialLoad()
 
