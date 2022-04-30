@@ -8,9 +8,8 @@ var mirrorUsername: cstring
 
 proc home: Vnode =
   ## Generates main section for Home page.
-  result = buildHtml:
-    main:
-      mainSection()
+  result = buildHtml(main):
+    mainSection()
 
 proc initialLoad =
   if ($window.location.pathname) == "/mirror":
