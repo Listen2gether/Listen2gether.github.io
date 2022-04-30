@@ -8,8 +8,7 @@ var
   mirrorUsername: cstring
   darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
 
-
-proc headerSection(): Vnode =
+proc headerSection: Vnode =
   ## Produces header section to be used on all pages.
   result = buildHtml(header):
     a(class = "header", href = "/"):
@@ -18,11 +17,10 @@ proc headerSection(): Vnode =
       text "gether"
 
 proc errorSection(message: string): Vnode =
-  result = buildHtml:
-    main:
-      tdiv(id = "mirror-error"):
-        errorMessage("Uh Oh!")
-        errorMessage(message)
+  result = buildHtml(main):
+    tdiv(id = "mirror-error"):
+      errorMessage("Uh Oh!")
+      errorMessage(message)
 
 proc setDataTheme(darkMode: bool) =
   if darkMode:
@@ -45,7 +43,7 @@ proc darkModeToggle: Vnode =
           setItem(cstring "dark-mode", cstring $darkMode)
       span(id = "dark-mode-slider", class = "slider")
 
-proc footerSection(): Vnode =
+proc footerSection: Vnode =
   ## Produces footer section to be used on all pages.
   result = buildHtml(footer):
     a(href = "https://www.gnu.org/licenses/agpl-3.0.html"):
