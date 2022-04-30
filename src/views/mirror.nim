@@ -218,7 +218,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       main:
         case mirrorMirrorView:
         of MirrorView.login:
-          signinCol(mirrorSigninView, mirrorServiceView, mirror = false)
+          signinCol(mirrorSigninView, mirrorServiceView, mirrorModal = false)
         of MirrorView.mirroring:
           if not polling:
             discard longPoll(mirrorUserService)

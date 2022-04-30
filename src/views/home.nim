@@ -314,7 +314,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
               if fmToken == "":
                 discard fmClient.getLFMToken()
 
-proc returnModal*(view: var SigninView, mirror: bool): Vnode =
+proc returnModal*(view: var SigninView, mirrorModal: bool): Vnode =
   result = buildHtml:
     tdiv(class = "login-container"):
       p(id = "modal-text", class = "body"):
@@ -326,10 +326,10 @@ proc returnModal*(view: var SigninView, mirror: bool): Vnode =
             view = SigninView.newUser
         renderUsers(storedClientUsers, clientUser, clientService)
         errorModal(clientErrorMessage)
-      if mirror:
+      if mirrorModal:
         mirrorUserModal()
 
-proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirror: bool): Vnode =
+proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirrorModal: bool): Vnode =
   result = buildHtml:
     tdiv(class = "login-container"):
       tdiv(id = "service-modal-container"):
@@ -351,7 +351,7 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
           lastFmModal()
           returnButton(serviceView, signinView)
 
-      if mirror:
+      if mirrorModal:
         mirrorUserModal()
 
 proc titleCol: Vnode =
@@ -366,7 +366,7 @@ proc titleCol: Vnode =
       p(id = "subtitle"):
         text "Whether you're physically in the same room or not."
 
-proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror = true): Vnode =
+proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirrorModal = true): Vnode =
   result = buildHtml:
     tdiv(id = "signin-container", class = "col"):
       case signinView:
@@ -375,9 +375,9 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
         discard db.getMirrorUsers()
         loadingModal(cstring "Loading users...")
       of SigninView.returningUser:
-        returnModal(signinView, mirror)
+        returnModal(signinView, mirrorModal)
       of SigninView.newUser:
-        loginModal(serviceView, signinView, mirror)
+        loginModal(serviceView, signinView, mirrorModal)
       of SigninView.loadingRoom:
         loadingModal(cstring "Loading room...")
 
