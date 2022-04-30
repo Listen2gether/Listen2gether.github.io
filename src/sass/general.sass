@@ -75,12 +75,15 @@ main
 .container
   display: flex
   flex-direction: row
-  margin: auto 25vw
   flex-wrap: wrap
 
 @media (max-width: 2560px)
   .container
     margin: auto 19vw
+
+@media (max-width: 1920px)
+  .container
+    margin: auto 25vw
 
 @media (max-width: 1536px)
   .container
@@ -94,9 +97,16 @@ main
   .container
     margin: auto 10vw
 
-@media (max-width: 900px)
+@media (max-width: 810px)
   .container
     flex-direction: column
+
+@media (max-width: 500px)
+  .container
+    margin: auto 2vw
+
+@media (max-width: 400px)
+  .container
     margin: auto 1vw
 
 .col
