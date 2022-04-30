@@ -26,6 +26,7 @@ var
   clientErrorMessage*, mirrorErrorMessage*: string
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
+  ## Gets users from a given IndexedDB store.
   result = initTable[cstring, User]()
   try:
     let objStore = await getAll(db, dbStore, dbOptions)
@@ -44,7 +45,8 @@ proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, storedUsers: var Ta
   except:
     logError "Failed to store users."
 
-proc errorMessage*(message: string): Vnode =
+proc errorModal*(message: string): Vnode =
+  ## Render a div with a given error message
   result = buildHtml:
     tdiv(class = "error-message"):
       if message != "":
@@ -52,6 +54,7 @@ proc errorMessage*(message: string): Vnode =
           text message
 
 proc loadingModal*(message: cstring): Vnode =
+  ## Renders a div with a loading animation with a given message.
   result = buildHtml:
     tdiv(id = "loading", class = "col login-container"):
       p(id = "body"):

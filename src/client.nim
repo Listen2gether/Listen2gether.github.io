@@ -19,8 +19,8 @@ proc headerSection: Vnode =
 proc errorSection(message: string): Vnode =
   result = buildHtml(main):
     tdiv(id = "mirror-error"):
-      errorMessage("Uh Oh!")
-      errorMessage(message)
+      errorModal("Uh Oh!")
+      errorModal(message)
 
 proc setDataTheme(darkMode: bool) =
   if darkMode:
