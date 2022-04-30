@@ -6,11 +6,6 @@ import
 
 var mirrorUsername: cstring
 
-proc home: Vnode =
-  ## Generates main section for Home page.
-  result = buildHtml(main):
-    mainSection()
-
 proc initialLoad =
   if ($window.location.pathname) == "/mirror":
     let params = toTable toSeq decodeQuery(($window.location.search).split("?")[1])
@@ -37,7 +32,8 @@ proc createDom: VNode =
     headerSection()
     case globalView:
     of ClientView.homeView:
-      home()
+      main:
+        home()
     of ClientView.loadingView:
       main:
         loadingModal(cstring("Loading " & $mirrorUsername & "'s listens..."))
