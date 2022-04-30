@@ -5,10 +5,10 @@
 #
 nimcache/
 nimblecache/
-htmldocs/
 keys.json
 .vscode/
 *.db
 *.js
 public/css
 public/docs
+public/js
