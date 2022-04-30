@@ -11,7 +11,7 @@ type
 var
   mirrorMirrorView = MirrorView.login
   mirrorSigninView = SigninView.loadingUsers
-  mirrorServiceView = ServiceView.none
+  mirrorServiceView = ServiceView.selection
   listenEndInd: int = 10
   mirrorToggle: bool = true
   polling: bool = false

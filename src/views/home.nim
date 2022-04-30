@@ -11,14 +11,14 @@ import
 
 type
   ServiceView* = enum
-    none, loading, listenBrainzService, lastFmService
+    selection, loading, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingRoom
   LastFmAuthView = enum
     signin, authorise
 
 var
-  homeServiceView: ServiceView = ServiceView.none
+  homeServiceView: ServiceView = ServiceView.selection
   homeSigninView: SigninView = SigninView.loadingUsers
   lastFmAuthView: LastFmAuthView = LastFmAuthView.signin
   fmToken: string
@@ -68,7 +68,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       except:
         storedClientUsers.del(userId)
     redraw()
-  homeServiceView = ServiceView.none
+  homeServiceView = ServiceView.selection
 
 proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
@@ -90,7 +90,7 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
       except:
         storedClientUsers.del(userId)
     redraw()
-  homeServiceView = ServiceView.none
+  homeServiceView = ServiceView.selection
 
 proc getLFMToken(fm: AsyncLastFM) {.async.} =
   try:
@@ -99,7 +99,7 @@ proc getLFMToken(fm: AsyncLastFM) {.async.} =
     homeServiceView = ServiceView.lastFmService
   except:
     clientErrorMessage = "Something went wrong. Try turning off your ad blocker."
-    homeServiceView = ServiceView.none
+    homeServiceView = ServiceView.selection
   redraw()
 
 proc getLFMSession(fm: AsyncLastFM) {.async.} =
@@ -114,7 +114,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
   except:
     clientErrorMessage = "Authorisation failed!"
     redraw()
-  homeServiceView = ServiceView.none
+  homeServiceView = ServiceView.selection
 
 proc serviceToggle: Vnode =
   result = buildHtml:
@@ -228,7 +228,7 @@ proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vn
         p(id = "return-button"):
           text "🔙"
         proc onclick(ev: kdom.Event; n: VNode) =
-          serviceView = ServiceView.none
+          serviceView = ServiceView.selection
           if storedClientUsers.len > 0:
             signinView = SigninView.returningUser
 
@@ -336,7 +336,7 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
         p(id = "modal-text", class = "body"):
           text "Login to your service:"
         case serviceView:
-        of ServiceView.none:
+        of ServiceView.selection:
           serviceModal(serviceView)
           errorMessage(clientErrorMessage)
         of ServiceView.loading:
