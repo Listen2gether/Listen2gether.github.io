@@ -103,11 +103,10 @@ proc pageListens(ev: Event; n: VNode) =
 proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endInd: int): Vnode =
   let dateFormat = "ddd d MMMM YYYY"
   var
-    trackName, artistName: cstring
+    trackName, artistName, detailedDate: cstring
     preMirrorSplit: bool = false
     lastCleanDate, cleanDate, today, time: string
     listenTime: Time
-    detailedDate: cstring
 
   result = buildHtml:
     tdiv(class = "listens", onscroll = pageListens):
