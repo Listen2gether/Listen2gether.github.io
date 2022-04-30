@@ -1,6 +1,5 @@
 import std/[options, times]
 
-
 type
   Service* = enum
     listenBrainzService = "listenbrainz",
@@ -28,7 +27,6 @@ type
     trackNumber*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
-
 func newServiceUser*(
   service: Service,
   username, token, sessionKey: cstring = ""): ServiceUser =
@@ -40,7 +38,6 @@ func newServiceUser*(
     result.token = token
   of lastFmService:
     result.sessionKey = sessionKey
-
 
 func newUser*(
   userId: cstring = $toUnix(getTime()),
@@ -55,7 +52,6 @@ func newUser*(
   result.playingNow = playingNow
   result.listenHistory = listenHistory
   result.lastUpdateTs = lastUpdateTs
-
 
 func newListen*(
   trackName, artistName: cstring,
