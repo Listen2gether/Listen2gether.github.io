@@ -413,7 +413,8 @@ proc logoCol: Vnode =
         )
       )
 
-proc mainSection*: Vnode =
+proc home*: Vnode =
+  ## Generates main section for Home page.
   result = buildHtml:
     tdiv(class = "container"):
       titleCol()
