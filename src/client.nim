@@ -1,6 +1,6 @@
 import
-  pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   std/strutils,
+  pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   views/[home, mirror, share]
 
 var darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
