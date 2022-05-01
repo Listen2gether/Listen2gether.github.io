@@ -357,19 +357,7 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
     if mirrorModal:
       mirrorUserModal()
 
-proc titleCol: Vnode =
-  ## Renders the title column
-  result = buildHtml(tdiv(id = "title-container", class = "col")):
-    p(id = "title"):
-      a(class = "header", href = "/"):
-        text "Listen"
-        span: text "2"
-        text "gether"
-      text " is a website for listen parties."
-    p(id = "subtitle"):
-      text "Whether you're physically in the same room or not."
-
-proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirrorModal = true): Vnode =
+proc signinModal*(signinView: var SigninView, serviceView: var ServiceView, mirrorModal = true): Vnode =
   ## Renders the signin column.
   result = buildHtml(tdiv(id = "signin-container", class = "col")):
     case signinView:
@@ -384,34 +372,34 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
     of SigninView.loadingRoom:
       loadingModal("Loading room...")
 
-proc descriptionCol: Vnode =
-  ## Renders the project description column
-  result = buildHtml(tdiv(id = "description-container", class = "col")):
-    p(class = "body"):
-      text "Virtual listen parties are powered by "
-      a(class = "header", href = "https://listenbrainz.org/"):
-        text "ListenBrainz"
-      text " and a "
-      a(class = "header", href = "https://matrix.org/"):
-        text "Matrix"
-      text " chatroom."
-
-proc logoCol: Vnode =
-  ## Renders the project logos column
-  result = buildHtml(tdiv(id = "logo-container", class = "col")):
-    a(href = "https://listenbrainz.org/", img(src = "/assets/listenbrainz-logo.svg",
-      id = "listenbrainz-logo", class = "logo", alt = "ListenBrainz.org logo")
-    )
-    a(href = "https://matrix.org/", img(src = "/assets/matrix-logo.svg",
-      id = "matrix-logo", class = "logo", alt = "Matrix.org logo")
-    )
-
 proc home*: Vnode =
   ## Renders the main section for home view.
   result = buildHtml(main):
     tdiv(class = "container"):
-      titleCol()
-      signinCol(homeSigninView, homeServiceView)
+      tdiv(id = "title-container", class = "col"):
+        p(id = "title"):
+          a(class = "header", href = "/"):
+            text "Listen"
+            span: text "2"
+            text "gether"
+          text " is a website for listen parties."
+        p(id = "subtitle"):
+          text "Whether you're physically in the same room or not."
+      signinModal(homeSigninView, homeServiceView)
       tdiv(class = "break-column")
-      descriptionCol()
-      logoCol()
+      tdiv(id = "description-container", class = "col"):
+        p(class = "body"):
+          text "Virtual listen parties are powered by "
+          a(class = "header", href = "https://listenbrainz.org/"):
+            text "ListenBrainz"
+          text " and a "
+          a(class = "header", href = "https://matrix.org/"):
+            text "Matrix"
+          text " chatroom."
+      tdiv(id = "logo-container", class = "col"):
+        a(href = "https://listenbrainz.org/", img(src = "/assets/listenbrainz-logo.svg",
+          id = "listenbrainz-logo", class = "logo", alt = "ListenBrainz.org logo")
+        )
+        a(href = "https://matrix.org/", img(src = "/assets/matrix-logo.svg",
+          id = "matrix-logo", class = "logo", alt = "Matrix.org logo")
+        )
