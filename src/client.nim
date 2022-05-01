@@ -75,10 +75,10 @@ proc mirrorRoute =
           mirrorErrorMessage = "Invalid service!"
           globalView = ClientView.errorView
       else:
-        mirrorErrorMessage = "Invalid parameters supplied! Links must include the service and user parameters!"
+        mirrorErrorMessage = "Invalid parameters supplied! Links must include both service and user parameters!"
         globalView = ClientView.errorView
   else:
-    mirrorErrorMessage = "No parameters supplied! Links must include the service and user parameters!"
+    mirrorErrorMessage = "No parameters supplied! Links must include both service and user parameters!"
     globalView = ClientView.errorView
 
 proc createDom: VNode =
