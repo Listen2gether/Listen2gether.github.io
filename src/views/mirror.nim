@@ -1,5 +1,5 @@
 import
-  std/[dom, times, options, asyncjs, tables],
+  std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
   sources/[lb, lfm],
   home, share, types
@@ -15,6 +15,7 @@ var
   listenEndInd: int = 10
   mirrorToggle: bool = true
   polling: bool = false
+  mirrorUsername*: cstring
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
@@ -190,7 +191,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
             discard longPoll(mirrorUserService)
           renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
 
-proc getMirrorUser*(username: cstring, service: Service) {.async.} =
+proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
   let userId = cstring($service & ":") & username
@@ -223,3 +224,29 @@ proc getMirrorUser*(username: cstring, service: Service) {.async.} =
       mirrorErrorMessage = "The requested user is not valid!"
       globalView = ClientView.errorView
   redraw()
+
+proc mirrorRoute* =
+  ## Routes the user to the mirror view if they use the /mirror URL path.
+  let path = $window.location.search
+  if path != "":
+    var params: Table[string, string]
+    params = toTable toSeq decodeQuery(path.split("?")[1])
+    if params.len != 0:
+      if "username" in params and "service" in params:
+        try:
+          mirrorUsername = cstring params["username"]
+          mirrorService = parseEnum[Service]($params["service"])
+          if mirrorUser.isNil and globalView != ClientView.errorView:
+            globalView = ClientView.loadingView
+            discard getMirrorUser(mirrorUsername, mirrorService)
+          else:
+            globalView = ClientView.mirrorView
+        except ValueError:
+          mirrorErrorMessage = "Invalid service!"
+          globalView = ClientView.errorView
+      else:
+        mirrorErrorMessage = "Invalid parameters supplied! Links must include both service and user parameters!"
+        globalView = ClientView.errorView
+  else:
+    mirrorErrorMessage = "No parameters supplied! Links must include both service and user parameters!"
+    globalView = ClientView.errorView
