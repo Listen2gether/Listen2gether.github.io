@@ -43,6 +43,7 @@ proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
     let storedUsers = await db.getUsers(dbStore)
     if storedUsers.len != 0:
       storedMirrorUsers = storedUsers
+      redraw()
   except:
     logError "Failed to get mirror users from IndexedDB."
 
@@ -160,7 +161,7 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
         buttonClass = buttonClass & cstring(" selected")
       for serviceUser in user.services:
         if serviceUser.username != "":
-          button(id = userId, title = cstring $serviceUser.service, class = buttonClass):
+          button(id = userId, title = cstring $serviceUser.username, class = buttonClass):
             serviceIconId = cstring($serviceUser.service & "-icon")
             tdiv(id = serviceIconId, class = "service-icon")
             text serviceUser.username
