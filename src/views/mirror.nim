@@ -222,7 +222,7 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
   redraw()
 
 proc mirrorRoute* =
-  ## Routes the user to the mirror view if they use the /mirror URL path.
+  ## Routes the user to the mirror view.
   let path = $window.location.search
   if path != "":
     var params: Table[string, string]
