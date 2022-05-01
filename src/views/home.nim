@@ -161,14 +161,14 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
         buttonClass = buttonClass & cstring(" selected")
       for serviceUser in user.services:
         if serviceUser.username != "":
-          button(id = userId, title = cstring $serviceUser.username, class = buttonClass):
+          button(id = userId, title = cstring $serviceUser.username, class = buttonClass, service = cstring $serviceUser.service):
             serviceIconId = cstring($serviceUser.service & "-icon")
             tdiv(id = serviceIconId, class = "service-icon")
             text serviceUser.username
             proc onclick(ev: kdom.Event; n: VNode) =
               let
                 userId = n.id
-                service = parseEnum[Service]($n.getAttr("title"))
+                service = parseEnum[Service]($n.getAttr("service"))
               if currentUser == storedUsers[userId]:
                 currentUser = nil
               else:
