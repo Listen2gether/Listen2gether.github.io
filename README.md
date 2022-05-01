@@ -9,7 +9,7 @@ Currently deployed at https://listen2gether.github.io/.
 
 ---
 
-### How to compile
+### How to compile:
 
 Requirements:
  - Nim
@@ -22,6 +22,6 @@ nimble buildjs
 nim r src/server.nim
 ```
 
-### Documentation
+### Documentation:
 
 Available at https://listen2gether.github.io/docs/.
