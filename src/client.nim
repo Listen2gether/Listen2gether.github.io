@@ -52,8 +52,14 @@ proc footerSection: Vnode =
       img(id = "github", src = "/assets/github-logo.svg", class = "icon", alt = "GitHub Repository")
     darkModeToggle()
 
+proc backButton(ev: Event) =
+  globalView = ClientView.homeView
+  redraw()
+
 proc createDom: VNode =
   ## Renders the web app.
+  window.addEventListener("popstate", backButton)
+
   if globalView == ClientView.homeView and $window.location.pathname == "/mirror":
     mirrorRoute()
 
