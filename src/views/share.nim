@@ -24,6 +24,7 @@ var
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
+  mirrorUsername*: string
   clientService*, mirrorService*: Service
   clientErrorMessage*, mirrorErrorMessage*: string
 

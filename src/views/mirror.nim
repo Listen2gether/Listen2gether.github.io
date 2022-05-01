@@ -15,7 +15,6 @@ var
   listenEndInd: int = 10
   mirrorToggle: bool = true
   polling: bool = false
-  mirrorUsername*: cstring
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
@@ -188,10 +187,10 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
           discard longPoll(mirrorUserService)
         renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
 
-proc getMirrorUser(username: cstring, service: Service) {.async.} =
+proc getMirrorUser(username: string, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
-  let userId = cstring($service & ":") & username
+  let userId = cstring $service & ":" & username
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
     mirrorService = service
@@ -231,7 +230,7 @@ proc mirrorRoute* =
     if params.len != 0:
       if "username" in params and "service" in params:
         try:
-          mirrorUsername = cstring params["username"]
+          mirrorUsername = params["username"]
           mirrorService = parseEnum[Service]($params["service"])
           if mirrorUser.isNil and globalView != ClientView.errorView:
             globalView = ClientView.loadingView

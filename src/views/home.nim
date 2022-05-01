@@ -63,6 +63,7 @@ proc validateUser(username: string, service: Service) {.async.} =
       mirrorUser = await fmClient.initUser(username)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorErrorMessage = ""
+    mirrorUsername = username
     loadMirror(service, username)
   except:
     mirrorErrorMessage = "Please enter a valid user!"
@@ -330,7 +331,7 @@ proc returnModal*(view: var SigninView, mirrorModal: bool): Vnode =
         proc onclick(ev: kdom.Event; n: VNode) =
           view = SigninView.newUser
       renderUsers(storedClientUsers, clientUser, clientService)
-      errorModal(clientErrorMessage)
+      errorModal clientErrorMessage
     if mirrorModal:
       mirrorUserModal()
 
@@ -342,17 +343,17 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
         text "Login to your service:"
       case serviceView:
       of ServiceView.selection:
-        serviceModal(serviceView)
-        errorModal(clientErrorMessage)
+        serviceModal serviceView
+        errorModal clientErrorMessage
       of ServiceView.loading:
-        errorModal(clientErrorMessage)
-        loadingModal("Loading...")
+        errorModal clientErrorMessage
+        loadingModal "Loading..."
       of ServiceView.listenBrainzService:
-        errorModal(clientErrorMessage)
+        errorModal clientErrorMessage
         listenBrainzModal()
         buttonModal(Service.listenBrainzService, serviceView, signinView)
       of ServiceView.lastFmService:
-        errorModal(clientErrorMessage)
+        errorModal clientErrorMessage
         lastFmModal()
         returnButton(serviceView, signinView)
     if mirrorModal:
@@ -371,7 +372,7 @@ proc signinModal*(signinView: var SigninView, serviceView: var ServiceView, mirr
     of SigninView.newUser:
       loginModal(serviceView, signinView, mirrorModal)
     of SigninView.loadingRoom:
-      loadingModal("Loading room...")
+      loadingModal "Loading " & mirrorUsername & "'s listens..."
 
 proc home*: Vnode =
   ## Renders the main section for home view.
