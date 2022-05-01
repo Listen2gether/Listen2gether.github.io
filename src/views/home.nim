@@ -63,7 +63,6 @@ proc validateUser(username: string, service: Service) {.async.} =
       mirrorUser = await fmClient.initUser(username)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorErrorMessage = ""
-    mirrorUsername = username
     loadMirror(service, username)
   except:
     mirrorErrorMessage = "Please enter a valid user!"
@@ -91,12 +90,9 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
     username = mirrorUser.services[mirrorService].username
 
   if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
-    if clientUser.services[mirrorService].username == username:
-      homeSigninView = SigninView.loadingRoom
-      discard validateUser($username, mirrorService)
-    else:
-      homeSigninView = SigninView.loadingRoom
-      discard validateUser($username, mirrorService)
+    mirrorUsername = $username
+    homeSigninView = SigninView.loadingRoom
+    discard validateUser($username, mirrorService)
 
 proc serviceToggle: Vnode =
   ## Renders the service selection toggle.
@@ -366,7 +362,7 @@ proc signinModal*(signinView: var SigninView, serviceView: var ServiceView, mirr
     of SigninView.loadingUsers:
       discard db.getClientUsers(signinView)
       discard db.getMirrorUsers()
-      loadingModal("Loading users...")
+      loadingModal "Loading users..."
     of SigninView.returningUser:
       returnModal(signinView, mirrorModal)
     of SigninView.newUser:
