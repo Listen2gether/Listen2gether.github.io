@@ -2,7 +2,6 @@ import
   pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
   std/[strutils, uri, sequtils, tables],
   views/[home, mirror, share],
-  sources/utils,
   types
 
 var
@@ -58,26 +57,33 @@ proc footerSection: Vnode =
 
 proc mirrorRoute =
   ## Routes the user to the mirror view if they use the /mirror URL path.
-  if ($window.location.pathname) == "/mirror":
-    let params = toTable toSeq decodeQuery(($window.location.search).split("?")[1])
-    if "username" in params and "service" in params:
-      try:
-        mirrorUsername = cstring params["username"]
-        mirrorService = parseEnum[Service]($params["service"])
-        if mirrorUser.isNil and globalView != ClientView.errorView:
-          globalView = ClientView.loadingView
-          discard getMirrorUser(mirrorUsername, mirrorService)
-        elif globalView == ClientView.errorView:
-          logError("Mirror user not found!")
-        else:
-          globalView = ClientView.mirrorView
-      except ValueError:
-        mirrorErrorMessage = "Invalid service!"
+  let path = $window.location.search
+  if path != "":
+    var params: Table[string, string]
+    params = toTable toSeq decodeQuery(path.split("?")[1])
+    if params.len != 0:
+      if "username" in params and "service" in params:
+        try:
+          mirrorUsername = cstring params["username"]
+          mirrorService = parseEnum[Service]($params["service"])
+          if mirrorUser.isNil and globalView != ClientView.errorView:
+            globalView = ClientView.loadingView
+            discard getMirrorUser(mirrorUsername, mirrorService)
+          else:
+            globalView = ClientView.mirrorView
+        except ValueError:
+          mirrorErrorMessage = "Invalid service!"
+          globalView = ClientView.errorView
+      else:
+        mirrorErrorMessage = "Invalid parameters supplied! Links must include the service and user parameters!"
         globalView = ClientView.errorView
+  else:
+    mirrorErrorMessage = "No parameters supplied! Links must include the service and user parameters!"
+    globalView = ClientView.errorView
 
 proc createDom: VNode =
   ## Renders the web app.
-  if mirrorUsername.isNil or globalView == ClientView.homeView:
+  if globalView == ClientView.homeView and $window.location.pathname == "/mirror":
     mirrorRoute()
 
   result = buildHtml(tdiv):
