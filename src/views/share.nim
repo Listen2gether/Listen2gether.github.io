@@ -53,7 +53,7 @@ proc errorModal*(message: string): Vnode =
         p(id = "error"):
           text message
 
-proc loadingModal*(message: cstring): Vnode =
+proc loadingModal*(message: string): Vnode =
   ## Renders a div with a loading animation with a given message.
   result = buildHtml:
     tdiv(id = "loading", class = "col login-container"):

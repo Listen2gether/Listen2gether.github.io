@@ -388,13 +388,13 @@ proc signinCol*(signinView: var SigninView, serviceView: var ServiceView, mirror
       of SigninView.loadingUsers:
         discard db.getClientUsers(signinView)
         discard db.getMirrorUsers()
-        loadingModal(cstring "Loading users...")
+        loadingModal("Loading users...")
       of SigninView.returningUser:
         returnModal(signinView, mirrorModal)
       of SigninView.newUser:
         loginModal(serviceView, signinView, mirrorModal)
       of SigninView.loadingRoom:
-        loadingModal(cstring "Loading room...")
+        loadingModal("Loading room...")
 
 proc descriptionCol: Vnode =
   ## Renders the project description column
