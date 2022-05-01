@@ -46,6 +46,62 @@ proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   except:
     logError "Failed to get mirror users from IndexedDB."
 
+proc loadMirror(service: Service, username: cstring) =
+  ## Sets the window url and sends information to the mirror view.
+  let url = "/mirror?service=" & $service & "&username=" & $username
+  pushState(dom.window.history, 0, cstring "", cstring url)
+
+proc validateUser(username: string, service: Service) {.async.} =
+  ## Validates and gets now playing for user.
+  try:
+    case service:
+    of Service.listenBrainzService:
+      mirrorUser = await lbClient.initUser(username)
+    of Service.lastFmService:
+      mirrorUser = await fmClient.initUser(username)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+    mirrorErrorMessage = ""
+    loadMirror(service, username)
+  except:
+    mirrorErrorMessage = "Please enter a valid user!"
+  redraw()
+
+proc onMirrorClick(ev: kdom.Event; n: VNode) =
+  ## Callback that routes to mirror view on mirror button click.
+  var username = getElementById("username-input").value
+  if getElementById("service-switch").checked:
+    mirrorService = Service.lastFmService
+
+  ## client user nil error
+  if clientUser.isNil:
+    clientErrorMessage = "Please login before trying to mirror!"
+  else:
+    clientErrorMessage = ""
+
+  ## mirror user nil error
+  if mirrorUser.isNil and username == "":
+    mirrorErrorMessage = "Please choose a user!"
+  else:
+    mirrorErrorMessage = ""
+
+  if not mirrorUser.isNil and username == "":
+    username = mirrorUser.services[mirrorService].username
+
+  if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
+    if clientUser.services[mirrorService].username == username:
+      homeSigninView = SigninView.loadingRoom
+      discard validateUser($username, mirrorService)
+    else:
+      homeSigninView = SigninView.loadingRoom
+      discard validateUser($username, mirrorService)
+
+proc serviceToggle: Vnode =
+  ## Renders the service selection toggle.
+  result = buildHtml:
+    label(class = "switch"):
+      input(`type` = "checkbox", id = "service-switch", class = "toggle")
+      span(id = "service-slider", class = "slider")
+
 proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   lbClient = newAsyncListenBrainz()
@@ -92,26 +148,6 @@ proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async
     redraw()
   homeServiceView = ServiceView.selection
 
-proc loadMirror(service: Service, username: cstring) =
-  ## Sets the window url and sends information to the mirror view.
-  let url = "/mirror?service=" & $service & "&username=" & $username
-  pushState(dom.window.history, 0, cstring "", cstring url)
-
-proc validateUser(username: string, service: Service) {.async.} =
-  ## Validates and gets now playing for user.
-  try:
-    case service:
-    of Service.listenBrainzService:
-      mirrorUser = await lbClient.initUser(username)
-    of Service.lastFmService:
-      mirrorUser = await fmClient.initUser(username)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-    mirrorErrorMessage = ""
-    loadMirror(service, username)
-  except:
-    mirrorErrorMessage = "Please enter a valid user!"
-  redraw()
-
 proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, currentService: var Service, mirror = false): Vnode =
   ## Renders stored users.
   var
@@ -144,42 +180,6 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
                       discard validateLBToken(currentUser.services[service].token, userId = currentUser.userId, store = false)
                     elif currentService == Service.listenBrainzService:
                       discard validateFMSession(currentUser.services[service], currentUser.userId, store = false)
-
-proc onMirrorClick(ev: kdom.Event; n: VNode) =
-  ## Callback that routes to mirror view on mirror button click.
-  var username = getElementById("username-input").value
-  if getElementById("service-switch").checked:
-    mirrorService = Service.lastFmService
-
-  ## client user nil error
-  if clientUser.isNil:
-    clientErrorMessage = "Please login before trying to mirror!"
-  else:
-    clientErrorMessage = ""
-
-  ## mirror user nil error
-  if mirrorUser.isNil and username == "":
-    mirrorErrorMessage = "Please choose a user!"
-  else:
-    mirrorErrorMessage = ""
-
-  if not mirrorUser.isNil and username == "":
-    username = mirrorUser.services[mirrorService].username
-
-  if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
-    if clientUser.services[mirrorService].username == username:
-      homeSigninView = SigninView.loadingRoom
-      discard validateUser($username, mirrorService)
-    else:
-      homeSigninView = SigninView.loadingRoom
-      discard validateUser($username, mirrorService)
-
-proc serviceToggle: Vnode =
-  ## Renders the service selection toggle.
-  result = buildHtml:
-    label(class = "switch"):
-      input(`type` = "checkbox", id = "service-switch", class = "toggle")
-      span(id = "service-slider", class = "slider")
 
 proc mirrorUserModal: Vnode =
   ## Renders the mirror user selection modal.
@@ -364,7 +364,6 @@ proc loginModal*(serviceView: var ServiceView, signinView: var SigninView, mirro
           errorModal(clientErrorMessage)
           lastFmModal()
           returnButton(serviceView, signinView)
-
       if mirrorModal:
         mirrorUserModal()
 
