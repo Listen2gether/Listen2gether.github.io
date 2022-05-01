@@ -10,7 +10,7 @@ import
   types, utils
 
 const
-  userBaseUrl* = "https://last.fm/user/"
+  userBaseUrl*: cstring = "https://last.fm/user/"
   apiKey* = "f6cbd0de2ace1b377de4ed27f73af158"
   apiSecret* = "6a037eaccb1957d1b63354b02a4eeb62"
 

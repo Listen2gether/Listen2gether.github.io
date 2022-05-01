@@ -12,7 +12,7 @@ import
 
 include pkg/listenbrainz/utils/tools
 
-const userBaseUrl* = "https://listenbrainz.org/user/"
+const userBaseUrl*: cstring = "https://listenbrainz.org/user/"
 
 func to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object

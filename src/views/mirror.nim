@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, tables],
-  pkg/karax/[karax, karaxdsl, vdom, kdom],
+  pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
   sources/[lb, lfm],
   home, share, types
 
@@ -52,7 +52,7 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
 proc getMirrorUser*(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
-  let userId = cstring($service & ":" & $username)
+  let userId = cstring($service & ":") & username
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
     mirrorService = service
@@ -155,7 +155,7 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                     text cleanDate
                   hr()
 
-            li(id = cstring($get(track.listenedAt)), class = "row listen"):
+            li(id = cstring $get(track.listenedAt), class = "row listen"):
               tdiv(id = "listen-details"):
                 if isSome track.mirrored:
                   if get track.mirrored:
@@ -202,10 +202,10 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
     case mirrorService:
     of Service.listenBrainzService:
       username = mirrorUser.services[mirrorService].username
-      userUrl = cstring(lb.userBaseUrl & $username)
+      userUrl = lb.userBaseUrl & username
     of Service.lastFmService:
       username = mirrorUser.services[mirrorService].username
-      userUrl = cstring(lfm.userBaseUrl & $username)
+      userUrl = lfm.userBaseUrl & username
 
   result = buildHtml:
     tdiv(id = "mirror-container"):

@@ -1,6 +1,6 @@
 import
   std/[asyncjs, tables, strutils, options],
-  pkg/karax/[karax, kbase, karaxdsl, vdom, kdom],
+  pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   pkg/lastfm/auth,
@@ -152,18 +152,18 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
   ## Renders stored users.
   var
     serviceIconId: cstring
-    buttonClass: string
+    buttonClass: cstring
   result = buildHtml:
     tdiv(id = "stored-users"):
       for userId, user in storedUsers.pairs:
         buttonClass = "row"
         if not currentUser.isNil and currentUser.userId == userId:
-          buttonClass = buttonClass & " selected"
+          buttonClass = buttonClass & cstring(" selected")
         for serviceUser in user.services:
           if serviceUser.username != "":
-            button(id = kstring userId, title = kstring $serviceUser.service, class = kstring buttonClass):
+            button(id = userId, title = cstring $serviceUser.service, class = buttonClass):
               serviceIconId = cstring($serviceUser.service & "-icon")
-              tdiv(id = kstring serviceIconId, class = "service-icon")
+              tdiv(id = serviceIconId, class = "service-icon")
               text serviceUser.username
               proc onclick(ev: kdom.Event; n: VNode) =
                 let
@@ -260,10 +260,10 @@ proc lastFmModal*: Vnode =
 
 proc submitButton(service: Service): Vnode =
   ## Renders the submit button.
-  let buttonId = $service & "-token"
+  let buttonId = cstring($service & "-token")
   result = buildHtml:
     tdiv:
-      button(id = kstring(buttonId), class = "row login-button", onclick = onLBTokenEnter):
+      button(id = buttonId, class = "row login-button", onclick = onLBTokenEnter):
         text "🆗"
 
 proc returnButton*(serviceView: var ServiceView, signinView: var SigninView): Vnode =
@@ -301,7 +301,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
   result = buildHtml:
     tdiv(id = "service-modal"):
       for service in Service:
-        button(id = kstring($service), class = "row"):
+        button(id = cstring $service, class = "row"):
           tdiv(class = "service-logo-button"):
             case service:
             of Service.listenBrainzService:
@@ -414,20 +414,12 @@ proc logoCol: Vnode =
   result = buildHtml:
     tdiv(id = "logo-container", class = "col"):
       a(href = "https://listenbrainz.org/",
-        img(
-          src = "/assets/listenbrainz-logo.svg",
-          id = "listenbrainz-logo",
-          class = "logo",
-          alt = "ListenBrainz.org logo"
-        )
+        img(src = "/assets/listenbrainz-logo.svg", id = "listenbrainz-logo", class = "logo",
+          alt = "ListenBrainz.org logo")
       )
       a(href = "https://matrix.org/",
-        img(
-          src = "/assets/matrix-logo.svg",
-          id = "matrix-logo",
-          class = "logo",
-          alt = "Matrix.org logo"
-        )
+        img(src = "/assets/matrix-logo.svg", id = "matrix-logo", class = "logo",
+          alt = "Matrix.org logo")
       )
 
 proc home*: Vnode =
