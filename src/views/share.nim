@@ -11,14 +11,16 @@ type
   ClientView* = enum
     homeView, mirrorView, loadingView, errorView
 
+const
+  clientUsersDbStore*: cstring = "clientUsers"
+  mirrorUsersDbStore*: cstring = "mirrorUsers"
+
 var
   globalView*: ClientView = ClientView.homeView
   fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
-  clientUsersDbStore*: cstring = "clientUsers"
-  mirrorUsersDbStore*: cstring = "mirrorUsers"
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
