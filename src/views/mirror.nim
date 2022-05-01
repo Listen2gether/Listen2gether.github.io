@@ -43,68 +43,67 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
     lastCleanDate, cleanDate, today, time: string
     listenTime: Time
 
-  result = buildHtml:
-    tdiv(class = "listens", onscroll = pageListens):
-      ul:
-        if isSome playingNow:
-          li(id = "now-playing", class = "row listen"):
+  result = buildHtml(tdiv(class = "listens", onscroll = pageListens)):
+    ul:
+      if isSome playingNow:
+        li(id = "now-playing", class = "row listen"):
+          tdiv(id = "listen-details"):
+            img(src = "/assets/nowplaying.svg")
+            tdiv(id = "track-details"):
+              trackName = get(playingNow).trackName
+              artistName = get(playingNow).artistName
+              p(title = trackName, id = "track-name"):
+                text trackName
+              p(title = artistName, id = "artist-name"):
+                text artistName
+            span:
+              text "Playing now"
+
+      if listenHistory.len > 0:
+        for idx, track in listenHistory[0..endInd]:
+          today = getTime().format(dateFormat)
+          listenTime = fromUnix get listenHistory[idx].listenedAt
+          cleanDate = listenTime.format(dateFormat)
+          detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
+          time = listenTime.format("HH:mm")
+
+          if isSome track.preMirror:
+            if get(track.preMirror) and not preMirrorSplit:
+              if idx == 0:
+                preMirrorSplit = true
+              else:
+                tdiv(class = "mirror-bar"):
+                  hr()
+                  p:
+                    text "Mirroring..."
+                  hr()
+                preMirrorSplit = true
+
+          if today != cleanDate:
+            if idx != 0:
+              lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format(dateFormat)
+            if idx == 0 or (lastCleanDate != "" and lastCleanDate != cleanDate):
+              tdiv(class = "listen-date"):
+                p:
+                  text cleanDate
+                hr()
+
+          li(id = cstring $get(track.listenedAt), class = "row listen"):
             tdiv(id = "listen-details"):
-              img(src = "/assets/nowplaying.svg")
+              if isSome track.mirrored:
+                if get track.mirrored:
+                  img(src = "/assets/mirrored.svg")
+                else:
+                  img(src = "/assets/pre-mirror.svg")
               tdiv(id = "track-details"):
-                trackName = get(playingNow).trackName
-                artistName = get(playingNow).artistName
+                trackName = track.trackName
+                artistName = track.artistName
                 p(title = trackName, id = "track-name"):
                   text trackName
                 p(title = artistName, id = "artist-name"):
                   text artistName
-              span:
-                text "Playing now"
-
-        if listenHistory.len > 0:
-          for idx, track in listenHistory[0..endInd]:
-            today = getTime().format(dateFormat)
-            listenTime = fromUnix get listenHistory[idx].listenedAt
-            cleanDate = listenTime.format(dateFormat)
-            detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
-            time = listenTime.format("HH:mm")
-
-            if isSome track.preMirror:
-              if get(track.preMirror) and not preMirrorSplit:
-                if idx == 0:
-                  preMirrorSplit = true
-                else:
-                  tdiv(class = "mirror-bar"):
-                    hr()
-                    p:
-                      text "Mirroring..."
-                    hr()
-                  preMirrorSplit = true
-
-            if today != cleanDate:
-              if idx != 0:
-                lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format(dateFormat)
-              if idx == 0 or (lastCleanDate != "" and lastCleanDate != cleanDate):
-                tdiv(class = "listen-date"):
-                  p:
-                    text cleanDate
-                  hr()
-
-            li(id = cstring $get(track.listenedAt), class = "row listen"):
-              tdiv(id = "listen-details"):
-                if isSome track.mirrored:
-                  if get track.mirrored:
-                    img(src = "/assets/mirrored.svg")
-                  else:
-                    img(src = "/assets/pre-mirror.svg")
-                tdiv(id = "track-details"):
-                  trackName = track.trackName
-                  artistName = track.artistName
-                  p(title = trackName, id = "track-name"):
-                    text trackName
-                  p(title = artistName, id = "artist-name"):
-                    text artistName
-                span(title = detailedDate):
-                  text time
+              span(title = detailedDate):
+                text time
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## Returns true if it is time to update the user again.
@@ -140,23 +139,22 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
   discard longPoll(service, ms)
 
 proc mirrorSwitch: Vnode =
-  result = buildHtml:
-    tdiv(id = "mirror-toggle"):
-      p:
-        text "Toggle mirroring: "
-      label(class = "switch"):
-        input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
-          proc onclick(ev: kdom.Event; n: VNode) =
-            if mirrorUser.services[mirrorService].username == clientUser.services[clientService].username:
-              if not mirrorToggle:
-                if window.confirm("Are you sure you want to mirror your own listens?"):
-                  mirrorToggle = true
-                else:
-                  getElementById("mirror-switch").checked = mirrorToggle
-              redraw()
-            else:
-              mirrorToggle = not mirrorToggle
-        span(id = "mirror-slider", class = "slider")
+  result = buildHtml(tdiv(id = "mirror-toggle")):
+    p:
+      text "Toggle mirroring: "
+    label(class = "switch"):
+      input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
+        proc onclick(ev: kdom.Event; n: VNode) =
+          if mirrorUser.services[mirrorService].username == clientUser.services[clientService].username:
+            if not mirrorToggle:
+              if window.confirm("Are you sure you want to mirror your own listens?"):
+                mirrorToggle = true
+              else:
+                getElementById("mirror-switch").checked = mirrorToggle
+            redraw()
+          else:
+            mirrorToggle = not mirrorToggle
+      span(id = "mirror-slider", class = "slider")
 
 proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
   var username, userUrl: cstring
@@ -174,22 +172,21 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
       username = mirrorUser.services[mirrorService].username
       userUrl = lfm.userBaseUrl & username
 
-  result = buildHtml:
-    tdiv(id = "mirror-container"):
-      tdiv(id = "mirror"):
-        p:
-          text "You are mirroring "
-          a(href = userUrl):
-            text $username & "!"
-        mirrorSwitch()
-      main:
-        case mirrorMirrorView:
-        of MirrorView.login:
-          signinCol(mirrorSigninView, mirrorServiceView, mirrorModal = false)
-        of MirrorView.mirroring:
-          if not polling:
-            discard longPoll(mirrorUserService)
-          renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
+  result = buildHtml(tdiv(id = "mirror-container")):
+    tdiv(id = "mirror"):
+      p:
+        text "You are mirroring "
+        a(href = userUrl):
+          text $username & "!"
+      mirrorSwitch()
+    main:
+      case mirrorMirrorView:
+      of MirrorView.login:
+        signinCol(mirrorSigninView, mirrorServiceView, mirrorModal = false)
+      of MirrorView.mirroring:
+        if not polling:
+          discard longPoll(mirrorUserService)
+        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
 
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
