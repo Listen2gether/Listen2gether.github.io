@@ -158,11 +158,11 @@ proc renderUsers(storedUsers: Table[cstring, User], currentUser: var User, curre
     for userId, user in storedUsers.pairs:
       buttonClass = "row"
       if not currentUser.isNil and currentUser.userId == userId:
-        buttonClass = buttonClass & cstring(" selected")
+        buttonClass = buttonClass & cstring " selected"
       for serviceUser in user.services:
         if serviceUser.username != "":
           button(id = userId, title = cstring $serviceUser.username, class = buttonClass, service = cstring $serviceUser.service):
-            serviceIconId = cstring($serviceUser.service & "-icon")
+            serviceIconId = cstring $serviceUser.service & "-icon"
             tdiv(id = serviceIconId, class = "service-icon")
             text serviceUser.username
             proc onclick(ev: kdom.Event; n: VNode) =
@@ -242,7 +242,7 @@ proc lastFmModal*: Vnode =
   result = buildHtml(tdiv(id = "lastfm-auth")):
     case lastFmAuthView:
     of LastFmAuthView.signin:
-      let link = cstring("http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken)
+      let link = cstring "http://www.last.fm/api/auth/?api_key=" & fmClient.key & "&token=" & fmToken
       a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
         text "Sign-in"
         proc onclick(ev: kdom.Event; n: VNode) =
@@ -257,7 +257,7 @@ proc lastFmModal*: Vnode =
 
 proc submitButton(service: Service): Vnode =
   ## Renders the submit button.
-  let buttonId = cstring($service & "-token")
+  let buttonId = cstring $service & "-token"
   result = buildHtml(tdiv):
     button(id = buttonId, class = "row login-button", onclick = onLBTokenEnter):
       text "🆗"
