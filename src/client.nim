@@ -70,9 +70,9 @@ proc createDom: VNode =
       home()
     of ClientView.loadingView:
       main:
-        loadingModal("Loading " & $mirrorUsername & "'s listens...")
+        loadingModal "Loading " & mirrorUsername & "'s listens..."
     of ClientView.errorView:
-      errorSection(mirrorErrorMessage)
+      errorSection mirrorErrorMessage
     of ClientView.mirrorView:
       mirror(clientService, mirrorService)
     footerSection()
