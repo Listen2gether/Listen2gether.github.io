@@ -16,73 +16,6 @@ var
   mirrorToggle: bool = true
   polling: bool = false
 
-proc setTimeoutAsync(ms: int): Future[void] =
-  let promise = newPromise() do (res: proc(): void):
-    discard setTimeout(res, ms)
-  return promise
-
-proc timeToUpdate(lastUpdateTs, ms: int): bool =
-  ## Returns true if it is time to update the user again.
-  let
-    currentTs = int(toUnix getTime())
-    nextUpdateTs = lastUpdateTs + (ms div 1000)
-  if currentTs >= nextUpdateTs: return true
-
-proc longPoll(service: Service, ms: int = 60000) {.async.} =
-  ## Updates the mirrorUser every 60 seconds and stores to the database
-  if not polling:
-    polling = true
-  await setTimeoutAsync(ms)
-  if timeToUpdate(mirrorUser.lastUpdateTs, ms):
-    echo "Updating and submitting..."
-    case service:
-    of Service.listenBrainzService:
-      let preMirror = not mirrorToggle
-      mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
-      if mirrorToggle:
-        discard lbClient.submitMirrorQueue(mirrorUser)
-    of Service.lastFmService:
-      let preMirror = not mirrorToggle
-      mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
-      if mirrorToggle:
-        discard fmClient.submitMirrorQueue(mirrorUser)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-  discard longPoll(service, ms)
-
-proc getMirrorUser*(username: cstring, service: Service) {.async.} =
-  ## Gets the mirror user from the database, if they aren't in the database, they are initialised
-  storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
-  let userId = cstring($service & ":") & username
-  if userId in storedMirrorUsers:
-    mirrorUser = storedMirrorUsers[userId]
-    mirrorService = service
-    case mirrorService:
-    of Service.listenBrainzService:
-      let preMirror = not mirrorToggle
-      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
-    of Service.lastFmService:
-      let preMirror = not mirrorToggle
-      mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-    mirrorMirrorView = MirrorView.login
-    globalView = ClientView.mirrorView
-  else:
-    try:
-      case service:
-      of Service.listenBrainzService:
-        mirrorUser = await lbClient.initUser(username)
-        mirrorService = service
-      of Service.lastFmService:
-        mirrorUser = await fmClient.initUser(username)
-        mirrorService = service
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-      mirrorMirrorView = MirrorView.login
-      globalView = ClientView.mirrorView
-    except:
-      mirrorErrorMessage = "The requested user is not valid!"
-      globalView = ClientView.errorView
-  redraw()
-
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
   let
@@ -172,6 +105,39 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                 span(title = detailedDate):
                   text time
 
+proc timeToUpdate(lastUpdateTs, ms: int): bool =
+  ## Returns true if it is time to update the user again.
+  let
+    currentTs = int(toUnix getTime())
+    nextUpdateTs = lastUpdateTs + (ms div 1000)
+  if currentTs >= nextUpdateTs: return true
+
+proc setTimeoutAsync(ms: int): Future[void] =
+  let promise = newPromise() do (res: proc(): void):
+    discard setTimeout(res, ms)
+  return promise
+
+proc longPoll(service: Service, ms: int = 60000) {.async.} =
+  ## Updates the mirrorUser every 60 seconds and stores to the database
+  if not polling:
+    polling = true
+  await setTimeoutAsync(ms)
+  if timeToUpdate(mirrorUser.lastUpdateTs, ms):
+    echo "Updating and submitting..."
+    case service:
+    of Service.listenBrainzService:
+      let preMirror = not mirrorToggle
+      mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
+      if mirrorToggle:
+        discard lbClient.submitMirrorQueue(mirrorUser)
+    of Service.lastFmService:
+      let preMirror = not mirrorToggle
+      mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
+      if mirrorToggle:
+        discard fmClient.submitMirrorQueue(mirrorUser)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+  discard longPoll(service, ms)
+
 proc mirrorSwitch: Vnode =
   result = buildHtml:
     tdiv(id = "mirror-toggle"):
@@ -223,3 +189,37 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
           if not polling:
             discard longPoll(mirrorUserService)
           renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
+
+proc getMirrorUser*(username: cstring, service: Service) {.async.} =
+  ## Gets the mirror user from the database, if they aren't in the database, they are initialised
+  storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
+  let userId = cstring($service & ":") & username
+  if userId in storedMirrorUsers:
+    mirrorUser = storedMirrorUsers[userId]
+    mirrorService = service
+    case mirrorService:
+    of Service.listenBrainzService:
+      let preMirror = not mirrorToggle
+      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
+    of Service.lastFmService:
+      let preMirror = not mirrorToggle
+      mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+    mirrorMirrorView = MirrorView.login
+    globalView = ClientView.mirrorView
+  else:
+    try:
+      case service:
+      of Service.listenBrainzService:
+        mirrorUser = await lbClient.initUser(username)
+        mirrorService = service
+      of Service.lastFmService:
+        mirrorUser = await fmClient.initUser(username)
+        mirrorService = service
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+      mirrorMirrorView = MirrorView.login
+      globalView = ClientView.mirrorView
+    except:
+      mirrorErrorMessage = "The requested user is not valid!"
+      globalView = ClientView.errorView
+  redraw()
