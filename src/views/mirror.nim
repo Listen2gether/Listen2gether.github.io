@@ -36,9 +36,9 @@ proc pageListens(ev: Event; n: VNode) =
 
 proc renderListen(listen: Listen, nowPlaying = false): Vnode =
   ## Renders a `Listen` object.
-  var id, recordingUrl, artistUrl: cstring
+  var id: cstring
   if nowPlaying:
-    id = cstring "now-playing"
+    id = "now-playing"
   else:
     id = cstring $get listen.listenedAt
 
@@ -56,15 +56,13 @@ proc renderListen(listen: Listen, nowPlaying = false): Vnode =
         tdiv(id = "track-details"):
           p(title = listen.trackName, id = "track-name"):
             if isSome listen.recordingMbid:
-              recordingUrl = "https://musicbrainz.org/recording/" & get listen.recordingMbid
-              a(class = "track-metadata", href = recordingUrl):
+              a(class = "track-metadata", href = "https://musicbrainz.org/recording/" & get listen.recordingMbid):
                 text listen.trackName
             else:
               text listen.trackName
           p(title = listen.artistName, id = "artist-name"):
             if isSome listen.artistMbids:
-              artistUrl = "https://musicbrainz.org/artist/" & get(listen.artistMbids)[0]
-              a(class = "track-metadata", href = artistUrl):
+              a(class = "track-metadata", href = "https://musicbrainz.org/artist/" & get(listen.artistMbids)[0]):
                 text listen.artistName
             else:
               text listen.artistName
