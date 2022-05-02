@@ -1,6 +1,7 @@
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
+  pkg/jsony,
   sources/[lb, lfm, utils],
   home, share, types
 
@@ -35,14 +36,20 @@ proc pageListens(ev: Event; n: VNode) =
 
 proc renderListen(listen: Listen, nowPlaying = false): Vnode =
   ## Renders a `Listen` object.
-  var id: string
+  var id, recordingUrl, artistUrl: cstring
   if nowPlaying:
-    id = "now-playing"
+    id = cstring "now-playing"
   else:
-    id = $get listen.listenedAt
+    id = cstring $get listen.listenedAt
+
+  if isSome listen.recordingMbid:
+    recordingUrl = "https://musicbrainz.org/recording/" & get listen.recordingMbid
+
+  if isSome listen.artistMbids:
+    artistUrl = "https://musicbrainz.org/artist/" & get(listen.artistMbids)[0]
 
   result = buildHtml:
-    li(id = cstring id, class = "row listen"):
+    li(id = id, class = "row listen"):
       tdiv(id = "listen-details"):
         if nowPlaying:
           img(src = "/assets/nowplaying.svg")
@@ -54,9 +61,11 @@ proc renderListen(listen: Listen, nowPlaying = false): Vnode =
               img(src = "/assets/pre-mirror.svg")
         tdiv(id = "track-details"):
           p(title = listen.trackName, id = "track-name"):
-            text listen.trackName
-          p(title = listen.artistName, id = "artist-name"):
-            text listen.artistName
+            a(class = "track-metadata", href = recordingUrl):
+              text listen.trackName
+          a(title = listen.artistName, id = "artist-name"):
+            a(class = "track-metadata", href = artistUrl):
+              text listen.artistName
         if nowPlaying:
           span:
             text "Playing now"
@@ -196,12 +205,11 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
     mirrorService = service
+    let preMirror = not mirrorToggle
     case mirrorService:
     of Service.listenBrainzService:
-      let preMirror = not mirrorToggle
       mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
-      let preMirror = not mirrorToggle
       mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorMirrorView = MirrorView.login
@@ -211,13 +219,15 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
       case service:
       of Service.listenBrainzService:
         mirrorUser = await lbClient.initUser(username)
-        mirrorService = service
       of Service.lastFmService:
         mirrorUser = await fmClient.initUser(username)
-        mirrorService = service
+      mirrorService = service
       discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
       mirrorMirrorView = MirrorView.login
       globalView = ClientView.mirrorView
+    except JsonError:
+      mirrorErrorMessage = "There was an error parsing this user's listens!"
+      globalView = ClientView.errorView
     except:
       mirrorErrorMessage = "The requested user is not valid!"
       globalView = ClientView.errorView
