@@ -237,7 +237,10 @@ proc initUser*(
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let userId = cstring($Service.lastFmService & ":" & $username)
-  var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService), Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)])
+  var user = newUser(userId = userId, services = [
+    Service.listenBrainzService: newServiceUser(Service.listenBrainzService),
+    Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)
+  ])
   user.lastUpdateTs = int toUnix getTime()
   let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror = true)
   user.playingNow = playingNow
