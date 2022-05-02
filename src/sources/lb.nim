@@ -71,8 +71,6 @@ proc getNowPlaying(
       payload = nowPlaying.payload
     if payload.count == 1:
       result = some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
-    else:
-      result = none Listen
   except JsonError:
     logError "There was a problem parsing" & $username & "'s now playing!"
   except HttpRequestError:
