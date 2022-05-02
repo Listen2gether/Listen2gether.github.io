@@ -5,7 +5,7 @@ else:
 
 import
   std/[times, strutils],
-  pkg/[listenbrainz, jsony],
+  pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
   types, utils
