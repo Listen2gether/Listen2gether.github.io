@@ -1,7 +1,7 @@
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
   pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
-  sources/[lb, lfm],
+  sources/[lb, lfm, utils],
   home, share, types
 
 type
@@ -107,7 +107,7 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## Returns true if it is time to update the user again.
   let
-    currentTs = int(toUnix getTime())
+    currentTs = int toUnix getTime()
     nextUpdateTs = lastUpdateTs + (ms div 1000)
   if currentTs >= nextUpdateTs: return true
 
@@ -122,15 +122,14 @@ proc longPoll(service: Service, ms: int = 60000) {.async.} =
     polling = true
   await setTimeoutAsync(ms)
   if timeToUpdate(mirrorUser.lastUpdateTs, ms):
-    echo "Updating and submitting..."
+    log "Updating and submitting..."
+    let preMirror = not mirrorToggle
     case service:
     of Service.listenBrainzService:
-      let preMirror = not mirrorToggle
       mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
       if mirrorToggle:
         discard lbClient.submitMirrorQueue(mirrorUser)
     of Service.lastFmService:
-      let preMirror = not mirrorToggle
       mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
       if mirrorToggle:
         discard fmClient.submitMirrorQueue(mirrorUser)
