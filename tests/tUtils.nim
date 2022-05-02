@@ -14,6 +14,12 @@ suite "Utils":
         someStr: Option[string] = some ""
         noneStr: Option[string] = none string
 
+    test "Convert some `Option[string]` to `Option[int]`":
+      check toInt(some "2") == some 2
+
+    test "Convert some `Option[int]` to `Option[string]`":
+      check to(some 2) == some "2"
+
     test "Convert some `Option[seq[cstring]]` to `Option[seq[string]]`":
       check to(someCstrSeq) == someStrSeq
 
