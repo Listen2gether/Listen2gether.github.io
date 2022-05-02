@@ -2,6 +2,20 @@ when defined(js):
   import std/jsconsole
 import std/[options, strutils]
 
+func toInt*(val: Option[string]): Option[int] =
+  ## Convert `Option[string]` to `Option[int]`
+  if isSome val:
+    result = some parseInt get val
+  else:
+    result = none int
+
+func to*(val: Option[int]): Option[string] =
+  ## Convert `Option[int]` to `Option[string]`
+  if isSome val:
+    result = some $get val
+  else:
+    result = none string
+
 func to*(val: string): Option[cstring] =
   ## Convert `string` to `Option[cstring]`
   if isEmptyOrWhitespace val:

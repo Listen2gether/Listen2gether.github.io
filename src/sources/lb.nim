@@ -17,7 +17,7 @@ const userBaseUrl*: cstring = "https://listenbrainz.org/user/"
 func to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
-    additionalInfo = newAdditionalInfo(tracknumber = some $get track.trackNumber,
+    additionalInfo = newAdditionalInfo(tracknumber = to track.trackNumber,
                                     trackMbid = to track.recordingMbid,
                                     recordingMbid = to track.recordingMbid,
                                     releaseMbid = to track.releaseMbid,
@@ -48,7 +48,7 @@ func to(
                     recordingMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid,
                     releaseMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).releaseMbid,
                     artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
-                    trackNumber = some parseInt get get(listen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber,
+                    trackNumber = toInt get(listen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
                     mirrored = mirrored)
