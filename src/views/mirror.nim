@@ -13,8 +13,8 @@ var
   mirrorSigninView = SigninView.loadingUsers
   mirrorServiceView = ServiceView.selection
   listenEndInd: int = 10
-  mirrorToggle: bool = true
-  polling: bool = false
+  mirrorToggle = true
+  polling = false
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
@@ -33,41 +33,59 @@ proc pageListens(ev: Event; n: VNode) =
     else:
       listenEndInd += increment
 
+proc renderListen(listen: Listen, nowPlaying = false): Vnode =
+  ## Renders a `Listen` object.
+  var id: string
+  if nowPlaying:
+    id = "now-playing"
+  else:
+    id = $get listen.listenedAt
+
+  result = buildHtml:
+    li(id = cstring id, class = "row listen"):
+      tdiv(id = "listen-details"):
+        if nowPlaying:
+          img(src = "/assets/nowplaying.svg")
+        else:
+          if isSome listen.mirrored:
+            if get listen.mirrored:
+              img(src = "/assets/mirrored.svg")
+            else:
+              img(src = "/assets/pre-mirror.svg")
+        tdiv(id = "track-details"):
+          p(title = listen.trackName, id = "track-name"):
+            text listen.trackName
+          p(title = listen.artistName, id = "artist-name"):
+            text listen.artistName
+        if nowPlaying:
+          span:
+            text "Playing now"
+        else:
+          let listenTime = fromUnix get listen.listenedAt
+          span(title = cstring listenTime.format("HH:mm:ss dd/MM/yy")):
+            text listenTime.format("HH:mm")
+
 proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endInd: int): Vnode =
-  # TODO split into smaller procs
+  ## Renders listen history.
   let dateFormat = "ddd d MMMM YYYY"
   var
-    trackName, artistName, detailedDate: cstring
     preMirrorSplit: bool = false
-    lastCleanDate, cleanDate, today, time: string
+    lastCleanDate, cleanDate, today: string
     listenTime: Time
 
   result = buildHtml(tdiv(class = "listens", onscroll = pageListens)):
     ul:
       if isSome playingNow:
-        li(id = "now-playing", class = "row listen"):
-          tdiv(id = "listen-details"):
-            img(src = "/assets/nowplaying.svg")
-            tdiv(id = "track-details"):
-              trackName = get(playingNow).trackName
-              artistName = get(playingNow).artistName
-              p(title = trackName, id = "track-name"):
-                text trackName
-              p(title = artistName, id = "artist-name"):
-                text artistName
-            span:
-              text "Playing now"
+        renderListen(get playingNow, true)
 
       if listenHistory.len > 0:
-        for idx, track in listenHistory[0..endInd]:
+        for idx, listen in listenHistory[0..endInd]:
           today = getTime().format(dateFormat)
           listenTime = fromUnix get listenHistory[idx].listenedAt
           cleanDate = listenTime.format(dateFormat)
-          detailedDate = cstring listenTime.format("HH:mm:ss dd/MM/yy")
-          time = listenTime.format("HH:mm")
 
-          if isSome track.preMirror:
-            if get(track.preMirror) and not preMirrorSplit:
+          if isSome listen.preMirror:
+            if get(listen.preMirror) and not preMirrorSplit:
               if idx == 0:
                 preMirrorSplit = true
               else:
@@ -87,22 +105,7 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                   text cleanDate
                 hr()
 
-          li(id = cstring $get(track.listenedAt), class = "row listen"):
-            tdiv(id = "listen-details"):
-              if isSome track.mirrored:
-                if get track.mirrored:
-                  img(src = "/assets/mirrored.svg")
-                else:
-                  img(src = "/assets/pre-mirror.svg")
-              tdiv(id = "track-details"):
-                trackName = track.trackName
-                artistName = track.artistName
-                p(title = trackName, id = "track-name"):
-                  text trackName
-                p(title = artistName, id = "artist-name"):
-                  text artistName
-              span(title = detailedDate):
-                text time
+          renderListen listen
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## Returns true if it is time to update the user again.
