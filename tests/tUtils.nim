@@ -4,21 +4,21 @@ import ../src/sources/utils
 suite "Utils":
     setup:
       let
-        someCstrSeq: Option[seq[cstring]] = some @[cstring ""]
+        someCstrSeq: Option[seq[cstring]] = some @[cstring "0"]
         noneCstrSeq: Option[seq[cstring]] = none seq[cstring]
-        someCstr: Option[cstring] = some cstring ""
+        someCstr: Option[cstring] = some cstring "0"
         noneCstr: Option[cstring] = none cstring
 
-        someStrSeq: Option[seq[string]] = some @[""]
+        someStrSeq: Option[seq[string]] = some @["0"]
         noneStrSeq: Option[seq[string]] = none seq[string]
-        someStr: Option[string] = some ""
+        someStr: Option[string] = some "0"
         noneStr: Option[string] = none string
 
     test "Convert some `Option[string]` to `Option[int]`":
-      check toInt(some "2") == some 2
+      check toInt(someStr) == some 0
 
     test "Convert some `Option[int]` to `Option[string]`":
-      check to(some 2) == some "2"
+      check to(some 0) == someStr
 
     test "Convert some `Option[seq[cstring]]` to `Option[seq[string]]`":
       check to(someCstrSeq) == someStrSeq

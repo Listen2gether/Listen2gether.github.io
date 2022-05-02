@@ -5,57 +5,51 @@ import std/[options, strutils]
 func toInt*(val: Option[string]): Option[int] =
   ## Convert `Option[string]` to `Option[int]`
   if isSome val:
-    result = some parseInt get val
-  else:
-    result = none int
+    if not isEmptyOrWhitespace get val:
+      result = some parseInt get val
 
 func to*(val: Option[int]): Option[string] =
   ## Convert `Option[int]` to `Option[string]`
   if isSome val:
     result = some $get val
-  else:
-    result = none string
+
 
 func to*(val: string): Option[cstring] =
   ## Convert `string` to `Option[cstring]`
-  if isEmptyOrWhitespace val:
-    result = none cstring
-  else:
+  if not isEmptyOrWhitespace val:
     result = some cstring val
 
 func to*(val: Option[seq[cstring]]): Option[seq[string]] =
   ## Convert `Option[seq[cstring]]` to `Option[seq[string]]`
   if isSome val:
     var list: seq[string]
-    for item in val.get():
-      list.add $item
-    result = some list
-  else:
-    result = none seq[string]
+    for item in get(val):
+      if item != cstring "":
+        list.add $item
+    if list.len != 0:
+      result = some list
 
 func to*(val: Option[seq[string]]): Option[seq[cstring]] =
   ## Convert `Option[seq[string]]` to `Option[seq[cstring]]`
   if isSome val:
     var list: seq[cstring]
-    for item in val.get():
-      list.add cstring item
-    result = some list
-  else:
-    result = none seq[cstring]
+    for item in get(val):
+      if not isEmptyOrWhitespace item:
+        list.add cstring item
+    if list.len != 0:
+      result = some list
 
 func to*(val: Option[string]): Option[cstring] =
   ## Convert `Option[string]` to `Option[cstring]`
   if isSome val:
-    result = some cstring get val
-  else:
-    result = none cstring
+    if not isEmptyOrWhitespace get val:
+      result = some cstring get val
 
 func to*(val: Option[cstring]): Option[string] =
   ## Convert `Option[cstring]` to `Option[string]`
   if isSome val:
-    result = some $get(val)
-  else:
-    result = none string
+    if get(val) != cstring "":
+      result = some $get(val)
 
 proc log*(msg: string) =
   ## Log messages to the JS console or stdout
