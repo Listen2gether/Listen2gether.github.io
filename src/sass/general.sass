@@ -62,6 +62,7 @@ a
     color: v.$red
 
 main
+  display: flex
   border: 0.01rem solid v.$border
   border-top: none
   position: relative
@@ -115,6 +116,17 @@ main
 
   .col
     padding: 1em
+
+.login-container
+  display: flex
+  flex-wrap: wrap
+  margin: 2em auto
+  flex-direction: column
+  align-items: center
+
+@media (max-width: 810px)
+  .login-container
+    margin: 1em auto
 
 p
   margin: 0
