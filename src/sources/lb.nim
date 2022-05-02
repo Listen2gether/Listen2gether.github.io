@@ -5,7 +5,7 @@ else:
 
 import
   std/[times, strutils],
-  pkg/listenbrainz,
+  pkg/[listenbrainz, jsony],
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
   types, utils
@@ -73,6 +73,8 @@ proc getNowPlaying(
       result = some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
     else:
       result = none Listen
+  except JsonError:
+    logError "There was a problem parsing" & $username & "'s now playing!"
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s now playing!"
 
@@ -86,6 +88,8 @@ proc getRecentTracks(
   try:
     let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
     result = to(userListens.payload.listens, some preMirror, mirrored = some false)
+  except JsonError:
+    logError "There was a problem parsing " & $username & "'s listens!"
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s listens!"
 
