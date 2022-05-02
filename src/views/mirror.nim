@@ -88,13 +88,11 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
     ul:
       if isSome playingNow:
         renderListen(get playingNow, true)
-
       if listenHistory.len > 0:
         for idx, listen in listenHistory[0..endInd]:
           today = getTime().format(dateFormat)
           listenTime = fromUnix get listenHistory[idx].listenedAt
           cleanDate = listenTime.format(dateFormat)
-
           if isSome listen.preMirror:
             if get(listen.preMirror) and not preMirrorSplit:
               if idx == 0:
@@ -106,7 +104,6 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                     text "Mirroring..."
                   hr()
                 preMirrorSplit = true
-
           if today != cleanDate:
             if idx != 0:
               lastCleanDate = fromUnix(get listenHistory[idx - 1].listenedAt).format(dateFormat)
@@ -115,7 +112,6 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                 p:
                   text cleanDate
                 hr()
-
           renderListen listen
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
