@@ -42,12 +42,6 @@ proc renderListen(listen: Listen, nowPlaying = false): Vnode =
   else:
     id = cstring $get listen.listenedAt
 
-  if isSome listen.recordingMbid:
-    recordingUrl = "https://musicbrainz.org/recording/" & get listen.recordingMbid
-
-  if isSome listen.artistMbids:
-    artistUrl = "https://musicbrainz.org/artist/" & get(listen.artistMbids)[0]
-
   result = buildHtml:
     li(id = id, class = "row listen"):
       tdiv(id = "listen-details"):
@@ -61,10 +55,18 @@ proc renderListen(listen: Listen, nowPlaying = false): Vnode =
               img(src = "/assets/pre-mirror.svg")
         tdiv(id = "track-details"):
           p(title = listen.trackName, id = "track-name"):
-            a(class = "track-metadata", href = recordingUrl):
+            if isSome listen.recordingMbid:
+              recordingUrl = "https://musicbrainz.org/recording/" & get listen.recordingMbid
+              a(class = "track-metadata", href = recordingUrl):
+                text listen.trackName
+            else:
               text listen.trackName
-          a(title = listen.artistName, id = "artist-name"):
-            a(class = "track-metadata", href = artistUrl):
+          p(title = listen.artistName, id = "artist-name"):
+            if isSome listen.artistMbids:
+              artistUrl = "https://musicbrainz.org/artist/" & get(listen.artistMbids)[0]
+              a(class = "track-metadata", href = artistUrl):
+                text listen.artistName
+            else:
               text listen.artistName
         if nowPlaying:
           span:
