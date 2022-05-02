@@ -155,12 +155,12 @@ proc mirrorSwitch: Vnode =
             mirrorToggle = not mirrorToggle
       span(id = "mirror-slider", class = "slider")
 
-proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
+proc mirror*: Vnode =
   var username, userUrl: cstring
 
   if not mirrorUser.isNil:
     if not clientUser.isNil:
-      if clientUser.services[clientService].username == mirrorUser.services[mirrorService].username:
+      if clientUser.userId == mirrorUser.userId:
         mirrorToggle = false
       mirrorMirrorView = MirrorView.mirroring
     case mirrorService:
@@ -184,7 +184,7 @@ proc mirror*(clientUserService, mirrorUserService: Service): Vnode =
         signinModal(mirrorSigninView, mirrorServiceView, mirrorModal = false)
       of MirrorView.mirroring:
         if not polling:
-          discard longPoll(mirrorUserService)
+          discard longPoll(mirrorService)
         renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
 
 proc getMirrorUser(username: string, service: Service) {.async.} =

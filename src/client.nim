@@ -74,7 +74,7 @@ proc createDom: VNode =
     of ClientView.errorView:
       errorSection mirrorErrorMessage
     of ClientView.mirrorView:
-      mirror(clientService, mirrorService)
+      mirror()
     footerSection()
 
 setRenderer createDom
