@@ -295,17 +295,9 @@ proc serviceModal*(view: var ServiceView): Vnode =
         tdiv(class = "service-logo-button"):
           case service:
           of Service.listenBrainzService:
-            img(src = "/assets/listenbrainz-logo.svg",
-                id = "listenbrainz-logo",
-                class = "service-logo",
-                alt = "ListenBrainz.org logo"
-            )
+            img(src = "/assets/listenbrainz-logo.svg", id = "listenbrainz-logo", class = "service-logo", alt = "ListenBrainz.org logo")
           of Service.lastFmService:
-            img(src = "/assets/lastfm-logo.svg",
-                id = "lastfm-logo",
-                class = "service-logo",
-                alt = "last.fm logo"
-            )
+            img(src = "/assets/lastfm-logo.svg", id = "lastfm-logo", class = "service-logo", alt = "last.fm logo")
         proc onclick(ev: kdom.Event; n: VNode) =
           case parseEnum[Service]($n.id):
           of Service.listenBrainzService:
