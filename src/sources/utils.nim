@@ -13,7 +13,6 @@ func to*(val: Option[int]): Option[string] =
   if isSome val:
     result = some $get val
 
-
 func to*(val: string): Option[cstring] =
   ## Convert `string` to `Option[cstring]`
   if not isEmptyOrWhitespace val:
