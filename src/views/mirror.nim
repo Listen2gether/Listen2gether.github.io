@@ -92,7 +92,7 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
           listenTime = fromUnix get listenHistory[idx].listenedAt
           cleanDate = listenTime.format(dateFormat)
           if isSome listen.preMirror:
-            if get listen.preMirror and not preMirrorSplit:
+            if get(listen.preMirror) and not preMirrorSplit:
               if idx == 0:
                 preMirrorSplit = true
               else:
