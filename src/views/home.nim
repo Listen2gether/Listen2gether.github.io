@@ -305,8 +305,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
           of Service.lastFmService:
             view = ServiceView.loading
             clientErrorMessage = ""
-            if fmToken == "":
-              discard fmClient.getLFMToken()
+            discard fmClient.getLFMToken()
 
 proc returnModal*(view: var SigninView, mirrorModal: bool): Vnode =
   ## Renders the returning user modal and the mirror user selection modal if `mirrorModal` is true.
