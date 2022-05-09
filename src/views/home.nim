@@ -65,6 +65,7 @@ proc validateUser(username: string, service: Service) {.async.} =
     mirrorErrorMessage = ""
     loadMirror(service, username)
   except:
+    homeSigninView = SigninView.loadingUsers
     mirrorErrorMessage = "Please enter a valid user!"
   redraw()
 
