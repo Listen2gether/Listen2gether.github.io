@@ -46,9 +46,7 @@ func newFMTrack(
   result.url = url
   result.`@attr` = `@attr`
 
-func `==`*(a, b: FMDate): bool =
-  return a.uts == b.uts and
-    a.text == b.text
+func `==`*(a, b: FMDate): bool = a.uts == b.uts and a.text == b.text
 
 func `==`*(a, b: FMTrack): bool =
   return a.artist == b.artist and
@@ -63,8 +61,7 @@ func newAttributes(nowplaying: string): Attributes =
   ## Create new `Attributes` object
   result.nowplaying = nowplaying
 
-func `==`*(a, b: Attributes): bool =
-  return a.nowplaying == b.nowplaying
+func `==`*(a, b: Attributes): bool = a.nowplaying == b.nowplaying
 
 func newScrobble(
   track, artist: string,
@@ -121,15 +118,12 @@ func to(
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-func to(
-  fmTracks: seq[FMTrack],
-  preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+func to(fmTracks: seq[FMTrack], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `FMTrack` objects to a sequence of `Listen` objects
   for fmTrack in fmTracks:
     result.add to(fmTrack, preMirror, mirrored)
 
-func to(scrobble: Scrobble,
-  preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(scrobble: Scrobble, preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert a `Scrobble` object to a `Listen` object
   result = newListen(trackName = cstring scrobble.track,
                     artistName = cstring scrobble.artist,
@@ -140,9 +134,7 @@ func to(scrobble: Scrobble,
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-func to(
-  listens: seq[Scrobble],
-  preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+func to(listens: seq[Scrobble], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `Scrobble` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
@@ -167,18 +159,16 @@ func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
     else:
       result.add to track
 
-proc setNowPlayingTrack(
-  fm: AsyncLastFM,
-  scrobble: Scrobble): Future[JsonNode] {.async.} =
+proc setNowPlayingTrack(fm: AsyncLastFM, scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Sets the current playing track on Last.fm
   try:
     result = await fm.setNowPlaying(track = scrobble.track,
-                              artist = scrobble.artist,
-                              album = get scrobble.album,
-                              mbid = get scrobble.mbid,
-                              albumArtist = get scrobble.albumArtist,
-                              trackNumber = scrobble.trackNumber,
-                              duration = scrobble.duration)
+      artist = scrobble.artist,
+      album = get scrobble.album,
+      mbid = get scrobble.mbid,
+      albumArtist = get scrobble.albumArtist,
+      trackNumber = scrobble.trackNumber,
+      duration = scrobble.duration)
   except:
     logError "There was a problem setting your now playing!"
 
