@@ -252,14 +252,34 @@ proc updateUser*(
   user: User,
   resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates Last.fm user's now playing, recent tracks, and latest listen timestamp
+  let username = user.services[lastFmService].username
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
   else:
     updatedUser.lastUpdateTs = int toUnix getTime()
-  let (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, `from` = user.lastUpdateTs, preMirror = false)
-  updatedUser.playingNow = playingNow
-  updatedUser.listenHistory = listenHistory & user.listenHistory
+
+  if resetLastUpdate:
+    let
+      (_, latestListenHistory) = await fm.getRecentTracks(username, preMirror)
+      upTo = get latestListenHistory[^1].listenedAt
+
+    if upTo > updatedUser.lastUpdateTs: # fills in any gaps in history
+      var (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+      while listenHistory.len > 0:
+        (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+        updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
+      updatedUser.playingNow = playingNow
+      updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
+    else: # no gap / overlap
+      let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = updatedUser.lastUpdateTs)
+      updatedUser.playingNow = playingNow
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+  else:
+    let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs)
+    updatedUser.playingNow = playingNow
+    updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
 proc pageUser*(

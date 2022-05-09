@@ -71,6 +71,8 @@ proc getNowPlaying(
       payload = nowPlaying.payload
     if payload.count == 1:
       result = some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
+    else:
+      result = none Listen
   except JsonError:
     logError "There was a problem parsing" & $username & "'s now playing!"
   except HttpRequestError:
@@ -109,14 +111,34 @@ proc updateUser*(
   user: User,
   resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates ListenBrainz user's now playing, recent tracks, and latest listen timestamp
+  let username = user.services[listenBrainzService].username
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
   else:
     updatedUser.lastUpdateTs = int toUnix getTime()
-  updatedUser.playingNow = await lb.getNowPlaying(user.services[listenBrainzService].username, preMirror = preMirror)
-  let newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror, minTs = user.lastUpdateTs)
-  updatedUser.listenHistory = newTracks & user.listenHistory
+
+  if resetLastUpdate:
+    let
+      latestListenHistory = await lb.getRecentTracks(username, preMirror)
+      maxTs = get latestListenHistory[^1].listenedAt
+
+    if maxTs > updatedUser.lastUpdateTs: # fills in any gaps in history
+      var listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+      while listenHistory.len > 0:
+        listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+        updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
+      updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
+      updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
+    else: # no gap / overlap
+      updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
+      let listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+  else:
+    updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
+    let listenHistory = await lb.getRecentTracks(username, preMirror, minTs = user.lastUpdateTs)
+    updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
 proc pageUser*(
