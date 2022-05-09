@@ -32,11 +32,7 @@ type
     album*, mbid*, albumArtist*: Option[string]
     timestamp*, trackNumber*, duration*: Option[int]
 
-func newFMTrack(
-  artist, album: JsonNode,
-  date: Option[FMDate] = none(FMDate),
-  mbid, name, url: Option[string] = none(string),
-  `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
+func newFMTrack( artist, album: JsonNode, date: Option[FMDate] = none(FMDate), mbid, name, url: Option[string] = none(string), `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
   result.artist = artist
   result.album = album
@@ -63,10 +59,7 @@ func newAttributes(nowplaying: string): Attributes =
 
 func `==`*(a, b: Attributes): bool = a.nowplaying == b.nowplaying
 
-func newScrobble(
-  track, artist: string,
-  album, mbid, albumArtist: Option[string] = none(string),
-  timestamp, trackNumber, duration: Option[int] = none(int)): Scrobble =
+func newScrobble(track, artist: string, album, mbid, albumArtist: Option[string] = none(string), timestamp, trackNumber, duration: Option[int] = none(int)): Scrobble =
   ## Create new `Scrobble` object
   result.track = track
   result.artist = artist
@@ -104,9 +97,7 @@ func parseMbids(mbid: string): Option[seq[cstring]] =
   else:
     result = some @[cstring mbid]
 
-func to(
-  fmTrack: FMTrack,
-  preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(fmTrack: FMTrack, preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `FMTrack` object to a `Listen` object
   result = newListen(trackName = cstring get fmTrack.name,
                     artistName = get getVal(fmTrack.artist, "#text"),
@@ -172,9 +163,7 @@ proc setNowPlayingTrack(fm: AsyncLastFM, scrobble: Scrobble): Future[JsonNode] {
   except:
     logError "There was a problem setting your now playing!"
 
-proc scrobbleTrack(
-  fm: AsyncLastFM,
-  scrobble: Scrobble): Future[JsonNode] {.async.} =
+proc scrobbleTrack(fm: AsyncLastFM, scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Scrobble a track to Last.fm
   try:
     result = await fm.scrobble(track = scrobble.track,
@@ -188,20 +177,13 @@ proc scrobbleTrack(
   except:
     logError "There was a problem scrobbling " & scrobble.track & " - " & scrobble.artist & "!"
 
-proc scrobbleTracks(
-  fm: AsyncLastFM,
-  scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
+proc scrobbleTracks(fm: AsyncLastFM, scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
   ## Scrobble many tracks to Last.fm
   var futures: seq[JsonNode]
   for scrobble in scrobbles:
     futures.add await fm.scrobbleTrack(scrobble)
 
-proc getRecentTracks(
-  fm: AsyncLastFM,
-  username: cstring,
-  preMirror: bool,
-  `from`, upTo = 0,
-  limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
+proc getRecentTracks(fm: AsyncLastFM, username: cstring, preMirror: bool, `from`, upTo = 0, limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Listen]
@@ -220,10 +202,7 @@ proc getRecentTracks(
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s listens!"
 
-proc initUser*(
-  fm: AsyncLastFM,
-  username: cstring,
-  sessionKey: cstring = ""): Future[User] {.async.} =
+proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Future[User] {.async.} =
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let userId = cstring($Service.lastFmService & ":" & $username)
@@ -237,10 +216,7 @@ proc initUser*(
   user.listenHistory = listenHistory
   return user
 
-proc updateUser*(
-  fm: AsyncLastFM,
-  user: User,
-  resetLastUpdate, preMirror = false): Future[User] {.async.} =
+proc updateUser*(fm: AsyncLastFM, user: User, resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates Last.fm user's now playing, recent tracks, and latest listen timestamp
   let username = user.services[lastFmService].username
   var updatedUser = user
@@ -272,22 +248,16 @@ proc updateUser*(
     updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
-proc pageUser*(
-  fm: AsyncLastFM,
-  user: var User,
-  endInd: var int,
-  inc: int = 10) {.async.} =
+proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc`: int = 10) {.async.} =
   ## Backfills Last.fm user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
     (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
   user.playingNow = playingNow
   user.listenHistory = user.listenHistory & listenHistory
-  endInd += inc
+  endInd += `inc`
 
-proc submitMirrorQueue*(
-  fm: AsyncLastFM,
-  user: var User) {.async.} =
+proc submitMirrorQueue*(fm: AsyncLastFM, user: var User) {.async.} =
   ## Submits Last.fm user's now playing and listen history that are not mirrored or preMirror
   if isSome user.playingNow:
     if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
