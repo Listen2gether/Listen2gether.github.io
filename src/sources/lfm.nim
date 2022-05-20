@@ -4,7 +4,7 @@ else:
   import std/asyncdispatch
 
 import
-  std/[json, options, strutils, times],
+  std/[json, options, strutils, times, unicode],
   pkg/[jsony, lastfm],
   pkg/lastfm/[track, user],
   types, utils
@@ -205,7 +205,9 @@ proc getRecentTracks(fm: AsyncLastFM, username: cstring, preMirror: bool, `from`
 proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Future[User] {.async.} =
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
-  let userId = cstring($Service.lastFmService & ":" & $username)
+  let
+    username = cstring toLower($username)
+    userId = cstring($Service.lastFmService & ":" & $username)
   var user = newUser(userId = userId, services = [
     Service.listenBrainzService: newServiceUser(Service.listenBrainzService),
     Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)

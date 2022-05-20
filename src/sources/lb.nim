@@ -4,7 +4,7 @@ else:
   import std/asyncdispatch
 
 import
-  std/[times, strutils],
+  std/[times, strutils, unicode],
   pkg/listenbrainz,
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
@@ -84,7 +84,9 @@ proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, 
 proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): Future[User] {.async.} =
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
-  let userId = cstring($Service.listenBrainzService & ":" & $username)
+  let
+    username = cstring toLower($username)
+    userId = cstring($Service.listenBrainzService & ":" & $username)
   var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username, token = token), Service.lastFmService: newServiceUser(Service.lastFmService)])
   user.lastUpdateTs = int toUnix getTime()
   user.playingNow = await lb.getNowPlaying(username, preMirror = true)
