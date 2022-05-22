@@ -225,7 +225,6 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     let resp = await fm.getSession($fmToken)
     fm.sk = resp.session.key
     clientErrorMessage = ""
-    fmToken = ""
     clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
     discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
     discard db.getClientUsers(homeSigninView)
@@ -336,6 +335,8 @@ proc serviceModal*(view: var ServiceView): Vnode =
             clientErrorMessage = ""
             if fmToken == "":
               discard fmClient.getLFMToken()
+            else:
+              view = ServiceView.lastFmService
 
 proc returnModal*(view: var SigninView, mirrorModal: bool): Vnode =
   ## Renders the returning user modal and the mirror user selection modal if `mirrorModal` is true.
