@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
-  pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
+  pkg/karax/[karax, karaxdsl, vdom, jstrutils],
   pkg/jsony,
   sources/[lb, lfm, utils],
   home, share, types
@@ -150,7 +150,7 @@ proc mirrorSwitch: Vnode =
       text "Toggle mirroring: "
     label(class = "switch"):
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
-        proc onclick(ev: kdom.Event; n: VNode) =
+        proc onclick(ev: Event; n: VNode) =
           if mirrorUser.services[mirrorService].username == clientUser.services[clientService].username:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
