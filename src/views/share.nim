@@ -31,7 +31,7 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
   result = initTable[cstring, User]()
   try:
     let objStore = await getAll(db, dbStore, dbOptions)
-    if not isNil objStore:
+    if not objStore.isNil:
       result = collect:
         for user in to(objStore, seq[User]): {user.userId: user}
   except:
