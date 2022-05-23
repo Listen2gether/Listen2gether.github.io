@@ -80,7 +80,7 @@ suite "Last.FM source":
       let newUser = waitFor fm.initUser(username)
 
     test "Update user":
-      var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService), Service.lastFmService: newServiceUser(Service.lastFmService, username)])
+      var user = newUser(username, Service.lastFmService)
       let updatedUser = waitFor fm.updateUser(user)
 
     ## Cannot be tested outside JS backend
