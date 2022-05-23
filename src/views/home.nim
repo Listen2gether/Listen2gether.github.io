@@ -95,8 +95,8 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
     username = $mirrorUser.username
 
   if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
-    homeSigninView = SigninView.loadingUser
     discard validateMirror(username, service)
+    homeSigninView = SigninView.loadingUser
 
 proc serviceToggle: Vnode =
   ## Renders the service selection toggle.
