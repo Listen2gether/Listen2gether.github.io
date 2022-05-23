@@ -13,7 +13,7 @@ type
   ServiceView* = enum
     selection, loading, listenBrainzService, lastFmService
   SigninView* = enum
-    loadingUsers, returningUser, newUser, loadingRoom
+    loadingUsers, returningUser, newUser, loadingUser
   LastFmAuthView = enum
     signin, authorise
 
@@ -95,7 +95,7 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
     username = $mirrorUser.username
 
   if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
-    homeSigninView = SigninView.loadingRoom
+    homeSigninView = SigninView.loadingUser
     discard validateMirror(username, service)
 
 proc serviceToggle: Vnode =
@@ -358,7 +358,7 @@ proc signinModal*(signinView: var SigninView, serviceView: var ServiceView, mirr
       returnModal(signinView, mirrorModal)
     of SigninView.newUser:
       loginModal(serviceView, signinView, mirrorModal)
-    of SigninView.loadingRoom:
+    of SigninView.loadingUser:
       loadingModal "Loading " & $mirrorUser.username & "'s listens..."
 
 proc home*: Vnode =
