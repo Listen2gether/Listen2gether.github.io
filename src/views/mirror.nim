@@ -129,7 +129,6 @@ proc longPoll(ms: int = 60000) {.async.} =
   if globalView == ClientView.mirrorView:
     if not polling:
       polling = true
-    await setTimeoutAsync(ms)
     if timeToUpdate(mirrorUser.lastUpdateTs, ms):
       log "Updating and submitting..."
       let preMirror = not mirrorToggle
@@ -143,6 +142,7 @@ proc longPoll(ms: int = 60000) {.async.} =
         if mirrorToggle:
           discard fmClient.submitMirrorQueue(mirrorUser)
       discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+    await setTimeoutAsync(ms)
     discard longPoll(ms)
 
 proc mirrorSwitch: Vnode =
