@@ -20,9 +20,8 @@ var
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
-  storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
-  storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
-  clientUser*, mirrorUser*: User
+  clientUsers*: Table[cstring, User] = initTable[cstring, User]()
+  mirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientErrorMessage*, mirrorErrorMessage*: string
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
@@ -36,12 +35,12 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
   except:
     logError "Failed to get stored users."
 
-proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, storedUsers: var Table[cstring, User], dbOptions: IDBOptions = dbOptions) {.async.} =
+proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, users: var Table[cstring, User], dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
   try:
     let res =  await put(db, dbStore, toJs user, dbOptions)
     if not res:
-      storedUsers[user.userId] = user
+      users[user.userId] = user
   except:
     logError "Failed to store users."
 
