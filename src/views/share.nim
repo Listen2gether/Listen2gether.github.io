@@ -7,13 +7,13 @@ import
   types
 from std/sugar import collect
 
-type
-  ClientView* = enum
-    homeView, mirrorView, loadingView, errorView
-
 const
   clientUsersDbStore*: cstring = "clientUsers"
   mirrorUsersDbStore*: cstring = "mirrorUsers"
+
+type
+  ClientView* = enum
+    homeView, mirrorView, loadingView, errorView
 
 var
   globalView*: ClientView = ClientView.homeView
@@ -23,9 +23,7 @@ var
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
-  clientUser*, mirrorUser*: User
-  mirrorUsername*: string
-  clientService*, mirrorService*: Service
+  client*, mirror*: User
   clientErrorMessage*, mirrorErrorMessage*: string
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =

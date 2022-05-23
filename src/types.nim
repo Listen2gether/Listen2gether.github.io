@@ -1,21 +1,17 @@
-import std/[options, times]
+import std/options
 
 type
   Service* = enum
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
-  ServiceUser* = ref object
-    username*: cstring
+  User* = ref object
+    userId*, username*: cstring
     case service*: Service
     of listenBrainzService:
       token*: cstring
     of lastFmService:
       sessionKey*: cstring
-
-  User* = ref object
-    userId*: cstring
-    services*: array[Service, ServiceUser]
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
     lastUpdateTs*: int
@@ -27,28 +23,22 @@ type
     trackNumber*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
-func newServiceUser*(
+func newUser*(
+  username: cstring,
   service: Service,
-  username, token, sessionKey: cstring = ""): ServiceUser =
-  ## Create a new ServiceUser object
-  result = ServiceUser(service: service)
+  token, sessionKey: cstring = "",
+  playingNow: Option[Listen] = none(Listen),
+  listenHistory: seq[Listen] = @[],
+  lastUpdateTs: int = 0): User =
+  ## Create new User object
+  result = User(service: service)
+  result.userId = cstring($service & ":" & $username)
   result.username = username
   case service:
   of listenBrainzService:
     result.token = token
   of lastFmService:
     result.sessionKey = sessionKey
-
-func newUser*(
-  userId: cstring = $toUnix(getTime()),
-  services: array[Service, ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService), lastFmService: newServiceUser(lastFmService)],
-  playingNow: Option[Listen] = none(Listen),
-  listenHistory: seq[Listen] = @[],
-  lastUpdateTs: int = 0): User =
-  ## Create new User object
-  new(result)
-  result.userId = userId
-  result.services = services
   result.playingNow = playingNow
   result.listenHistory = listenHistory
   result.lastUpdateTs = lastUpdateTs
