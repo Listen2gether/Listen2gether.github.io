@@ -47,23 +47,23 @@ proc getMirrorUsers(db: IndexedDB, dbStore = mirrorUsersDbStore) {.async.} =
   except:
     logError "Failed to get mirror users from IndexedDB."
 
-proc loadMirror(mirror: User) =
+proc loadMirror(user: User) =
   ## Sets the window url and sends information to the mirror view.
-  let url = "/mirror?service=" & $mirror.service & "&username=" & $mirror.username
+  let url = "/mirror?service=" & $user.service & "&username=" & $user.username
   pushState(dom.window.history, 0, cstring "", cstring url)
   homeSigninView = SigninView.loadingUsers
 
-proc validateMirror(user: User) {.async.} =
+proc validateMirror(username: string, service: Service) {.async.} =
   ## Validates and gets now playing for user.
   try:
-    case user.service:
+    case service:
     of Service.listenBrainzService:
-      mirror = await lbClient.initUser(user.username)
+      mirrorUser = await lbClient.initUser(username)
     of Service.lastFmService:
-      mirror = await fmClient.initUser(user.username)
-    discard db.storeUser(mirrorUsersDbStore, mirror, storedMirrorUsers)
+      mirrorUser = await fmClient.initUser(username)
+    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
     mirrorErrorMessage = ""
-    loadMirror(mirror)
+    loadMirror(mirrorUser)
   except:
     homeSigninView = SigninView.loadingUsers
     mirrorErrorMessage = "Please enter a valid user!"
@@ -71,30 +71,32 @@ proc validateMirror(user: User) {.async.} =
 
 proc onMirrorClick(ev: kdom.Event; n: VNode) =
   ## Callback that routes to mirror view on mirror button click.
-  var username = getElementById("username-input").value
+  var
+    username = $getElementById("username-input").value
+    service: Service
   if getElementById("service-switch").checked:
-    mirror.service = Service.lastFmService
+    service = Service.lastFmService
   else:
-    mirror.service = Service.listenBrainzService
+    service = Service.listenBrainzService
 
   ## client user nil error
-  if client.isNil:
+  if clientUser.isNil:
     clientErrorMessage = "Please login before trying to mirror!"
   else:
     clientErrorMessage = ""
 
   ## mirror user nil error
-  if mirror.isNil and username == "":
+  if mirrorUser.isNil and username == "":
     mirrorErrorMessage = "Please choose a user!"
   else:
     mirrorErrorMessage = ""
 
-  if not mirror.isNil and username == "":
-    username = mirror.username
+  if not mirrorUser.isNil and username == "":
+    username = $mirrorUser.username
 
-  if not client.isNil and (not mirror.isNil or username != ""):
+  if not clientUser.isNil and (not mirrorUser.isNil or username != ""):
     homeSigninView = SigninView.loadingRoom
-    discard validatemMirror(mirror)
+    discard validateMirror(username, service)
 
 proc serviceToggle: Vnode =
   ## Renders the service selection toggle.
@@ -110,15 +112,15 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     if store:
-      client = await lbClient.initUser(cstring res.userName.get(), token = token)
-      discard db.storeUser(clientUsersDbStore, client, storedClientUsers)
+      clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
+      discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
       discard db.getClientUsers(homeSigninView)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
     else:
       clientErrorMessage = "Token no longer valid!"
-      client = nil
+      clientUser = nil
       try:
         discard db.delete(clientUsersDbStore, userId, dbOptions)
       except:
@@ -126,25 +128,25 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     redraw()
   homeServiceView = ServiceView.selection
 
-proc validateFMSession(user: ServiceUser, userId: cstring, store = true) {.async.} =
+proc validateFMSession(user: User, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
   try:
-    client = await fmClient.initUser(user.username, user.sessionKey)
+    clientUser = await fmClient.initUser(user.username, user.sessionKey)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     if store:
-      discard db.storeUser(clientUsersDbStore, client, storedClientUsers)
+      discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
       discard db.getClientUsers(homeSigninView)
   except:
     if store:
       clientErrorMessage = "Authorisation failed!"
     else:
       clientErrorMessage = "Session no longer valid!"
-      client = nil
+      clientUser = nil
       try:
-        discard db.delete(clientUsersDbStore, userId, dbOptions)
+        discard db.delete(clientUsersDbStore, user.userId, dbOptions)
       except:
-        storedClientUsers.del(userId)
+        storedClientUsers.del(user.userId)
     redraw()
   homeServiceView = ServiceView.selection
 
@@ -158,27 +160,23 @@ proc renderUsers(storedUsers: Table[cstring, User], current: var User, mirror = 
       buttonClass = "row"
       if not current.isNil and current.userId == userId:
         buttonClass = buttonClass & cstring " selected"
-      for serviceUser in user.services:
-        if serviceUser.username != "":
-          button(id = userId, title = cstring $serviceUser.username, class = buttonClass, service = cstring $serviceUser.service):
-            serviceIconId = cstring $serviceUser.service & "-icon"
-            tdiv(id = serviceIconId, class = "service-icon")
-            text serviceUser.username
-            proc onclick(ev: kdom.Event; n: VNode) =
-              let
-                userId = n.id
-                service = parseEnum[Service]($n.getAttr("service"))
-              if current == storedUsers[userId]:
-                current = nil
-              else:
-                current = storedUsers[userId]
-                if not mirror:
-                  case current.service
-                  of Service.listenBrainzService:
-                    homeServiceView = ServiceView.loading
-                    discard validateLBToken(current.token, userId = current.userId, store = false)
-                  of Service.listenBrainzService:
-                    discard validateFMSession(current.sessionKey, current.userId, store = false)
+      button(id = userId, title = user.username, class = buttonClass, service = cstring $user.service):
+        serviceIconId = cstring $user.service & "-icon"
+        tdiv(id = serviceIconId, class = "service-icon")
+        text user.username
+        proc onclick(ev: kdom.Event; n: VNode) =
+          let userId = n.id
+          if current == storedUsers[userId]:
+            current = nil
+          else:
+            current = storedUsers[userId]
+            if not mirror:
+              case current.service
+              of Service.listenBrainzService:
+                homeServiceView = ServiceView.loading
+                discard validateLBToken(current.token, current.userId, store = false)
+              of Service.lastFmService:
+                discard validateFMSession(current, store = false)
 
 proc mirrorUserModal: Vnode =
   ## Renders the mirror user selection modal.
@@ -186,7 +184,7 @@ proc mirrorUserModal: Vnode =
     if storedMirrorUsers.len > 0:
       p(id = "modal-text", class = "body"):
         text "Select a user to mirror..."
-      renderUsers(storedMirrorUsers, mirror, mirrorService, mirror = true)
+      renderUsers(storedMirrorUsers, mirrorUser, mirror = true)
     else:
       p(id = "modal-text", class = "body"):
         text "Enter a username and select a service."
@@ -221,8 +219,8 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fm.sk = resp.session.key
     clientErrorMessage = ""
     fmToken = ""
-    client = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard db.storeUser(clientUsersDbStore, client, storedClientUsers)
+    clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
+    discard db.storeUser(clientUsersDbStore, clientUser, storedClientUsers)
     discard db.getClientUsers(homeSigninView)
   except:
     clientErrorMessage = "Authorisation failed!"
@@ -316,10 +314,10 @@ proc returnModal*(view: var SigninView, mirrorModal: bool): Vnode =
       text "Welcome!"
     tdiv(id = "returning-user"):
       a(id = "link"):
-        text "Not you?"
+        text "Add another account?"
         proc onclick(ev: kdom.Event; n: VNode) =
           view = SigninView.newUser
-      renderUsers(storedClientUsers, client, clientService)
+      renderUsers(storedClientUsers, clientUser)
       errorModal clientErrorMessage
     if mirrorModal:
       mirrorUserModal()
@@ -361,7 +359,7 @@ proc signinModal*(signinView: var SigninView, serviceView: var ServiceView, mirr
     of SigninView.newUser:
       loginModal(serviceView, signinView, mirrorModal)
     of SigninView.loadingRoom:
-      loadingModal "Loading " & mirrorUsername & "'s listens..."
+      loadingModal "Loading " & $mirrorUser.username & "'s listens..."
 
 proc home*: Vnode =
   ## Renders the main section for home view.

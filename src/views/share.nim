@@ -1,11 +1,10 @@
 import
-  std/[asyncjs, jsffi, tables],
+  std/[asyncjs, jsffi, tables, sugar],
   pkg/karax/[karaxdsl, vdom],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   sources/[lfm, utils],
   types
-from std/sugar import collect
 
 const
   clientUsersDbStore*: cstring = "clientUsers"
@@ -23,7 +22,7 @@ var
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
-  client*, mirror*: User
+  clientUser*, mirrorUser*: User
   clientErrorMessage*, mirrorErrorMessage*: string
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
