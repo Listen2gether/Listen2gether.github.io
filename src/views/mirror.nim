@@ -126,23 +126,24 @@ proc setTimeoutAsync(ms: int): Future[void] =
 
 proc longPoll(ms: int = 60000) {.async.} =
   ## Updates the mirrorUser every 60 seconds and stores to the database
-  if not polling:
-    polling = true
-  await setTimeoutAsync(ms)
-  if timeToUpdate(mirrorUser.lastUpdateTs, ms):
-    log "Updating and submitting..."
-    let preMirror = not mirrorToggle
-    case mirrorUser.service:
-    of Service.listenBrainzService:
-      mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
-      if mirrorToggle:
-        discard lbClient.submitMirrorQueue(mirrorUser)
-    of Service.lastFmService:
-      mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
-      if mirrorToggle:
-        discard fmClient.submitMirrorQueue(mirrorUser)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-  discard longPoll(ms)
+  if globalView == ClientView.mirrorView:
+    if not polling:
+      polling = true
+    await setTimeoutAsync(ms)
+    if timeToUpdate(mirrorUser.lastUpdateTs, ms):
+      log "Updating and submitting..."
+      let preMirror = not mirrorToggle
+      case mirrorUser.service:
+      of Service.listenBrainzService:
+        mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
+        if mirrorToggle:
+          discard lbClient.submitMirrorQueue(mirrorUser)
+      of Service.lastFmService:
+        mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
+        if mirrorToggle:
+          discard fmClient.submitMirrorQueue(mirrorUser)
+      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+    discard longPoll(ms)
 
 proc mirrorSwitch: Vnode =
   result = buildHtml(tdiv(id = "mirror-toggle")):
