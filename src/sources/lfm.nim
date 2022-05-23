@@ -205,13 +205,8 @@ proc getRecentTracks(fm: AsyncLastFM, username: cstring, preMirror: bool, `from`
 proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Future[User] {.async.} =
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
-  let
-    username = cstring toLower($username)
-    userId = cstring($Service.lastFmService & ":" & $username)
-  var user = newUser(userId = userId, services = [
-    Service.listenBrainzService: newServiceUser(Service.listenBrainzService),
-    Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)
-  ])
+  let username = cstring toLower($username)
+  var user = newUser(username, Service.lastFmService, sessionKey = sessionKey)
   user.lastUpdateTs = int toUnix getTime()
   let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror = true)
   user.playingNow = playingNow
@@ -220,7 +215,6 @@ proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Fu
 
 proc updateUser*(fm: AsyncLastFM, user: User, resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates Last.fm user's now playing, recent tracks, and latest listen timestamp
-  let username = user.services[lastFmService].username
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
@@ -229,23 +223,23 @@ proc updateUser*(fm: AsyncLastFM, user: User, resetLastUpdate, preMirror = false
 
   if resetLastUpdate:
     let
-      (_, latestListenHistory) = await fm.getRecentTracks(username, preMirror)
+      (_, latestListenHistory) = await fm.getRecentTracks(user.username, preMirror)
       upTo = get latestListenHistory[^1].listenedAt
 
     if upTo > updatedUser.lastUpdateTs: # fills in any gaps in history
-      var (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+      var (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
       updatedUser.listenHistory = listenHistory & user.listenHistory
       while listenHistory.len > 0:
-        (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+        (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
         updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
       updatedUser.playingNow = playingNow
       updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
     else: # no gap / overlap
-      let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = updatedUser.lastUpdateTs)
+      let (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = updatedUser.lastUpdateTs)
       updatedUser.playingNow = playingNow
       updatedUser.listenHistory = listenHistory & user.listenHistory
   else:
-    let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror, `from` = user.lastUpdateTs)
+    let (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs)
     updatedUser.playingNow = playingNow
     updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
@@ -254,7 +248,7 @@ proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc`: int = 10
   ## Backfills Last.fm user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
-    (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
+    (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror = true, upTo = to)
   user.playingNow = playingNow
   user.listenHistory = user.listenHistory & listenHistory
   endInd += `inc`

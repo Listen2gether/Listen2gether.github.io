@@ -33,7 +33,6 @@ proc darkModeToggle: Vnode =
   if hasItem(cstring "dark-mode"):
     darkMode = parseBool $getItem(cstring "dark-mode")
   setDataTheme(darkMode)
-
   result = buildHtml:
     label(class = "switch"):
       input(`type` = "checkbox", id = "dark-mode-switch", class = "toggle", checked = toChecked darkMode):
@@ -59,10 +58,8 @@ proc backButton(ev: Event) =
 proc createDom: VNode =
   ## Renders the web app.
   window.addEventListener("popstate", backButton)
-
   if globalView == ClientView.homeView and $window.location.pathname == "/mirror":
     mirrorRoute()
-
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
@@ -70,7 +67,7 @@ proc createDom: VNode =
       home()
     of ClientView.loadingView:
       main:
-        loadingModal "Loading " & mirrorUsername & "'s listens..."
+        loadingModal "Loading " & $mirrorUser.username & "'s listens..."
     of ClientView.errorView:
       errorSection mirrorErrorMessage
     of ClientView.mirrorView:

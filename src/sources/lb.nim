@@ -18,14 +18,14 @@ func to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
     additionalInfo = newAdditionalInfo(# tracknumber = to track.trackNumber,
-                                    trackMbid = to track.recordingMbid,
-                                    recordingMbid = to track.recordingMbid,
-                                    releaseMbid = to track.releaseMbid,
-                                    artistMbids = to track.artistMbids)
+                                      trackMbid = to track.recordingMbid,
+                                      recordingMbid = to track.recordingMbid,
+                                      releaseMbid = to track.releaseMbid,
+                                      artistMbids = to track.artistMbids)
     trackMetadata = newTrackMetadata(trackName = $track.trackName,
-                                  artistName = $track.artistName,
-                                  releaseName = to track.releaseName,
-                                  additionalInfo = some additionalInfo)
+                                    artistName = $track.artistName,
+                                    releaseName = to track.releaseName,
+                                    additionalInfo = some additionalInfo)
   result = newAPIListen(listenedAt = track.listenedAt, trackMetadata = trackMetadata)
 
 func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
@@ -84,10 +84,8 @@ proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, 
 proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): Future[User] {.async.} =
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
-  let
-    username = cstring toLower($username)
-    userId = cstring($Service.listenBrainzService & ":" & $username)
-  var user = newUser(userId = userId, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username = username, token = token), Service.lastFmService: newServiceUser(Service.lastFmService)])
+  let username = cstring toLower($username)
+  var user = newUser(username, Service.listenBrainzService, token)
   user.lastUpdateTs = int toUnix getTime()
   user.playingNow = await lb.getNowPlaying(username, preMirror = true)
   user.listenHistory = await lb.getRecentTracks(username, preMirror = true)
@@ -95,7 +93,6 @@ proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): F
 
 proc updateUser*(lb: AsyncListenBrainz, user: User, resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates ListenBrainz user's now playing, recent tracks, and latest listen timestamp
-  let username = user.services[listenBrainzService].username
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
@@ -104,24 +101,24 @@ proc updateUser*(lb: AsyncListenBrainz, user: User, resetLastUpdate, preMirror =
 
   if resetLastUpdate:
     let
-      latestListenHistory = await lb.getRecentTracks(username, preMirror)
+      latestListenHistory = await lb.getRecentTracks(user.username, preMirror)
       maxTs = get latestListenHistory[^1].listenedAt
 
     if maxTs > updatedUser.lastUpdateTs: # fills in any gaps in history
-      var listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+      var listenHistory = await lb.getRecentTracks(user.username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
       updatedUser.listenHistory = listenHistory & user.listenHistory
       while listenHistory.len > 0:
-        listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+        listenHistory = await lb.getRecentTracks(user.username, preMirror, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
         updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
-      updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
+      updatedUser.playingNow = await lb.getNowPlaying(user.username, preMirror)
       updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
     else: # no gap / overlap
-      updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
-      let listenHistory = await lb.getRecentTracks(username, preMirror, minTs = updatedUser.lastUpdateTs)
+      updatedUser.playingNow = await lb.getNowPlaying(user.username, preMirror)
+      let listenHistory = await lb.getRecentTracks(user.username, preMirror, minTs = updatedUser.lastUpdateTs)
       updatedUser.listenHistory = listenHistory & user.listenHistory
   else:
-    updatedUser.playingNow = await lb.getNowPlaying(username, preMirror)
-    let listenHistory = await lb.getRecentTracks(username, preMirror, minTs = user.lastUpdateTs)
+    updatedUser.playingNow = await lb.getNowPlaying(user.username, preMirror)
+    let listenHistory = await lb.getRecentTracks(user.username, preMirror, minTs = user.lastUpdateTs)
     updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
@@ -129,7 +126,7 @@ proc pageUser*(lb: AsyncListenBrainz, user: var User, endInd: var int, `inc`: in
   ## Backfills ListenBrainz user's recent tracks
   let
     maxTs = get user.listenHistory[^1].listenedAt
-    newTracks = await lb.getRecentTracks(user.services[listenBrainzService].username, preMirror = true, maxTs = maxTs)
+    newTracks = await lb.getRecentTracks(user.username, preMirror = true, maxTs = maxTs)
   user.listenHistory = user.listenHistory & newTracks
   endInd += `inc`
 
