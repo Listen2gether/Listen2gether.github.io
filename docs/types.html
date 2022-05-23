@@ -68,19 +68,16 @@
   <li><a class="reference" href="#Service"
     title="Service = enum
   listenBrainzService = &quot;listenbrainz&quot;, lastFmService = &quot;lastfm&quot;">Service</a></li>
-  <li><a class="reference" href="#ServiceUser"
-    title="ServiceUser = ref object
-  username*: cstring
+  <li><a class="reference" href="#User"
+    title="User = ref object
+  userId*, username*: cstring
   case service*: Service
   of listenBrainzService:
       token*: cstring
 
   of lastFmService:
-      sessionKey*: cstring">ServiceUser</a></li>
-  <li><a class="reference" href="#User"
-    title="User = ref object
-  userId*: cstring
-  services*: array[Service, ServiceUser]
+      sessionKey*: cstring
+
   playingNow*: Option[Listen]
   listenHistory*: seq[Listen]
   lastUpdateTs*: int">User</a></li>
@@ -110,20 +107,11 @@
           mirrored, preMirror: Option[bool] = none(bool)): Listen</a></li>
 
   </ul>
-  <ul class="simple nested-toc-section">newServiceUser
-      <li><a class="reference" href="#newServiceUser%2CService%2Ccstring%2Ccstring%2Ccstring"
-    title="newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser">newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser</a></li>
-
-  </ul>
   <ul class="simple nested-toc-section">newUser
-      <li><a class="reference" href="#newUser%2Ccstring%2Carray%5BService%2CServiceUser%5D%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint"
-    title="newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
-    ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
-                    lastFmService: newServiceUser(lastFmService)];
+      <li><a class="reference" href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint"
+    title="newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
         playingNow: Option[Listen] = none(Listen);
-        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User">newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
-    ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
-                    lastFmService: newServiceUser(lastFmService)];
+        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User">newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
         playingNow: Option[Listen] = none(Listen);
         listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User</a></li>
 
@@ -159,9 +147,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L23"
+href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L19"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L23" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L19" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -178,9 +166,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 </dd>
 </div>
-<div id="ServiceUser">
-<dt><pre><a href="types.html#ServiceUser"><span class="Identifier">ServiceUser</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">username</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
+<div id="User">
+<dt><pre><a href="types.html#User"><span class="Identifier">User</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">userId</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">username</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
   <span class="Keyword">case</span> <span class="Identifier">service</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a>
   <span class="Keyword">of</span> <span class="Identifier">listenBrainzService</span><span class="Other">:</span>
       <span class="Identifier">token</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
@@ -188,21 +176,6 @@ class="link-seesrc" target="_blank">Source</a>
   <span class="Keyword">of</span> <span class="Identifier">lastFmService</span><span class="Other">:</span>
       <span class="Identifier">sessionKey</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
 
-  </pre></dt>
-<dd>
-
-
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L8"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L8" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-<div id="User">
-<dt><pre><a href="types.html#User"><span class="Identifier">User</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">userId</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
-  <span class="Identifier">services</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">Service</span><span class="Other">,</span> <a href="types.html#ServiceUser"><span class="Identifier">ServiceUser</span></a><span class="Other">]</span>
   <span class="Identifier">playingNow</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span>
   <span class="Identifier">listenHistory</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span>
   <span class="Identifier">lastUpdateTs</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
@@ -211,9 +184,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 
 &nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L16"
+href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L8"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L16" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L8" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -230,9 +203,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 does not include <tt class="docutils literal"><span class="pre"><span class="Identifier">mirrored</span></span></tt> or <tt class="docutils literal"><span class="pre"><span class="Identifier">preMirror</span></span></tt>
 &nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L75"
+href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L65"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L75" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L65" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -252,26 +225,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new Listen object
 &nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L56"
+href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L46"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L56" class="link-seesrc" target="_blank" >Edit</a>
-
-</dd>
-</div>
-
-</div>
-
-<div id="newServiceUser-procs-all">
-<div id="newServiceUser,Service,cstring,cstring,cstring">
-<dt><pre><span class="Keyword">func</span> <a href="#newServiceUser%2CService%2Ccstring%2Ccstring%2Ccstring"><span class="Identifier">newServiceUser</span></a><span class="Other">(</span><span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span> <span class="Identifier">username</span><span class="Other">,</span> <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">sessionKey</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#ServiceUser"><span class="Identifier">ServiceUser</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
-<dd>
-
-Create a new ServiceUser object
-&nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L30"
-class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L30" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L46" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -279,10 +235,9 @@ class="link-seesrc" target="_blank">Source</a>
 </div>
 
 <div id="newUser-procs-all">
-<div id="newUser,cstring,array[Service,ServiceUser],Option[Listen],seq[Listen],int">
-<dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2Carray%5BService%2CServiceUser%5D%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">userId</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="Operator">$</span><span class="Identifier">toUnix</span><span class="Other">(</span><span class="Identifier">getTime</span><span class="Other">(</span><span class="Other">)</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">services</span><span class="Other">:</span> <span class="Identifier">array</span><span class="Other">[</span><span class="Identifier">Service</span><span class="Other">,</span>
-    <a href="types.html#ServiceUser"><span class="Identifier">ServiceUser</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Other">[</span><span class="Identifier">listenBrainzService</span><span class="Other">:</span> <span class="Identifier">newServiceUser</span><span class="Other">(</span><span class="Identifier">listenBrainzService</span><span class="Other">)</span><span class="Other">,</span>
-                    <span class="Identifier">lastFmService</span><span class="Other">:</span> <span class="Identifier">newServiceUser</span><span class="Other">(</span><span class="Identifier">lastFmService</span><span class="Other">)</span><span class="Other">]</span><span class="Other">;</span>
+<div id="newUser,cstring,Service,cstring,cstring,Option[Listen],seq[Listen],int">
+<dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span>
+             <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">sessionKey</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span>
              <span class="Identifier">playingNow</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">;</span>
              <span class="Identifier">listenHistory</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">lastUpdateTs</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
@@ -290,9 +245,9 @@ class="link-seesrc" target="_blank">Source</a>
 
 Create new User object
 &nbsp;&nbsp;<a
-href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L42"
+href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L26"
 class="link-seesrc" target="_blank">Source</a>
-&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L42" class="link-seesrc" target="_blank" >Edit</a>
+&nbsp;&nbsp;<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L26" class="link-seesrc" target="_blank" >Edit</a>
 
 </dd>
 </div>
@@ -308,7 +263,7 @@ class="link-seesrc" target="_blank">Source</a>
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-20 13:42:07 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-23 11:23:06 UTC</small>
       </div>
     </div>
   </div>

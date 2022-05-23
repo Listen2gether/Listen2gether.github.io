@@ -122,19 +122,11 @@
           listenedAt: Option[int] = none(int);
           mirrored, preMirror: Option[bool] = none(bool)): Listen</a></li>
           </ul></dd>
-<dt><a name="newServiceUser" href="#newServiceUser"><span>newServiceUser:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser" href="types.html#newServiceUser%2CService%2Ccstring%2Ccstring%2Ccstring">types: newServiceUser(service: Service; username, token, sessionKey: cstring = &quot;&quot;): ServiceUser</a></li>
-          </ul></dd>
 <dt><a name="newUser" href="#newUser"><span>newUser:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
-          data-doc-search-tag="types: newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
-    ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
-                    lastFmService: newServiceUser(lastFmService)];
+          data-doc-search-tag="types: newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
         playingNow: Option[Listen] = none(Listen);
-        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User" href="types.html#newUser%2Ccstring%2Carray%5BService%2CServiceUser%5D%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint">types: newUser(userId: cstring = $toUnix(getTime()); services: array[Service,
-    ServiceUser] = [listenBrainzService: newServiceUser(listenBrainzService),
-                    lastFmService: newServiceUser(lastFmService)];
+        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User" href="types.html#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2COption%5BListen%5D%2Cseq%5BListen%5D%2Cint">types: newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
         playingNow: Option[Listen] = none(Listen);
         listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User</a></li>
           </ul></dd>
@@ -161,10 +153,6 @@
 <dt><a name="Service" href="#Service"><span>Service:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
           data-doc-search-tag="types: Service" href="types.html#Service">types: Service</a></li>
-          </ul></dd>
-<dt><a name="ServiceUser" href="#ServiceUser"><span>ServiceUser:</span></a></dt><dd><ul class="simple">
-<li><a class="reference external"
-          data-doc-search-tag="types: ServiceUser" href="types.html#ServiceUser">types: ServiceUser</a></li>
           </ul></dd>
 <dt><a name="submitMirrorQueue" href="#submitMirrorQueue"><span>submitMirrorQueue:</span></a></dt><dd><ul class="simple">
 <li><a class="reference external"
@@ -215,7 +203,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-20 13:42:07 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-05-23 11:23:06 UTC</small>
       </div>
     </div>
   </div>
