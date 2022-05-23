@@ -22,7 +22,13 @@ var
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   clientUsers*: Table[cstring, User] = initTable[cstring, User]()
   mirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
-  clientErrorMessage*, mirrorErrorMessage*: string
+  mirrorUserId*: cstring = ""
+  clientErrorMessage*, mirrorErrorMessage*: cstring = ""
+
+proc getSelectedIds*(users: Table[cstring, User]): seq[cstring] =
+  for userId, user in users:
+    if user.selected:
+      result.add userId
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
   ## Gets users from a given IndexedDB store.
@@ -44,7 +50,7 @@ proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, users: var Table[cs
   except:
     logError "Failed to store users."
 
-proc errorModal*(message: string): Vnode =
+proc errorModal*(message: cstring): Vnode =
   ## Render a div with a given error message
   result = buildHtml:
     tdiv(class = "error-message"):
@@ -52,7 +58,7 @@ proc errorModal*(message: string): Vnode =
         p(id = "error"):
           text message
 
-proc loadingModal*(message: string): Vnode =
+proc loadingModal*(message: cstring): Vnode =
   ## Renders a div with a loading animation with a given message.
   result = buildHtml:
     tdiv(id = "loading", class = "col login-container"):
