@@ -3,6 +3,7 @@ lastFmService	types.html#lastFmService	Service.lastFmService
 Service	types.html#Service	types: Service	
 User	types.html#User	types: User	
 Listen	types.html#Listen	types: Listen	
-newUser	types.html#newUser,cstring,Service,cstring,cstring,Option[Listen],seq[Listen],int	types: newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;\n        playingNow: Option[Listen] = none(Listen);\n        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0): User	
+newUser	types.html#newUser,cstring,Service,cstring,cstring,Option[Listen],seq[Listen],int,bool	types: newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;\n        playingNow: Option[Listen] = none(Listen);\n        listenHistory: seq[Listen] = @[]; lastUpdateTs: int = 0;\n        selected: bool = false): User	
+`==`	types.html#==,User,User	types: `==`(a, b: User): bool	
 newListen	types.html#newListen,cstring,cstring,Option[cstring],Option[cstring],Option[cstring],Option[seq[cstring]],Option[int],Option[int],Option[bool],Option[bool]	types: newListen(trackName, artistName: cstring; releaseName, recordingMbid,\n    releaseMbid: Option[cstring] = none(cstring);\n          artistMbids: Option[seq[cstring]] = none(seq[cstring]);\n          trackNumber: Option[int] = none(int);\n          listenedAt: Option[int] = none(int);\n          mirrored, preMirror: Option[bool] = none(bool)): Listen	
 `==`	types.html#==,Listen,Listen	types: `==`(a, b: Listen): bool	
