@@ -53,6 +53,7 @@ proc footerSection: Vnode =
 
 proc backButton(ev: Event) =
   globalView = ClientView.homeView
+  onboardView = OnboardView.initialise
   redraw()
 
 proc createDom: VNode =

@@ -36,7 +36,7 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
   except:
     logError "Failed to get stored users."
 
-proc storeUser*(db: IndexedDB, dbStore: cstring, user: User, storedUsers: var Table[cstring, User], dbOptions: IDBOptions = dbOptions) {.async.} =
+proc storeUser*(db: IndexedDB, user: User, storedUsers: var Table[cstring, User], dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
   try:
     let res =  await put(db, dbStore, toJs user, dbOptions)
@@ -56,7 +56,7 @@ proc errorModal*(message: string): Vnode =
 proc loadingModal*(message: string): Vnode =
   ## Renders a div with a loading animation with a given message.
   result = buildHtml:
-    tdiv(id = "loading", class = "col login-container"):
+    tdiv(id = "loading", class = "col signin-container"):
       p(id = "body"):
         text message
       img(id = "spinner", src = "/assets/spinner.svg")
