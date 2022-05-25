@@ -34,7 +34,7 @@ var
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
-proc getUsers*(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
+proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
     let users = await db.getUsers(dbStore)
