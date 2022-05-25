@@ -28,8 +28,8 @@ proc pageListens(ev: Event; n: VNode) =
       of Service.listenBrainzService:
         discard lbClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
       of Service.lastFmService:
-        discard fmClient.pageUser(mirrorUser, listenEndInd)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+        discard fmClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     else:
       listenEndInd += increment
 
@@ -124,7 +124,7 @@ proc setTimeoutAsync(ms: int): Future[void] =
   return promise
 
 proc longPoll(ms: int = 60000) {.async.} =
-  ## Updates the mirrorUser every 60 seconds and stores to the database
+  ## Updates the mirror user every 60 seconds and stores to the database
   if globalView == ClientView.mirrorView:
     if not polling:
       polling = true
@@ -139,8 +139,8 @@ proc longPoll(ms: int = 60000) {.async.} =
       of Service.lastFmService:
         mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], preMirror = preMirror)
         if mirrorToggle:
-          discard fmClient.submitMirrorQueue(mirrorUser)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+          discard fmClient.submitMirrorQueue(mirrorUsers[mirrorUserId])
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -187,7 +187,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
     main:
       case mirrorView:
       of MirrorView.login:
-        loginModal()
+        onboardModal(mirrorModal = false)
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
@@ -205,7 +205,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       mirrorUsers[mirrorUserId] = await lbClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+    discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
@@ -215,7 +215,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
         mirrorUsers[mirrorUserId] = await lbClient.initUser(username)
       of Service.lastFmService:
         mirrorUsers[mirrorUserId] = await fmClient.initUser(username)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
       mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
@@ -241,7 +241,6 @@ proc mirrorRoute*: (cstring, Service) =
           result = (mirrorUsername, mirrorService)
           if not mirrorUsers.hasKey(mirrorUserId) and globalView != ClientView.errorView:
             globalView = ClientView.loadingView
-            discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
             globalView = ClientView.mirrorView

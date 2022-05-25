@@ -26,7 +26,7 @@ type
 
 var
   onboardView* = OnboardView.initialise
-  loginView* = ModalView.newUser
+  loginView = ModalView.newUser
   serviceView = ServiceView.selection
   lastFmAuthView = LastFmAuthView.signin
   lastFMSessionView = LastFMSessionView.loading
@@ -63,7 +63,7 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
     of Service.lastFmService:
       user = await fmClient.initUser(username)
     mirrorUserId = user.userId
-    discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+    discard db.storeUser(user, mirrorUsers, mirrorUsersDbStore)
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
@@ -119,7 +119,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     if store:
-      clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
+      let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
       discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
       discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
@@ -182,7 +182,7 @@ proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
               case clientUser.service
               of Service.listenBrainzService:
                 serviceView = ServiceView.loading
-                discard validateLBToken(current.token, current.userId, store = false)
+                discard validateLBToken(clientUser.token, clientUser.userId, store = false)
               of Service.lastFmService:
                 discard validateFMSession(clientUser, store = false)
 
@@ -204,8 +204,8 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     clientErrorMessage = ""
     fmToken = ""
     let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard db.storeUser(clientUser, storedClientUsers, clientUsersDbStore)
-    discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
+    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
     lastFmSessionView = LastFmSessionView.success
     serviceView = ServiceView.selection
     lastFmSessionView = LastFmSessionView.loading
@@ -302,7 +302,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
             clientErrorMessage = ""
             discard fmClient.getLFMToken()
 
-proc loginModal*: Vnode =
+proc loginModal: Vnode =
   result = buildHtml(tdiv):
     case loginView:
     of ModalView.newUser:
@@ -331,7 +331,7 @@ proc loginModal*: Vnode =
           text "Add another account?"
           proc onclick(ev: Event; n: VNode) =
             loginView = ModalView.newUser
-        renderUsers(storedClientUsers, clientUser)
+        renderUsers(clientUsers)
         errorModal clientErrorMessage
 
 proc mirrorUserModal(view: var ModalView): Vnode =
@@ -351,25 +351,27 @@ proc mirrorUserModal(view: var ModalView): Vnode =
         text "Add another account?"
         proc onclick(ev: Event; n: VNode) =
           view = ModalView.newUser
-      renderUsers(storedMirrorUsers, mirrorUser, mirror = true)
+      renderUsers(mirrorUsers, mirror = true)
     errorModal(mirrorErrorMessage)
     button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
       text "Start mirroring!"
 
-proc onboardModal: Vnode =
+proc onboardModal*(mirrorModal = true): Vnode =
   ## Renders the signin column.
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
-      discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
-      discard db.getUsers(mirrorUserView, storedMirrorUsers, mirrorUsersDbStore)
+      discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
+      if mirrorModal:
+        discard db.getUsers(mirrorUserView, mirrorUsers, mirrorUsersDbStore)
       loadingModal "Loading users..."
       onboardView = OnboardView.onboard
     of OnboardView.onboard:
       loginModal()
-      mirrorUserModal(mirrorUserView)
+      if mirrorModal:
+        mirrorUserModal(mirrorUserView)
     of OnboardView.loading:
-      loadingModal "Loading " & $mirrorUser.username & "'s listens..."
+      loadingModal "Loading " & mirrorUsers[mirrorUserId].username & "'s listens..."
 
 proc home*: Vnode =
   ## Renders the main section for home view.

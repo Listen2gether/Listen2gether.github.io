@@ -1,7 +1,8 @@
 import
   std/[dom, strutils],
-  pkg/karax/[karax, karaxdsl, vdom, localstorage],
-  views/[home, mirror, share]
+  pkg/karax/[karax, karaxdsl, vdom, localstorage, jstrutils],
+  views/[home, mirror, share],
+  types
 
 var
   darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
