@@ -78,7 +78,7 @@ suite "ListenBrainz source":
       let newUser = waitFor lb.initUser(username)
 
     test "Update user":
-      var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
+      var user = newUser(username, Service.listenBrainzService)
       let updatedUser = waitFor lb.updateUser(user)
 
     ## Cannot be tested outside JS backend

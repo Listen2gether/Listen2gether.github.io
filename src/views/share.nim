@@ -1,19 +1,18 @@
 import
-  std/[asyncjs, jsffi, tables],
+  std/[asyncjs, jsffi, tables, sugar],
   pkg/karax/[karaxdsl, vdom],
   pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
   sources/[lfm, utils],
   types
-from std/sugar import collect
-
-type
-  ClientView* = enum
-    homeView, mirrorView, loadingView, errorView
 
 const
   clientUsersDbStore*: cstring = "clientUsers"
   mirrorUsersDbStore*: cstring = "mirrorUsers"
+
+type
+  ClientView* = enum
+    homeView, mirrorView, loadingView, errorView
 
 var
   globalView*: ClientView = ClientView.homeView
@@ -24,8 +23,6 @@ var
   storedClientUsers*: Table[cstring, User] = initTable[cstring, User]()
   storedMirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientUser*, mirrorUser*: User
-  mirrorUsername*: string
-  clientService*, mirrorService*: Service
   clientErrorMessage*, mirrorErrorMessage*: string
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
@@ -33,7 +30,7 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
   result = initTable[cstring, User]()
   try:
     let objStore = await getAll(db, dbStore, dbOptions)
-    if not isNil objStore:
+    if not objStore.isNil:
       result = collect:
         for user in to(objStore, seq[User]): {user.userId: user}
   except:

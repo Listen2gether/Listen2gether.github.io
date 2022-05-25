@@ -4,7 +4,7 @@ else:
   import std/asyncdispatch
 
 import
-  std/[json, options, strutils, times],
+  std/[json, options, strutils, times, unicode],
   pkg/[jsony, lastfm],
   pkg/lastfm/[track, user],
   types, utils
@@ -32,11 +32,7 @@ type
     album*, mbid*, albumArtist*: Option[string]
     timestamp*, trackNumber*, duration*: Option[int]
 
-func newFMTrack(
-  artist, album: JsonNode,
-  date: Option[FMDate] = none(FMDate),
-  mbid, name, url: Option[string] = none(string),
-  `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
+func newFMTrack( artist, album: JsonNode, date: Option[FMDate] = none(FMDate), mbid, name, url: Option[string] = none(string), `@attr`: Option[Attributes] = none(Attributes)): FMTrack =
   ## Create new `FMTrack` object
   result.artist = artist
   result.album = album
@@ -46,9 +42,7 @@ func newFMTrack(
   result.url = url
   result.`@attr` = `@attr`
 
-func `==`*(a, b: FMDate): bool =
-  return a.uts == b.uts and
-    a.text == b.text
+func `==`*(a, b: FMDate): bool = a.uts == b.uts and a.text == b.text
 
 func `==`*(a, b: FMTrack): bool =
   return a.artist == b.artist and
@@ -63,13 +57,9 @@ func newAttributes(nowplaying: string): Attributes =
   ## Create new `Attributes` object
   result.nowplaying = nowplaying
 
-func `==`*(a, b: Attributes): bool =
-  return a.nowplaying == b.nowplaying
+func `==`*(a, b: Attributes): bool = a.nowplaying == b.nowplaying
 
-func newScrobble(
-  track, artist: string,
-  album, mbid, albumArtist: Option[string] = none(string),
-  timestamp, trackNumber, duration: Option[int] = none(int)): Scrobble =
+func newScrobble(track, artist: string, album, mbid, albumArtist: Option[string] = none(string), timestamp, trackNumber, duration: Option[int] = none(int)): Scrobble =
   ## Create new `Scrobble` object
   result.track = track
   result.artist = artist
@@ -107,9 +97,7 @@ func parseMbids(mbid: string): Option[seq[cstring]] =
   else:
     result = some @[cstring mbid]
 
-func to(
-  fmTrack: FMTrack,
-  preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(fmTrack: FMTrack, preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `FMTrack` object to a `Listen` object
   result = newListen(trackName = cstring get fmTrack.name,
                     artistName = get getVal(fmTrack.artist, "#text"),
@@ -121,15 +109,12 @@ func to(
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-func to(
-  fmTracks: seq[FMTrack],
-  preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+func to(fmTracks: seq[FMTrack], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `FMTrack` objects to a sequence of `Listen` objects
   for fmTrack in fmTracks:
     result.add to(fmTrack, preMirror, mirrored)
 
-func to(scrobble: Scrobble,
-  preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(scrobble: Scrobble, preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert a `Scrobble` object to a `Listen` object
   result = newListen(trackName = cstring scrobble.track,
                     artistName = cstring scrobble.artist,
@@ -140,9 +125,7 @@ func to(scrobble: Scrobble,
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-func to(
-  listens: seq[Scrobble],
-  preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+func to(listens: seq[Scrobble], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `Scrobble` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
@@ -167,24 +150,20 @@ func to(tracks: seq[Listen], toMirror = false): seq[Scrobble] =
     else:
       result.add to track
 
-proc setNowPlayingTrack(
-  fm: AsyncLastFM,
-  scrobble: Scrobble): Future[JsonNode] {.async.} =
+proc setNowPlayingTrack(fm: AsyncLastFM, scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Sets the current playing track on Last.fm
   try:
     result = await fm.setNowPlaying(track = scrobble.track,
-                              artist = scrobble.artist,
-                              album = get scrobble.album,
-                              mbid = get scrobble.mbid,
-                              albumArtist = get scrobble.albumArtist,
-                              trackNumber = scrobble.trackNumber,
-                              duration = scrobble.duration)
+      artist = scrobble.artist,
+      album = get scrobble.album,
+      mbid = get scrobble.mbid,
+      albumArtist = get scrobble.albumArtist,
+      trackNumber = scrobble.trackNumber,
+      duration = scrobble.duration)
   except:
     logError "There was a problem setting your now playing!"
 
-proc scrobbleTrack(
-  fm: AsyncLastFM,
-  scrobble: Scrobble): Future[JsonNode] {.async.} =
+proc scrobbleTrack(fm: AsyncLastFM, scrobble: Scrobble): Future[JsonNode] {.async.} =
   ## Scrobble a track to Last.fm
   try:
     result = await fm.scrobble(track = scrobble.track,
@@ -198,20 +177,13 @@ proc scrobbleTrack(
   except:
     logError "There was a problem scrobbling " & scrobble.track & " - " & scrobble.artist & "!"
 
-proc scrobbleTracks(
-  fm: AsyncLastFM,
-  scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
+proc scrobbleTracks(fm: AsyncLastFM, scrobbles: seq[Scrobble]): Future[seq[JsonNode]] {.async.} =
   ## Scrobble many tracks to Last.fm
   var futures: seq[JsonNode]
   for scrobble in scrobbles:
     futures.add await fm.scrobbleTrack(scrobble)
 
-proc getRecentTracks(
-  fm: AsyncLastFM,
-  username: cstring,
-  preMirror: bool,
-  `from`, upTo = 0,
-  limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
+proc getRecentTracks(fm: AsyncLastFM, username: cstring, preMirror: bool, `from`, upTo = 0, limit = 100): Future[(Option[Listen], seq[Listen])] {.async.} =
   ## Return a Last.FM user's listen history and now playing
   var
     playingNow: Option[Listen]
@@ -230,54 +202,58 @@ proc getRecentTracks(
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s listens!"
 
-proc initUser*(
-  fm: AsyncLastFM,
-  username: cstring,
-  sessionKey: cstring = ""): Future[User] {.async.} =
+proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Future[User] {.async.} =
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
-  let userId = cstring($Service.lastFmService & ":" & $username)
-  var user = newUser(userId = userId, services = [
-    Service.listenBrainzService: newServiceUser(Service.listenBrainzService),
-    Service.lastFmService: newServiceUser(Service.lastFmService, username, sessionKey = sessionKey)
-  ])
+  let username = cstring toLower($username)
+  var user = newUser(username, Service.lastFmService, sessionKey = sessionKey)
   user.lastUpdateTs = int toUnix getTime()
   let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror = true)
   user.playingNow = playingNow
   user.listenHistory = listenHistory
   return user
 
-proc updateUser*(
-  fm: AsyncLastFM,
-  user: User,
-  resetLastUpdate, preMirror = false): Future[User] {.async.} =
+proc updateUser*(fm: AsyncLastFM, user: User, resetLastUpdate, preMirror = false): Future[User] {.async.} =
   ## Updates Last.fm user's now playing, recent tracks, and latest listen timestamp
   var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
     updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
   else:
     updatedUser.lastUpdateTs = int toUnix getTime()
-  let (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, `from` = user.lastUpdateTs, preMirror = false)
-  updatedUser.playingNow = playingNow
-  updatedUser.listenHistory = listenHistory & user.listenHistory
+
+  if resetLastUpdate:
+    let
+      (_, latestListenHistory) = await fm.getRecentTracks(user.username, preMirror)
+      upTo = get latestListenHistory[^1].listenedAt
+
+    if upTo > updatedUser.lastUpdateTs: # fills in any gaps in history
+      var (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+      while listenHistory.len > 0:
+        (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs, upTo = upTo)
+        updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
+      updatedUser.playingNow = playingNow
+      updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
+    else: # no gap / overlap
+      let (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = updatedUser.lastUpdateTs)
+      updatedUser.playingNow = playingNow
+      updatedUser.listenHistory = listenHistory & user.listenHistory
+  else:
+    let (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror, `from` = user.lastUpdateTs)
+    updatedUser.playingNow = playingNow
+    updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
-proc pageUser*(
-  fm: AsyncLastFM,
-  user: var User,
-  endInd: var int,
-  inc: int = 10) {.async.} =
+proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc`: int = 10) {.async.} =
   ## Backfills Last.fm user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
-    (playingNow, listenHistory) = await fm.getRecentTracks(user.services[lastFmService].username, preMirror = true, upTo = to)
+    (playingNow, listenHistory) = await fm.getRecentTracks(user.username, preMirror = true, upTo = to)
   user.playingNow = playingNow
   user.listenHistory = user.listenHistory & listenHistory
-  endInd += inc
+  endInd += `inc`
 
-proc submitMirrorQueue*(
-  fm: AsyncLastFM,
-  user: var User) {.async.} =
+proc submitMirrorQueue*(fm: AsyncLastFM, user: var User) {.async.} =
   ## Submits Last.fm user's now playing and listen history that are not mirrored or preMirror
   if isSome user.playingNow:
     if not get(get(user.playingNow).preMirror) and not get(get(user.playingNow).mirrored):
