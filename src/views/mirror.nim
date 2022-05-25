@@ -10,9 +10,9 @@ type
     login, mirroring
 
 var
-  mirrorMirrorView = MirrorView.login
-  mirrorSigninView = SigninView.loadingUsers
-  mirrorServiceView = ServiceView.selection
+  mirrorView = MirrorView.login
+  signinView = SigninView.loadingUsers
+  serviceView = ServiceView.selection
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -172,7 +172,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
     if clientUserIds.len > 0:
       if mirrorUsers[mirrorUserId].userId in clientUserIds:
         mirrorToggle = false
-      mirrorMirrorView = MirrorView.mirroring
+      mirrorView = MirrorView.mirroring
     case mirrorUsers[mirrorUserId].service:
     of Service.listenBrainzService:
       userUrl = lb.userBaseUrl & username
@@ -187,9 +187,9 @@ proc mirror*(username: cstring, service: Service): Vnode =
           text username & "!"
       mirrorSwitch()
     main:
-      case mirrorMirrorView:
+      case mirrorView:
       of MirrorView.login:
-        signinModal(mirrorSigninView, mirrorServiceView, mirrorModal = false)
+        signinModal(signinView, serviceView, mirrorModal = false)
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
@@ -208,7 +208,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
     of Service.lastFmService:
       mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
-    mirrorMirrorView = MirrorView.login
+    mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
     try:
@@ -218,7 +218,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       of Service.lastFmService:
         mirrorUsers[mirrorUserId] = await fmClient.initUser(username)
       discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
-      mirrorMirrorView = MirrorView.login
+      mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"

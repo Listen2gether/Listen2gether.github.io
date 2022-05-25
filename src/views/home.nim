@@ -10,17 +10,17 @@ import
   types
 
 type
-  ServiceView* = enum
-    selection, loading, listenBrainzService, lastFmService
   SigninView* = enum
     loadingUsers, returningUser, newUser, loadingUser
+  ServiceView* = enum
+    selection, loading, listenBrainzService, lastFmService
   LastFmAuthView = enum
     signin, authorise
 
 var
-  homeServiceView: ServiceView = ServiceView.selection
-  homeSigninView: SigninView = SigninView.loadingUsers
-  lastFmAuthView: LastFmAuthView = LastFmAuthView.signin
+  signinView = SigninView.loadingUsers
+  serviceView = ServiceView.selection
+  lastFmAuthView = LastFmAuthView.signin
   fmToken: string
 
 proc getClientUsers(db: IndexedDB, view: var SigninView, dbStore = clientUsersDbStore) {.async.} =
@@ -51,7 +51,7 @@ proc loadMirror(user: User) =
   ## Sets the window url and sends information to the mirror view.
   let url: cstring = "/mirror?service=" & cstring($user.service) & "&username=" & user.username
   pushState(dom.window.history, 0, "", url)
-  homeSigninView = SigninView.loadingUsers
+  signinView = SigninView.loadingUsers
 
 proc validateMirror(username: cstring, service: Service) {.async.} =
   ## Validates and gets now playing for user.
@@ -67,7 +67,7 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
-    homeSigninView = SigninView.loadingUsers
+    signinView = SigninView.loadingUsers
     mirrorErrorMessage = "Please enter a valid user!"
   redraw()
 
@@ -99,7 +99,7 @@ proc onMirrorClick(ev: kdom.Event; n: VNode) =
 
   if selectedClientUsers.len > 0 and (mirrorUsers.hasKey(mirrorUserId) or mirrorUsername != ""):
     discard validateMirror(mirrorUsername, mirrorService)
-    homeSigninView = SigninView.loadingUser
+    signinView = SigninView.loadingUser
 
 proc serviceToggle: Vnode =
   ## Renders the service selection toggle.
@@ -117,7 +117,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     if store:
       let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
       discard db.storeUser(clientUsersDbStore, clientUser, clientUsers)
-      discard db.getClientUsers(homeSigninView)
+      discard db.getClientUsers(signinView)
   else:
     if store:
       clientErrorMessage = "Please enter a valid token!"
@@ -128,7 +128,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
       except:
         clientUsers.del(userId)
     redraw()
-  homeServiceView = ServiceView.selection
+  serviceView = ServiceView.selection
 
 proc validateFMSession(user: User, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
@@ -138,7 +138,7 @@ proc validateFMSession(user: User, store = true) {.async.} =
     fmClient.sk = $user.sessionKey
     if store:
       discard db.storeUser(clientUsersDbStore, clientUser, clientUsers)
-      discard db.getClientUsers(homeSigninView)
+      discard db.getClientUsers(signinView)
   except:
     if store:
       clientErrorMessage = "Authorisation failed!"
@@ -149,7 +149,7 @@ proc validateFMSession(user: User, store = true) {.async.} =
       except:
         clientUsers.del(user.userId)
     redraw()
-  homeServiceView = ServiceView.selection
+  serviceView = ServiceView.selection
 
 proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
   ## Renders stored users.
@@ -177,7 +177,7 @@ proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
             else:
               case clientUser.service
               of Service.listenBrainzService:
-                homeServiceView = ServiceView.loading
+                serviceView = ServiceView.loading
                 discard validateLBToken(clientUser.token, clientUser.userId, store = false)
               of Service.lastFmService:
                 discard validateFMSession(clientUser, store = false)
@@ -205,7 +205,7 @@ proc onLBTokenEnter(ev: kdom.Event; n: VNode) =
   if $n.id == "listenbrainz-token":
     let token = getElementById("listenbrainz-token").value
     if token != "":
-      homeServiceView = ServiceView.loading
+      serviceView = ServiceView.loading
       discard validateLBToken token
     else:
       clientErrorMessage = "Please enter a token!"
@@ -225,11 +225,11 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fmToken = ""
     let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
     discard db.storeUser(clientUsersDbStore, clientUser, clientUsers)
-    discard db.getClientUsers(homeSigninView)
+    discard db.getClientUsers(signinView)
   except:
     clientErrorMessage = "Authorisation failed!"
     redraw()
-  homeServiceView = ServiceView.selection
+  serviceView = ServiceView.selection
 
 proc lastFmModal*: Vnode =
   ## Renders the Last.fm authorisation modal.
@@ -285,10 +285,10 @@ proc getLFMToken(fm: AsyncLastFM) {.async.} =
   try:
     let resp = await fm.getToken()
     fmToken = resp.token
-    homeServiceView = ServiceView.lastFmService
+    serviceView = ServiceView.lastFmService
   except:
     clientErrorMessage = "Something went wrong. Try turning off your ad blocker."
-    homeServiceView = ServiceView.selection
+    serviceView = ServiceView.selection
   redraw()
 
 proc serviceModal*(view: var ServiceView): Vnode =
@@ -378,7 +378,7 @@ proc home*: Vnode =
           text " is a website for listen parties."
         p(id = "subtitle"):
           text "Whether you're physically in the same room or not."
-      signinModal(homeSigninView, homeServiceView)
+      signinModal(signinView, serviceView)
       tdiv(class = "break-column")
       tdiv(id = "description-container", class = "col"):
         p(class = "body"):
