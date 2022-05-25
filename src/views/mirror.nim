@@ -10,9 +10,9 @@ type
     login, mirroring
 
 var
-  mirrorMirrorView = MirrorView.login
-  mirrorSigninView = SigninView.loadingUsers
-  mirrorServiceView = ServiceView.selection
+  mirrorView = MirrorView.login
+  signinView = SigninView.loadingUsers
+  serviceView = ServiceView.selection
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -170,7 +170,7 @@ proc mirror*: Vnode =
     if not clientUser.isNil:
       if clientUser.userId == mirrorUser.userId:
         mirrorToggle = false
-      mirrorMirrorView = MirrorView.mirroring
+      mirrorView = MirrorView.mirroring
     case mirrorUser.service:
     of Service.listenBrainzService:
       username = mirrorUser.username
@@ -187,9 +187,9 @@ proc mirror*: Vnode =
           text $username & "!"
       mirrorSwitch()
     main:
-      case mirrorMirrorView:
+      case mirrorView:
       of MirrorView.login:
-        signinModal(mirrorSigninView, mirrorServiceView, mirrorModal = false)
+        signinModal(signinView, serviceView, mirrorModal = false)
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
@@ -208,7 +208,7 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
     of Service.lastFmService:
       mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-    mirrorMirrorView = MirrorView.login
+    mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
     try:
@@ -218,7 +218,7 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
       of Service.lastFmService:
         mirrorUser = await fmClient.initUser(username)
       discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-      mirrorMirrorView = MirrorView.login
+      mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"
