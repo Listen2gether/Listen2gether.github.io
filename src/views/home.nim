@@ -78,12 +78,6 @@ proc onMirrorClick(ev: Event; n: VNode) =
     mirrorUsername: cstring = ""
     mirrorService: Service
 
-  ## client user nil error
-  if selectedClientUsers.len == 0:
-    clientErrorMessage = "Please login before trying to mirror!"
-  else:
-    clientErrorMessage = ""
-
   case mirrorUserView:
   of ModalView.newUser:
     mirrorUsername = getElementById("username-input").value
@@ -91,19 +85,21 @@ proc onMirrorClick(ev: Event; n: VNode) =
       mirrorService = Service.lastFmService
     else:
       mirrorService = Service.listenBrainzService
-    if mirrorUsername == "":
+    if mirrorUsername != "" and selectedClientUsers.len > 0:
+      mirrorErrorMessage = ""
+      discard validateMirror(mirrorUsername, mirrorService)
+      onboardView = OnboardView.loading
+    else:
       mirrorErrorMessage = "Please choose a user!"
   of ModalView.returningUser:
-    if mirrorUsers.hasKey(mirrorUserId):
+    if mirrorUsers.hasKey(mirrorUserId) and selectedClientUsers.len > 0:
       mirrorUsername = mirrorUsers[mirrorUserId].username
       mirrorService = mirrorUsers[mirrorUserId].service
       mirrorErrorMessage = ""
+      discard validateMirror(mirrorUsername, mirrorService)
+      onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
-
-  if selectedClientUsers.len > 0 and (mirrorUsers.hasKey(mirrorUserId) or mirrorUsername != ""):
-    discard validateMirror(mirrorUsername, mirrorService)
-    onboardView = OnboardView.loading
 
 proc serviceToggle: Vnode =
   ## Renders the service selection toggle.
