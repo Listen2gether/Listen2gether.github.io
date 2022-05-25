@@ -1,6 +1,6 @@
 import
-  std/strutils,
-  pkg/karax/[karax, karaxdsl, vdom, kdom, localstorage],
+  std/[dom, strutils],
+  pkg/karax/[karax, karaxdsl, vdom, localstorage],
   views/[home, mirror, share]
 
 var darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -36,7 +36,7 @@ proc darkModeToggle: Vnode =
   result = buildHtml:
     label(class = "switch"):
       input(`type` = "checkbox", id = "dark-mode-switch", class = "toggle", checked = toChecked darkMode):
-        proc onclick(ev: kdom.Event; n: VNode) =
+        proc onclick(ev: Event; n: VNode) =
           darkMode = not darkMode
           setDataTheme(darkMode)
           setItem(cstring "dark-mode", cstring $darkMode)
