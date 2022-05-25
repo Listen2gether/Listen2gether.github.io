@@ -227,7 +227,7 @@ var NNI620757181 = {kind: 2, len: 2, offset: 0, typ: null, name: null, sons: [{k
 {kind: 1, offset: "onloadingdone", len: 0, typ: NTI620757182, name: "onloadingdone", sons: null}]};
 NTI620757181.node = NNI620757181;
 NTI620757090.base = NTI620757181;
-var NNI620757015 = {kind: 2, len: 23, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "activeElement", len: 0, typ: NTI620757016, name: "activeElement", sons: null}, 
+var NNI620757015 = {kind: 2, len: 25, offset: 0, typ: null, name: null, sons: [{kind: 1, offset: "activeElement", len: 0, typ: NTI620757016, name: "activeElement", sons: null}, 
 {kind: 1, offset: "documentElement", len: 0, typ: NTI620757016, name: "documentElement", sons: null}, 
 {kind: 1, offset: "alinkColor", len: 0, typ: NTI33554440, name: "alinkColor", sons: null}, 
 {kind: 1, offset: "bgColor", len: 0, typ: NTI33554440, name: "bgColor", sons: null}, 
@@ -237,11 +237,13 @@ var NNI620757015 = {kind: 2, len: 23, offset: 0, typ: null, name: null, sons: [{
 {kind: 1, offset: "defaultCharset", len: 0, typ: NTI33554440, name: "defaultCharset", sons: null}, 
 {kind: 1, offset: "fgColor", len: 0, typ: NTI33554440, name: "fgColor", sons: null}, 
 {kind: 1, offset: "head", len: 0, typ: NTI620757016, name: "head", sons: null}, 
+{kind: 1, offset: "hidden", len: 0, typ: NTI33554466, name: "hidden", sons: null}, 
 {kind: 1, offset: "lastModified", len: 0, typ: NTI33554440, name: "lastModified", sons: null}, 
 {kind: 1, offset: "linkColor", len: 0, typ: NTI33554440, name: "linkColor", sons: null}, 
 {kind: 1, offset: "referrer", len: 0, typ: NTI33554440, name: "referrer", sons: null}, 
 {kind: 1, offset: "title", len: 0, typ: NTI33554440, name: "title", sons: null}, 
 {kind: 1, offset: "URL", len: 0, typ: NTI33554440, name: "URL", sons: null}, 
+{kind: 1, offset: "visibilityState", len: 0, typ: NTI33554440, name: "visibilityState", sons: null}, 
 {kind: 1, offset: "vlinkColor", len: 0, typ: NTI33554440, name: "vlinkColor", sons: null}, 
 {kind: 1, offset: "anchors", len: 0, typ: NTI620757138, name: "anchors", sons: null}, 
 {kind: 1, offset: "forms", len: 0, typ: NTI620757139, name: "forms", sons: null}, 
