@@ -41,7 +41,7 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
   except:
     logError "Failed to get stored users."
 
-proc storeUser*(db: IndexedDB, user: User, storedUsers: var Table[cstring, User], dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
+proc storeUser*(db: IndexedDB, user: User, users: var Table[cstring, User], dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
   try:
     let res =  await put(db, dbStore, toJs user, dbOptions)
