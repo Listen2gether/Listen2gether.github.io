@@ -26,7 +26,7 @@ type
 
 var
   onboardView* = OnboardView.initialise
-  loginView* = ModalView.newUser
+  loginView = ModalView.newUser
   serviceView = ServiceView.selection
   lastFmAuthView = LastFmAuthView.signin
   lastFMSessionView = LastFMSessionView.loading
@@ -90,8 +90,6 @@ proc onMirrorClick(ev: Event; n: VNode) =
       service = Service.listenBrainzService
     if username == "":
       mirrorErrorMessage = "Please choose a user!"
-    # else:
-    #   mirrorErrorMessage = ""
   of ModalView.returningUser:
     if mirrorUser.isNil:
       mirrorErrorMessage = "Please choose a user!"
@@ -299,7 +297,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
             clientErrorMessage = ""
             discard fmClient.getLFMToken()
 
-proc loginModal*: Vnode =
+proc loginModal: Vnode =
   result = buildHtml(tdiv):
     case loginView:
     of ModalView.newUser:
@@ -353,18 +351,20 @@ proc mirrorUserModal(view: var ModalView): Vnode =
     button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
       text "Start mirroring!"
 
-proc onboardModal: Vnode =
+proc onboardModal*(mirrorModal = true): Vnode =
   ## Renders the signin column.
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
       discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
-      discard db.getUsers(mirrorUserView, storedMirrorUsers, mirrorUsersDbStore)
+      if mirrorModal:
+        discard db.getUsers(mirrorUserView, storedMirrorUsers, mirrorUsersDbStore)
       loadingModal "Loading users..."
       onboardView = OnboardView.onboard
     of OnboardView.onboard:
       loginModal()
-      mirrorUserModal(mirrorUserView)
+      if mirrorModal:
+        mirrorUserModal(mirrorUserView)
     of OnboardView.loading:
       loadingModal "Loading " & $mirrorUser.username & "'s listens..."
 

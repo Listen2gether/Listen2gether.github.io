@@ -187,7 +187,7 @@ proc mirror*: Vnode =
     main:
       case mirrorView:
       of MirrorView.login:
-        loginModal()
+        onboardModal(mirrorModal = false)
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
@@ -241,7 +241,6 @@ proc mirrorRoute* =
           if mirrorUser.isNil and globalView != ClientView.errorView:
             mirrorUser = newUser(mirrorUsername, mirrorService)
             globalView = ClientView.loadingView
-            discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
             globalView = ClientView.mirrorView
