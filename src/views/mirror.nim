@@ -1,6 +1,6 @@
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
-  pkg/karax/[karax, karaxdsl, vdom, kdom, jstrutils],
+  pkg/karax/[karax, karaxdsl, vdom, jstrutils],
   pkg/jsony,
   sources/[lb, lfm, utils],
   home, share, types
@@ -10,9 +10,7 @@ type
     login, mirroring
 
 var
-  mirrorMirrorView = MirrorView.login
-  mirrorSigninView = SigninView.loadingUsers
-  mirrorServiceView = ServiceView.selection
+  mirrorView = MirrorView.login
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -30,8 +28,8 @@ proc pageListens(ev: Event; n: VNode) =
       of Service.listenBrainzService:
         discard lbClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
       of Service.lastFmService:
-        discard fmClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
+        discard fmClient.pageUser(mirrorUser, listenEndInd)
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
     else:
       listenEndInd += increment
 
@@ -141,8 +139,8 @@ proc longPoll(ms: int = 60000) {.async.} =
       of Service.lastFmService:
         mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], preMirror = preMirror)
         if mirrorToggle:
-          discard fmClient.submitMirrorQueue(mirrorUsers[mirrorUserId])
-      discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
+          discard fmClient.submitMirrorQueue(mirrorUser)
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -152,7 +150,7 @@ proc mirrorSwitch: Vnode =
       text "Toggle mirroring: "
     label(class = "switch"):
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
-        proc onclick(ev: kdom.Event; n: VNode) =
+        proc onclick(ev: Event; n: VNode) =
           if mirrorUsers[mirrorUserId].username in clientUserIds:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
@@ -172,7 +170,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
     if clientUserIds.len > 0:
       if mirrorUsers[mirrorUserId].userId in clientUserIds:
         mirrorToggle = false
-      mirrorMirrorView = MirrorView.mirroring
+      mirrorView = MirrorView.mirroring
     case mirrorUsers[mirrorUserId].service:
     of Service.listenBrainzService:
       userUrl = lb.userBaseUrl & username
@@ -187,9 +185,9 @@ proc mirror*(username: cstring, service: Service): Vnode =
           text username & "!"
       mirrorSwitch()
     main:
-      case mirrorMirrorView:
+      case mirrorView:
       of MirrorView.login:
-        signinModal(mirrorSigninView, mirrorServiceView, mirrorModal = false)
+        loginModal()
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
@@ -207,8 +205,8 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       mirrorUsers[mirrorUserId] = await lbClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
-    mirrorMirrorView = MirrorView.login
+    discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+    mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
     try:
@@ -217,8 +215,8 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
         mirrorUsers[mirrorUserId] = await lbClient.initUser(username)
       of Service.lastFmService:
         mirrorUsers[mirrorUserId] = await fmClient.initUser(username)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUsers[mirrorUserId], mirrorUsers)
-      mirrorMirrorView = MirrorView.login
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+      mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"
@@ -243,6 +241,7 @@ proc mirrorRoute*: (cstring, Service) =
           result = (mirrorUsername, mirrorService)
           if not mirrorUsers.hasKey(mirrorUserId) and globalView != ClientView.errorView:
             globalView = ClientView.loadingView
+            discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
             globalView = ClientView.mirrorView
