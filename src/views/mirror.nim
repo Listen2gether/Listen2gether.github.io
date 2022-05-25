@@ -10,9 +10,7 @@ type
     login, mirroring
 
 var
-  mirrorMirrorView = MirrorView.login
-  mirrorSigninView = SigninView.loadingUsers
-  mirrorServiceView = ServiceView.selection
+  mirrorView = MirrorView.login
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -30,7 +28,7 @@ proc pageListens(ev: Event; n: VNode) =
         discard lbClient.pageUser(mirrorUser, listenEndInd)
       of Service.lastFmService:
         discard fmClient.pageUser(mirrorUser, listenEndInd)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
     else:
       listenEndInd += increment
 
@@ -141,7 +139,7 @@ proc longPoll(ms: int = 60000) {.async.} =
         mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
         if mirrorToggle:
           discard fmClient.submitMirrorQueue(mirrorUser)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -170,7 +168,7 @@ proc mirror*: Vnode =
     if not clientUser.isNil:
       if clientUser.userId == mirrorUser.userId:
         mirrorToggle = false
-      mirrorMirrorView = MirrorView.mirroring
+      mirrorView = MirrorView.mirroring
     case mirrorUser.service:
     of Service.listenBrainzService:
       username = mirrorUser.username
@@ -187,18 +185,18 @@ proc mirror*: Vnode =
           text $username & "!"
       mirrorSwitch()
     main:
-      case mirrorMirrorView:
+      case mirrorView:
       of MirrorView.login:
-        signinModal(mirrorSigninView, mirrorServiceView, mirrorModal = false)
+        loginModal()
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
         renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
 
-proc getMirrorUser(username: string, service: Service) {.async.} =
+proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
-  let userId = cstring $service & ":" & username
+  let userId: cstring = cstring($service) & ":" & username
   if userId in storedMirrorUsers:
     mirrorUser = storedMirrorUsers[userId]
     let preMirror = not mirrorToggle
@@ -207,8 +205,8 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
       mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-    mirrorMirrorView = MirrorView.login
+    discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+    mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
     try:
@@ -217,8 +215,8 @@ proc getMirrorUser(username: string, service: Service) {.async.} =
         mirrorUser = await lbClient.initUser(username)
       of Service.lastFmService:
         mirrorUser = await fmClient.initUser(username)
-      discard db.storeUser(mirrorUsersDbStore, mirrorUser, storedMirrorUsers)
-      mirrorMirrorView = MirrorView.login
+      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+      mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"
@@ -238,10 +236,12 @@ proc mirrorRoute* =
       if "username" in params and "service" in params:
         try:
           let
-            mirrorUsername = params["username"]
+            mirrorUsername = cstring params["username"]
             mirrorService = parseEnum[Service]($params["service"])
           if mirrorUser.isNil and globalView != ClientView.errorView:
+            mirrorUser = newUser(mirrorUsername, mirrorService)
             globalView = ClientView.loadingView
+            discard db.getUsers(loginView, storedClientUsers, clientUsersDbStore)
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
             globalView = ClientView.mirrorView
