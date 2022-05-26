@@ -22,7 +22,6 @@ var
   dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
   clientUsers*: Table[cstring, User] = initTable[cstring, User]()
   mirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
-  mirrorUserId*: cstring = ""
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
 
 proc getSelectedIds*(users: Table[cstring, User]): seq[cstring] =

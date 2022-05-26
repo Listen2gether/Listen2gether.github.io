@@ -11,6 +11,7 @@ type
 
 var
   mirrorView = MirrorView.login
+  mirrorUserId: cstring = ""
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -237,6 +238,7 @@ proc mirrorRoute*: (cstring, Service) =
           let
             mirrorUsername = cstring params["username"]
             mirrorService = parseEnum[Service]($params["service"])
+          mirrorUserId = cstring($mirrorService) & ":" & mirrorUsername
           result = (mirrorUsername, mirrorService)
           if not mirrorUsers.hasKey(mirrorUserId) and globalView != ClientView.errorView:
             globalView = ClientView.loadingView

@@ -60,11 +60,10 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
   try:
     case service:
     of Service.listenBrainzService:
-      user = await lbClient.initUser(username)
+      user = await lbClient.initUser(username, selected = true)
     of Service.lastFmService:
-      user = await fmClient.initUser(username)
+      user = await fmClient.initUser(username, selected = true)
     discard db.storeUser(user, mirrorUsers, mirrorUsersDbStore)
-    mirrorUserId = user.userId
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
@@ -74,31 +73,32 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
 
 proc onMirrorClick(ev: Event; n: VNode) =
   ## Callback that routes to mirror view on mirror button click.
-  let selectedClientUsers = getSelectedIds(clientUsers)
+  let
+    selectedClientIds = getSelectedIds(clientUsers)
+    selectedMirrorIds = getSelectedIds(mirrorUsers)
   var
     mirrorUsername: cstring = ""
     mirrorService: Service
 
   case mirrorUserView:
   of ModalView.newUser:
-    let selectedIds = getSelectedIds(mirrorUsers)
-    if selectedIds.len > 0:
-      mirrorUsers[selectedIds[0]].selected = false
+    if selectedMirrorIds.len > 0:
+      mirrorUsers[selectedMirrorIds[0]].selected = false
     mirrorUsername = getElementById("username-input").value
     if getElementById("service-switch").checked:
       mirrorService = Service.lastFmService
     else:
       mirrorService = Service.listenBrainzService
-    if mirrorUsername != "" and selectedClientUsers.len > 0:
+    if mirrorUsername != "" and selectedClientIds.len > 0:
       mirrorErrorMessage = ""
       discard validateMirror(mirrorUsername, mirrorService)
       onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
   of ModalView.returningUser:
-    if mirrorUsers.hasKey(mirrorUserId) and selectedClientUsers.len > 0:
-      mirrorUsername = mirrorUsers[mirrorUserId].username
-      mirrorService = mirrorUsers[mirrorUserId].service
+    if selectedMirrorIds.len == 1 and mirrorUsers.hasKey(selectedMirrorIds[0]) and selectedClientIds.len > 0:
+      mirrorUsername = mirrorUsers[selectedMirrorIds[0]].username
+      mirrorService = mirrorUsers[selectedMirrorIds[0]].service
       mirrorErrorMessage = ""
       discard validateMirror(mirrorUsername, mirrorService)
       onboardView = OnboardView.loading
@@ -119,7 +119,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     if store:
-      let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
+      let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
       discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
       discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
@@ -137,7 +137,7 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
 proc validateFMSession(user: User, store = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
   try:
-    let clientUser = await fmClient.initUser(user.username, user.sessionKey)
+    let clientUser = await fmClient.initUser(user.username, user.sessionKey, selected = true)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     if store:
@@ -175,7 +175,6 @@ proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
             storedUsers[userId].selected = false
           else:
             if mirror:
-              mirrorUserId = userId
               let selectedIds = getSelectedIds(mirrorUsers)
               if selectedIds.len > 0:
                 storedUsers[selectedIds[0]].selected = false
@@ -354,6 +353,10 @@ proc mirrorUserModal(view: var ModalView): Vnode =
       a(id = "link"):
         text "Add another account?"
         proc onclick(ev: Event; n: VNode) =
+          let selectedIds = getSelectedIds(mirrorUsers)
+          if selectedIds.len == 1:
+            mirrorUsers[selectedIds[0]].selected = false
+            discard db.storeUser(mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
           view = ModalView.newUser
       renderUsers(mirrorUsers, mirror = true)
     errorModal(mirrorErrorMessage)
