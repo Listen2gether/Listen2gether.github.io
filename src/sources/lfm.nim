@@ -202,11 +202,11 @@ proc getRecentTracks(fm: AsyncLastFM, username: cstring, preMirror: bool, `from`
   except HttpRequestError:
     logError "There was a problem getting " & $username & "'s listens!"
 
-proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = ""): Future[User] {.async.} =
+proc initUser*(fm: AsyncLastFM, username: cstring, sessionKey: cstring = "", selected = false): Future[User] {.async.} =
   ## Gets a given Last.fm user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let username = cstring toLower($username)
-  var user = newUser(username, Service.lastFmService, sessionKey = sessionKey)
+  var user = newUser(username, Service.lastFmService, sessionKey = sessionKey, selected = selected)
   user.lastUpdateTs = int toUnix getTime()
   let (playingNow, listenHistory) = await fm.getRecentTracks(username, preMirror = true)
   user.playingNow = playingNow

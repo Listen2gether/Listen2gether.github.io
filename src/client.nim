@@ -1,9 +1,13 @@
 import
   std/[dom, strutils],
-  pkg/karax/[karax, karaxdsl, vdom, localstorage],
-  views/[home, mirror, share]
+  pkg/karax/[karax, karaxdsl, vdom, localstorage, jstrutils],
+  views/[home, mirror, share],
+  types
 
-var darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
+var
+  darkMode: bool = window.matchMedia("(prefers-color-scheme: dark)").matches
+  mirrorUsername: cstring = ""
+  mirrorService: Service
 
 proc headerSection: Vnode =
   ## Renders header section to be used on all pages.
@@ -13,7 +17,7 @@ proc headerSection: Vnode =
       span: text "2"
       text "gether"
 
-proc errorSection(message: string): Vnode =
+proc errorSection(message: cstring): Vnode =
   ## Renders an error view with a given message.
   result = buildHtml(main):
     tdiv(id = "mirror-error"):
@@ -23,15 +27,15 @@ proc errorSection(message: string): Vnode =
 proc setDataTheme(darkMode: bool) =
   ## Sets the data-theme according to the given `darkMode` value
   if darkMode:
-    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "dark")
+    document.getElementsByTagName("html")[0].setAttribute("data-theme", "dark")
   else:
-    document.getElementsByTagName("html")[0].setAttribute(cstring "data-theme", cstring "light")
+    document.getElementsByTagName("html")[0].setAttribute("data-theme", "light")
 
 proc darkModeToggle: Vnode =
   ## Renders the dark mode toggle and watches for system color theme changes to automatically adjust the theme.
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", proc(ev: Event) = darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches)
-  if hasItem(cstring "dark-mode"):
-    darkMode = parseBool $getItem(cstring "dark-mode")
+  if hasItem("dark-mode"):
+    darkMode = parseBool $getItem("dark-mode")
   setDataTheme(darkMode)
   result = buildHtml:
     label(class = "switch"):
@@ -39,7 +43,7 @@ proc darkModeToggle: Vnode =
         proc onclick(ev: Event; n: VNode) =
           darkMode = not darkMode
           setDataTheme(darkMode)
-          setItem(cstring "dark-mode", cstring $darkMode)
+          setItem("dark-mode", & darkMode)
       span(id = "dark-mode-slider", class = "slider")
 
 proc footerSection: Vnode =
@@ -59,8 +63,8 @@ proc backButton(ev: Event) =
 proc createDom: VNode =
   ## Renders the web app.
   window.addEventListener("popstate", backButton)
-  if globalView == ClientView.homeView and $window.location.pathname == "/mirror":
-    mirrorRoute()
+  if globalView == ClientView.homeView and window.location.pathname == "/mirror":
+    (mirrorUsername, mirrorService) = mirrorRoute()
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
@@ -68,11 +72,11 @@ proc createDom: VNode =
       home()
     of ClientView.loadingView:
       main:
-        loadingModal "Loading " & $mirrorUser.username & "'s listens..."
+        loadingModal "Loading " & mirrorUsername & "'s listens..."
     of ClientView.errorView:
       errorSection mirrorErrorMessage
     of ClientView.mirrorView:
-      mirror()
+      mirror(mirrorUsername, mirrorService)
     footerSection()
 
 setRenderer createDom

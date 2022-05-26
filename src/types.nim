@@ -15,6 +15,7 @@ type
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
     lastUpdateTs*: int
+    selected*: bool
 
   Listen* = object
     trackName*, artistName*: cstring
@@ -29,7 +30,8 @@ func newUser*(
   token, sessionKey: cstring = "",
   playingNow: Option[Listen] = none(Listen),
   listenHistory: seq[Listen] = @[],
-  lastUpdateTs: int = 0): User =
+  lastUpdateTs: int = 0,
+  selected: bool = false): User =
   ## Create new User object
   result = User(service: service)
   result.userId = cstring($service & ":" & $username)
@@ -42,6 +44,9 @@ func newUser*(
   result.playingNow = playingNow
   result.listenHistory = listenHistory
   result.lastUpdateTs = lastUpdateTs
+  result.selected = selected
+
+func `==`*(a, b: User): bool = a.userId == b.userId
 
 func newListen*(
   trackName, artistName: cstring,

@@ -11,6 +11,7 @@ type
 
 var
   mirrorView = MirrorView.login
+  mirrorUserId: cstring = ""
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -22,13 +23,13 @@ proc pageListens(ev: Event; n: VNode) =
     d = n.dom
 
   if d != nil and ((d.scrollHeight - d.scrollTop) == d.offsetHeight):
-    if (mirrorUser.listenHistory.len - 1) <= (listenEndInd + increment):
-      case mirrorUser.service:
+    if (mirrorUsers[mirrorUserId].listenHistory.len - 1) <= (listenEndInd + increment):
+      case mirrorUsers[mirrorUserId].service:
       of Service.listenBrainzService:
-        discard lbClient.pageUser(mirrorUser, listenEndInd)
+        discard lbClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
       of Service.lastFmService:
-        discard fmClient.pageUser(mirrorUser, listenEndInd)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+        discard fmClient.pageUser(mirrorUsers[mirrorUserId], listenEndInd)
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     else:
       listenEndInd += increment
 
@@ -38,7 +39,7 @@ proc renderListen(listen: Listen, nowPlaying = false): Vnode =
   if nowPlaying:
     id = "now-playing"
   else:
-    id = cstring $get listen.listenedAt
+    id = & get listen.listenedAt
 
   result = buildHtml:
     li(id = id, class = "row listen"):
@@ -123,23 +124,23 @@ proc setTimeoutAsync(ms: int): Future[void] =
   return promise
 
 proc longPoll(ms: int = 60000) {.async.} =
-  ## Updates the mirrorUser every 60 seconds and stores to the database
+  ## Updates the mirror user every 60 seconds and stores to the database
   if globalView == ClientView.mirrorView:
     if not polling:
       polling = true
-    if timeToUpdate(mirrorUser.lastUpdateTs, ms):
+    if timeToUpdate(mirrorUsers[mirrorUserId].lastUpdateTs, ms):
       log "Updating and submitting..."
       let preMirror = not mirrorToggle
-      case mirrorUser.service:
+      case mirrorUsers[mirrorUserId].service:
       of Service.listenBrainzService:
-        mirrorUser = await lbClient.updateUser(mirrorUser, preMirror = preMirror)
+        mirrorUsers[mirrorUserId] = await lbClient.updateUser(mirrorUsers[mirrorUserId], preMirror = preMirror)
         if mirrorToggle:
-          discard lbClient.submitMirrorQueue(mirrorUser)
+          discard lbClient.submitMirrorQueue(mirrorUsers[mirrorUserId])
       of Service.lastFmService:
-        mirrorUser = await fmClient.updateUser(mirrorUser, preMirror = preMirror)
+        mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], preMirror = preMirror)
         if mirrorToggle:
-          discard fmClient.submitMirrorQueue(mirrorUser)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+          discard fmClient.submitMirrorQueue(mirrorUsers[mirrorUserId])
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -150,7 +151,8 @@ proc mirrorSwitch: Vnode =
     label(class = "switch"):
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
         proc onclick(ev: Event; n: VNode) =
-          if mirrorUser.username == clientUser.username:
+          let clientUserIds = getSelectedIds(clientUsers)
+          if mirrorUsers[mirrorUserId].username in clientUserIds:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
                 mirrorToggle = true
@@ -161,20 +163,18 @@ proc mirrorSwitch: Vnode =
             mirrorToggle = not mirrorToggle
       span(id = "mirror-slider", class = "slider")
 
-proc mirror*: Vnode =
-  var username, userUrl: cstring
-
-  if not mirrorUser.isNil:
-    if not clientUser.isNil:
-      if clientUser.userId == mirrorUser.userId:
+proc mirror*(username: cstring, service: Service): Vnode =
+  var userUrl: cstring = ""
+  if mirrorUsers.hasKey(mirrorUserId):
+    let clientUserIds = getSelectedIds(clientUsers)
+    if clientUserIds.len > 0:
+      if mirrorUsers[mirrorUserId].userId in clientUserIds:
         mirrorToggle = false
       mirrorView = MirrorView.mirroring
-    case mirrorUser.service:
+    case mirrorUsers[mirrorUserId].service:
     of Service.listenBrainzService:
-      username = mirrorUser.username
       userUrl = lb.userBaseUrl & username
     of Service.lastFmService:
-      username = mirrorUser.username
       userUrl = lfm.userBaseUrl & username
 
   result = buildHtml(tdiv(id = "mirror-container")):
@@ -182,7 +182,7 @@ proc mirror*: Vnode =
       p:
         text "You are mirroring "
         a(href = userUrl):
-          text $username & "!"
+          text username & "!"
       mirrorSwitch()
     main:
       case mirrorView:
@@ -191,31 +191,31 @@ proc mirror*: Vnode =
       of MirrorView.mirroring:
         if not polling:
           discard longPoll()
-        renderListens(mirrorUser.playingNow, mirrorUser.listenHistory, listenEndInd)
+        renderListens(mirrorUsers[mirrorUserId].playingNow, mirrorUsers[mirrorUserId].listenHistory, listenEndInd)
 
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
-  storedMirrorUsers = await db.getUsers(mirrorUsersDbStore)
+  mirrorUsers = await db.getUsers(mirrorUsersDbStore)
   let userId: cstring = cstring($service) & ":" & username
-  if userId in storedMirrorUsers:
-    mirrorUser = storedMirrorUsers[userId]
+  if userId in mirrorUsers:
+    mirrorUsers[mirrorUserId] = mirrorUsers[userId]
     let preMirror = not mirrorToggle
-    case mirrorUser.service:
+    case mirrorUsers[mirrorUserId].service:
     of Service.listenBrainzService:
-      mirrorUser = await lbClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
+      mirrorUsers[mirrorUserId] = await lbClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
-      mirrorUser = await fmClient.updateUser(mirrorUser, resetLastUpdate = true, preMirror = preMirror)
-    discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+      mirrorUsers[mirrorUserId] = await fmClient.updateUser(mirrorUsers[mirrorUserId], resetLastUpdate = true, preMirror = preMirror)
+    discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
     mirrorView = MirrorView.login
     globalView = ClientView.mirrorView
   else:
     try:
       case service:
       of Service.listenBrainzService:
-        mirrorUser = await lbClient.initUser(username)
+        mirrorUsers[mirrorUserId] = await lbClient.initUser(username)
       of Service.lastFmService:
-        mirrorUser = await fmClient.initUser(username)
-      discard db.storeUser(mirrorUser, storedMirrorUsers, mirrorUsersDbStore)
+        mirrorUsers[mirrorUserId] = await fmClient.initUser(username)
+      discard db.storeUser(mirrorUsers[mirrorUserId], mirrorUsers, mirrorUsersDbStore)
       mirrorView = MirrorView.login
       globalView = ClientView.mirrorView
     except JsonError:
@@ -226,7 +226,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       globalView = ClientView.errorView
   redraw()
 
-proc mirrorRoute* =
+proc mirrorRoute*: (cstring, Service) =
   ## Routes the user to the mirror view.
   let path = $window.location.search
   if path != "":
@@ -238,8 +238,9 @@ proc mirrorRoute* =
           let
             mirrorUsername = cstring params["username"]
             mirrorService = parseEnum[Service]($params["service"])
-          if mirrorUser.isNil and globalView != ClientView.errorView:
-            mirrorUser = newUser(mirrorUsername, mirrorService)
+          mirrorUserId = cstring($mirrorService) & ":" & mirrorUsername
+          result = (mirrorUsername, mirrorService)
+          if not mirrorUsers.hasKey(mirrorUserId) and globalView != ClientView.errorView:
             globalView = ClientView.loadingView
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
