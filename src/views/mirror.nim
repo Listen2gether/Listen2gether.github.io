@@ -14,7 +14,6 @@ var
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
-  clientUserIds: seq[cstring]
 
 proc pageListens(ev: Event; n: VNode) =
   ## Backfills the user's listens on scroll event and stores to DB
@@ -151,6 +150,7 @@ proc mirrorSwitch: Vnode =
     label(class = "switch"):
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
         proc onclick(ev: Event; n: VNode) =
+          let clientUserIds = getSelectedIds(clientUsers)
           if mirrorUsers[mirrorUserId].username in clientUserIds:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
@@ -165,7 +165,7 @@ proc mirrorSwitch: Vnode =
 proc mirror*(username: cstring, service: Service): Vnode =
   var userUrl: cstring = ""
   if mirrorUsers.hasKey(mirrorUserId):
-    clientUserIds = getSelectedIds(clientUsers)
+    let clientUserIds = getSelectedIds(clientUsers)
     if clientUserIds.len > 0:
       if mirrorUsers[mirrorUserId].userId in clientUserIds:
         mirrorToggle = false
