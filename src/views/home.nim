@@ -55,15 +55,16 @@ proc loadMirror(user: User) =
 
 proc validateMirror(username: cstring, service: Service) {.async.} =
   ## Validates and gets now playing for user.
+  var user = newUser(username, service, selected = true)
+  mirrorUsers[user.userId] = user
   try:
-    var user = newUser(username, service)
     case service:
     of Service.listenBrainzService:
       user = await lbClient.initUser(username)
     of Service.lastFmService:
       user = await fmClient.initUser(username)
-    mirrorUserId = user.userId
     discard db.storeUser(user, mirrorUsers, mirrorUsersDbStore)
+    mirrorUserId = user.userId
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
@@ -80,6 +81,9 @@ proc onMirrorClick(ev: Event; n: VNode) =
 
   case mirrorUserView:
   of ModalView.newUser:
+    let selectedIds = getSelectedIds(mirrorUsers)
+    if selectedIds.len > 0:
+      mirrorUsers[selectedIds[0]].selected = false
     mirrorUsername = getElementById("username-input").value
     if getElementById("service-switch").checked:
       mirrorService = Service.lastFmService
@@ -170,11 +174,15 @@ proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
           if storedUsers[userId].selected:
             storedUsers[userId].selected = false
           else:
-            let clientUser = storedUsers[userId]
-            storedUsers[userId].selected = true
             if mirror:
               mirrorUserId = userId
+              let selectedIds = getSelectedIds(mirrorUsers)
+              if selectedIds.len > 0:
+                storedUsers[selectedIds[0]].selected = false
+              storedUsers[userId].selected = true
             else:
+              let clientUser = storedUsers[userId]
+              storedUsers[userId].selected = true
               case clientUser.service
               of Service.listenBrainzService:
                 serviceView = ServiceView.loading
@@ -367,7 +375,12 @@ proc onboardModal*(mirrorModal = true): Vnode =
       if mirrorModal:
         mirrorUserModal(mirrorUserView)
     of OnboardView.loading:
-      loadingModal "Loading " & mirrorUsers[mirrorUserId].username & "'s listens..."
+      let selectedIds = getSelectedIds(mirrorUsers)
+      if selectedIds.len > 0:
+        loadingModal "Loading " & mirrorUsers[selectedIds[0]].username & "'s listens..."
+      else:
+        loadingModal "Loading..."
+
 
 proc home*: Vnode =
   ## Renders the main section for home view.
