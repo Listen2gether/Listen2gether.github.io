@@ -166,7 +166,6 @@ proc mirror*(username: cstring, service: Service): Vnode =
   var userUrl: cstring = ""
   if mirrorUsers.hasKey(mirrorUserId):
     clientUserIds = getSelectedIds(clientUsers)
-    echo clientUserIds
     if clientUserIds.len > 0:
       if mirrorUsers[mirrorUserId].userId in clientUserIds:
         mirrorToggle = false
