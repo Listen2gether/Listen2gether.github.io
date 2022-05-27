@@ -35,10 +35,8 @@ proc pageListens(ev: Event; n: VNode) =
 
 proc renderListen(listen: Listen, nowPlaying = false): Vnode =
   ## Renders a `Listen` object.
-  var id: cstring
-  if nowPlaying:
-    id = "now-playing"
-  else:
+  var id: cstring = "now-playing"
+  if not nowPlaying:
     id = & get listen.listenedAt
 
   result = buildHtml:
