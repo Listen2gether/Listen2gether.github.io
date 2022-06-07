@@ -397,20 +397,20 @@ proc home*: Vnode =
         p(id = "subtitle"):
           text "Whether you're physically in the same room or not."
       onboardModal()
-      tdiv(class = "break-column")
-      tdiv(id = "description-container", class = "col"):
-        p(class = "body"):
-          text "Virtual listen parties are powered by "
-          a(class = "header", href = "https://listenbrainz.org/"):
-            text "ListenBrainz"
-          text " and a "
-          a(class = "header", href = "https://matrix.org/"):
-            text "Matrix"
-          text " chatroom."
-      tdiv(id = "logo-container", class = "col"):
-        a(href = "https://listenbrainz.org/", img(src = "/assets/listenbrainz-logo.svg",
-          id = "listenbrainz-logo", class = "logo", alt = "ListenBrainz.org logo")
-        )
-        a(href = "https://matrix.org/", img(src = "/assets/matrix-logo.svg",
-          id = "matrix-logo", class = "logo", alt = "Matrix.org logo")
-        )
+      # tdiv(class = "break-column")
+      # tdiv(id = "description-container", class = "col"):
+      #   p(class = "body"):
+      #     text "Virtual listen parties are powered by "
+      #     a(class = "header", href = "https://listenbrainz.org/"):
+      #       text "ListenBrainz"
+      #     text " and a "
+      #     a(class = "header", href = "https://matrix.org/"):
+      #       text "Matrix"
+      #     text " chatroom."
+      # tdiv(id = "logo-container", class = "col"):
+      #   a(href = "https://listenbrainz.org/", img(src = "/assets/listenbrainz-logo.svg",
+      #     id = "listenbrainz-logo", class = "logo", alt = "ListenBrainz.org logo")
+      #   )
+      #   a(href = "https://matrix.org/", img(src = "/assets/matrix-logo.svg",
+      #     id = "matrix-logo", class = "logo", alt = "Matrix.org logo")
+      #   )
