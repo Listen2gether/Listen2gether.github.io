@@ -153,7 +153,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
         clientUsers.del(user.userId)
     redraw()
 
-proc renderUsers(storedUsers: Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
+proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
   ## Renders stored users, `mirror` should be true if rendering mirror users.
   var
     serviceIconId: cstring
