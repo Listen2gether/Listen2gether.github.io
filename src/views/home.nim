@@ -394,8 +394,8 @@ proc home*: Vnode =
             span: text "2"
             text "gether"
           text " is a website for listen parties."
-        p(id = "subtitle"):
-          text "Whether you're physically in the same room or not."
+        # p(id = "subtitle"):
+        #   text "Whether you're physically in the same room or not."
       onboardModal()
       # tdiv(class = "break-column")
       # tdiv(id = "description-container", class = "col"):
