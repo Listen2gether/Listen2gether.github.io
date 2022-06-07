@@ -111,19 +111,18 @@ proc serviceToggle: Vnode =
     input(`type` = "checkbox", id = "service-switch", class = "toggle")
     span(id = "service-slider", class = "slider")
 
-proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async.} =
+proc validateLBToken(token: cstring, userId: cstring = "", newUser = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken($token)
   if res.valid:
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
-    if store:
-      let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
-      discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
-      discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
+    let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
+    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
-    if store:
+    if newUser:
       clientErrorMessage = "Please enter a valid token!"
     else:
       clientErrorMessage = "Token no longer valid!"
@@ -134,17 +133,16 @@ proc validateLBToken(token: cstring, userId: cstring = "", store = true) {.async
     redraw()
   serviceView = ServiceView.selection
 
-proc validateFMSession(user: User, store = true) {.async.} =
+proc validateFMSession(user: User, newUser = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
   try:
     let clientUser = await fmClient.initUser(user.username, user.sessionKey, selected = true)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
-    if store:
-      discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
-      discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
+    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   except:
-    if store:
+    if newUser:
       clientErrorMessage = "Authorisation failed!"
     else:
       clientErrorMessage = "Session no longer valid!"
@@ -155,8 +153,8 @@ proc validateFMSession(user: User, store = true) {.async.} =
         clientUsers.del(user.userId)
     redraw()
 
-proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
-  ## Renders stored users.
+proc renderUsers(storedUsers: Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
+  ## Renders stored users, `mirror` should be true if rendering mirror users.
   var
     serviceIconId: cstring
     buttonClass: cstring
@@ -173,21 +171,22 @@ proc renderUsers(storedUsers: Table[cstring, User], mirror = false): Vnode =
           let userId = n.id
           if storedUsers[userId].selected:
             storedUsers[userId].selected = false
+            discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
           else:
             if mirror:
               let selectedIds = getSelectedIds(mirrorUsers)
               if selectedIds.len > 0:
                 storedUsers[selectedIds[0]].selected = false
               storedUsers[userId].selected = true
+              discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
             else:
-              let clientUser = storedUsers[userId]
               storedUsers[userId].selected = true
-              case clientUser.service
+              case storedUsers[userId].service
               of Service.listenBrainzService:
                 serviceView = ServiceView.loading
-                discard validateLBToken(clientUser.token, clientUser.userId, store = false)
+                discard validateLBToken(storedUsers[userId].token, storedUsers[userId].userId, newUser = false)
               of Service.lastFmService:
-                discard validateFMSession(clientUser, store = false)
+                discard validateFMSession(storedUsers[userId], newUser = false)
 
 proc onLBTokenEnter(ev: Event; n: VNode) =
   ## Callback to validate a ListenBrainz token.
@@ -334,7 +333,7 @@ proc loginModal: Vnode =
           text "Add another account?"
           proc onclick(ev: Event; n: VNode) =
             loginView = ModalView.newUser
-        renderUsers(clientUsers)
+        renderUsers(clientUsers, clientUsersDbStore)
         errorModal clientErrorMessage
 
 proc mirrorUserModal(view: var ModalView): Vnode =
@@ -358,7 +357,7 @@ proc mirrorUserModal(view: var ModalView): Vnode =
             mirrorUsers[selectedIds[0]].selected = false
             discard db.storeUser(mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
           view = ModalView.newUser
-      renderUsers(mirrorUsers, mirror = true)
+      renderUsers(mirrorUsers, mirrorUsersDbStore, mirror = true)
     errorModal(mirrorErrorMessage)
     button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
       text "Start mirroring!"
@@ -383,7 +382,6 @@ proc onboardModal*(mirrorModal = true): Vnode =
         loadingModal "Loading " & mirrorUsers[selectedIds[0]].username & "'s listens..."
       else:
         loadingModal "Loading..."
-
 
 proc home*: Vnode =
   ## Renders the main section for home view.
