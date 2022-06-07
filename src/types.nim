@@ -12,10 +12,10 @@ type
       token*: cstring
     of lastFmService:
       sessionKey*: cstring
-    playingNow*: Option[Listen]
-    listenHistory*: seq[Listen]
     lastUpdateTs*: int
     selected*: bool
+    playingNow*: Option[Listen]
+    listenHistory*: seq[Listen]
 
   Listen* = object
     trackName*, artistName*: cstring
@@ -28,10 +28,10 @@ func newUser*(
   username: cstring,
   service: Service,
   token, sessionKey: cstring = "",
-  playingNow: Option[Listen] = none(Listen),
-  listenHistory: seq[Listen] = @[],
   lastUpdateTs: int = 0,
-  selected: bool = false): User =
+  selected: bool = false,
+  playingNow: Option[Listen] = none(Listen),
+  listenHistory: seq[Listen] = @[]): User =
   ## Create new User object
   result = User(service: service)
   result.userId = cstring($service & ":" & $username)
@@ -41,10 +41,10 @@ func newUser*(
     result.token = token
   of lastFmService:
     result.sessionKey = sessionKey
-  result.playingNow = playingNow
-  result.listenHistory = listenHistory
   result.lastUpdateTs = lastUpdateTs
   result.selected = selected
+  result.playingNow = playingNow
+  result.listenHistory = listenHistory
 
 func `==`*(a, b: User): bool = a.userId == b.userId
 
