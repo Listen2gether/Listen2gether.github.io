@@ -7,6 +7,8 @@ on:
       - "public/**"
       - "listen2gether.nimble"
 
+  workflow_dispatch:
+
 jobs:
   deploy:
     strategy:
