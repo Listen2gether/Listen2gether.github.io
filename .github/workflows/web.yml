@@ -38,14 +38,11 @@ jobs:
       - name: Compile JS
         run: nimble buildjs
 
-      - name: Minify JS
-        run: uglifyjs public/js/client.js -c -o public/js/client.js
-
-      - name: Minify HTML
-        run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html
-
+      - name: Minify
+        run: nimble minify
+        
       - name: Create /mirror path
-        run: cp public/index.html public/mirror.html
+        run: nimble prep
 
       - name: Generate docs
         run: nimble docs
