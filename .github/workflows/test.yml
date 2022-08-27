@@ -6,6 +6,8 @@ on:
       - "**.nim"
       - "listen2gether.nimble"
 
+  workflow_dispatch:
+
 jobs:
   test:
     strategy:
