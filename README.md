@@ -22,6 +22,8 @@ nimble buildjs
 nim r src/server.nim
 ```
 
+---
+
 ### Documentation:
 
 Available at https://listen2gether.github.io/docs/.
