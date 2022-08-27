@@ -14,12 +14,16 @@ Currently deployed at https://listen2gether.github.io/.
 Requirements:
  - Nim
  - Dart Sass
+ - HTMLMinifier & UglifyJS (optional)
 
 Run the following commands:
 ```
-nimble sass
-nimble buildjs
-nim r src/server.nim
+nimble sass           ## builds the Sass resources
+nimble buildjs        ## builds the app js
+nimble minify         ## minifies the html and js (optional)
+nimble prep           ## creates app html routes
+nimble docs           ## generates documentation
+nim r src/server.nim  ## runs the dev webserver
 ```
 
 ---
