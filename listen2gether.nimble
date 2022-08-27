@@ -30,3 +30,11 @@ task sass, "Generate CSS":
 task buildjs, "Compile JS":
   exec "mkdir -p public/js"
   exec "nim -d:danger -o:public/js/client.js js src/client.nim"
+
+task minify, "Minify HTML & JS":
+  exec "html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes \
+    --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html"
+  exec "uglifyjs public/js/client.js -c -o public/js/client.js"
+  
+task prep, "Prepare deployment":
+  exec "cp public/index.html public/mirror.html"
