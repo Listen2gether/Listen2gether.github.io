@@ -9,7 +9,7 @@ bin           = @["server"]
 
 
 # Dependencies
-requires "nim >= 1.7.1"
+requires "nim >= 1.5.1"
 when defined(c):
   requires "prologue"
 requires "nodejs"
