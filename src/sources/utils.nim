@@ -70,4 +70,4 @@ proc log*(msg: string) =
   else:
     echo msg
 
-proc logError*(msg: string) = log "ERROR:" & msg
+proc logError*(msg: string) = log "ERROR: " & msg
