@@ -1,6 +1,19 @@
 when defined(js):
   import std/jsconsole
-import std/[options, strutils]
+import
+  std/[options, strutils],
+  pkg/union,
+  pkg/union/uniontraits
+
+proc unionToInt*[T: Union](val: T): Option[int] =
+  ## Convert `union(Option[string] | Option[int])` to `Option[int]`
+  unpack(val):
+    if isSome it:
+      when it is Option[string]:
+        if not isEmptyOrWhitespace get it:
+          result = some parseInt get it
+      when it is Option[int]:
+        result = some get it
 
 func toInt*(val: Option[string]): Option[int] =
   ## Convert `Option[string]` to `Option[int]`
@@ -58,4 +71,3 @@ proc log*(msg: string) =
     echo msg
 
 proc logError*(msg: string) = log "ERROR:" & msg
-

@@ -5,7 +5,7 @@ else:
 
 import
   std/[times, strutils, unicode],
-  pkg/listenbrainz,
+  pkg/[listenbrainz, union],
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
   types, utils
@@ -17,7 +17,7 @@ const userBaseUrl*: cstring = "https://listenbrainz.org/user/"
 func to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
-    additionalInfo = newAdditionalInfo(# tracknumber = to track.trackNumber,
+    additionalInfo = newAdditionalInfo(tracknumber = to(track.trackNumber) as union(Option[string] | Option[int]),
                                       trackMbid = to track.recordingMbid,
                                       recordingMbid = to track.recordingMbid,
                                       releaseMbid = to track.releaseMbid,
@@ -46,7 +46,7 @@ func to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): List
                     recordingMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).recordingMbid,
                     releaseMbid = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).releaseMbid,
                     artistMbids = to get(listen.trackMetadata.additionalInfo, AdditionalInfo()).artistMbids,
-                    # trackNumber = toInt get(listen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber,
+                    trackNumber = unionToInt get(listen.trackMetadata.additionalInfo, AdditionalInfo()).tracknumber,
                     listenedAt = listen.listenedAt,
                     preMirror = preMirror,
                     mirrored = mirrored)

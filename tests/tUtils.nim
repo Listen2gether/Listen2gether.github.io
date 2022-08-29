@@ -1,5 +1,7 @@
-import std/[unittest, options]
-import ../src/sources/utils
+import
+  std/[unittest, options],
+  pkg/union,
+  ../src/sources/utils
 
 suite "Utils":
     setup:
@@ -13,6 +15,23 @@ suite "Utils":
         noneStrSeq: Option[seq[string]] = none seq[string]
         someStr: Option[string] = some "0"
         noneStr: Option[string] = none string
+
+        someUnionStr = someStr as union(Option[string] | Option[int])
+        noneUnionStr = noneStr as union(Option[string] | Option[int])
+        someUnionInt = some(0) as union(Option[string] | Option[int])
+        noneUnionInt = none(int) as union(Option[string] | Option[int])
+
+    test "Convert some `union(Option[string])` to `Option[int]`":
+      check unionToInt(someUnionStr) == some 0
+
+    test "Convert none `union(Option[string])` to `Option[int]`":
+      check unionToInt(noneUnionStr) == none int
+
+    test "Convert some `union(Option[int])` to `Option[int]`":
+      check unionToInt(someUnionInt) == some 0
+
+    test "Convert none `union(Option[int])` to `Option[int]`":
+      check unionToInt(noneUnionInt) == none int
 
     test "Convert some `Option[string]` to `Option[int]`":
       check toInt(someStr) == some 0
