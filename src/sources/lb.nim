@@ -75,7 +75,6 @@ proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, 
   ## Return a ListenBrainz user's listen history
   try:
     let userListens = await lb.getUserListens($username, minTs, maxTs, count)
-    echo repr userListens
     return to(userListens.payload.listens, some preMirror, some false)
   except JsonError:
     logError("There was a problem parsing $#'s listens!" % $username)
