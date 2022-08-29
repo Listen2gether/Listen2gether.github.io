@@ -74,8 +74,8 @@ proc getNowPlaying(lb: AsyncListenBrainz, username: cstring, preMirror: bool): F
 proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, maxTs, minTs: int = 0, count: int = 100): Future[seq[Listen]] {.async.} =
   ## Return a ListenBrainz user's listen history
   try:
-    let userListens = await lb.getUserListens($username, maxTs = maxTs, minTs = minTs, count = count)
-    result = to(userListens.payload.listens, some preMirror, mirrored = some false)
+    let userListens = await lb.getUserListens($username, minTs, maxTs, count)
+    return to(userListens.payload.listens, some preMirror, some false)
   except JsonError:
     logError "There was a problem parsing " & $username & "'s listens!"
   except HttpRequestError:
