@@ -14,7 +14,7 @@ include pkg/listenbrainz/utils/tools
 
 const userBaseUrl*: cstring = "https://listenbrainz.org/user/"
 
-func to(track: Listen): APIListen =
+proc to(track: Listen): APIListen =
   ## Convert a `Listen` object to an `APIListen` object
   let
     additionalInfo = newAdditionalInfo(tracknumber = to(track.trackNumber) as union(Option[string] | Option[int]),
@@ -28,7 +28,7 @@ func to(track: Listen): APIListen =
                                     additionalInfo = some additionalInfo)
   result = newAPIListen(listenedAt = track.listenedAt, trackMetadata = trackMetadata)
 
-func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
+proc to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
   ## Convert a sequence of `Listen` objects to a sequence of `APIListen` objects.
   ## When `toMirror` is set, only tracks that have not been mirrored or are not pre-mirror are returned.
   for track in tracks:
@@ -38,7 +38,7 @@ func to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
     else:
       result.add to track
 
-func to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): Listen =
+proc to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): Listen =
   ## Convert an `APIListen` object to a `Listen` object.
   result = newListen(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
@@ -51,7 +51,7 @@ func to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): List
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-func to(listens: seq[APIListen], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+proc to(listens: seq[APIListen], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
   ## Convert a sequence of `APIListen` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
@@ -63,23 +63,24 @@ proc getNowPlaying(lb: AsyncListenBrainz, username: cstring, preMirror: bool): F
       nowPlaying = await lb.getUserPlayingNow($username)
       payload = nowPlaying.payload
     if payload.count == 1:
-      result = some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
+      return some to(payload.listens[0], preMirror = some preMirror, mirrored = some false)
     else:
-      result = none Listen
+      return none Listen
   except JsonError:
-    logError "There was a problem parsing" & $username & "'s now playing!"
+    logError("There was a problem parsing $#'s now playing!" % $username)
   except HttpRequestError:
-    logError "There was a problem getting " & $username & "'s now playing!"
+    logError("There was a problem getting $#'s now playing!" % $username)
 
 proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, maxTs, minTs: int = 0, count: int = 100): Future[seq[Listen]] {.async.} =
   ## Return a ListenBrainz user's listen history
   try:
     let userListens = await lb.getUserListens($username, minTs, maxTs, count)
+    echo repr userListens
     return to(userListens.payload.listens, some preMirror, some false)
   except JsonError:
-    logError "There was a problem parsing " & $username & "'s listens!"
+    logError("There was a problem parsing $#'s listens!" % $username)
   except HttpRequestError:
-    logError "There was a problem getting " & $username & "'s listens!"
+    logError("There was a problem getting $#'s listens!" % $username)
 
 proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = "", selected = false): Future[User] {.async.} =
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
@@ -141,7 +142,7 @@ proc submitMirrorQueue*(lb: AsyncListenBrainz, user: var User) {.async.} =
         discard lb.submitListens(playingNow)
         get(user.playingNow).mirrored = some true
       except HttpRequestError:
-        logError "There was a problem submitting your now playing!"
+        logError("There was a problem submitting your now playing!")
 
   let listens = to(user.listenHistory, toMirror = true)
   if listens.len > 0:
@@ -153,4 +154,4 @@ proc submitMirrorQueue*(lb: AsyncListenBrainz, user: var User) {.async.} =
         if track in mirroredTracks:
           user.listenHistory[idx].mirrored = some true
     except HttpRequestError:
-      logError "There was a problem submitting your listens!"
+      logError("There was a problem submitting your listens!")
