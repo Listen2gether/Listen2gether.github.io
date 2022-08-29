@@ -21,7 +21,7 @@ jobs:
         uses: alaviss/setup-nim@0.1.1
         with:
           path: nim
-          version: devel
+          version: stable
 
       - name: Setup Dart Sass, UglifyJS, html-minifer
         run: npm install -g sass uglify-js html-minifier
