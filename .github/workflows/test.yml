@@ -23,7 +23,7 @@ jobs:
         uses: alaviss/setup-nim@0.1.1
         with:
           path: nim
-          version: version-1-6-6
+          version: devel
 
       - name: Install
         run: nimble install -d:js -y
