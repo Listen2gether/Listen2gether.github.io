@@ -1,11 +1,8 @@
 name: Web Deployment
 on:
   push:
-    paths:
-      - ".github/workflows/**"
-      - "src/**"
-      - "public/**"
-      - "listen2gether.nimble"
+    tags:
+       - '*'
 
   workflow_dispatch:
 
@@ -40,7 +37,7 @@ jobs:
 
       - name: Minify
         run: nimble minify
-        
+
       - name: Create /mirror path
         run: nimble prep
 
