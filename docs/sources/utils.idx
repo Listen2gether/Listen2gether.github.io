@@ -1,3 +1,4 @@
+unionToInt	sources/utils.html#unionToInt,T	utils: unionToInt[T: Union](val: T): Option[int]	
 toInt	sources/utils.html#toInt,Option[string]	utils: toInt(val: Option[string]): Option[int]	
 to	sources/utils.html#to,Option[int]	utils: to(val: Option[int]): Option[string]	
 to	sources/utils.html#to,string	utils: to(val: string): Option[cstring]	

@@ -27,12 +27,13 @@
       <h1 class="title">sources/utils</h1>
       <div class="row">
   <div class="three columns">
-    <div class="theme-switch-wrapper">
-      <label class="theme-switch" for="checkbox">
-        <input type="checkbox" id="checkbox" />
-        <div class="slider round"></div>
-      </label>
-      &nbsp;&nbsp;&nbsp; <em>Dark Mode</em>
+    <div class="theme-select-wrapper">
+      <label for="theme-select">Theme:&nbsp;</label>
+      <select id="theme-select" onchange="setTheme(this.value)">
+        <option value="auto">🌗 Match OS</option>
+        <option value="dark">🌑 Dark</option>
+        <option value="light">🌕 Light</option>
+      </select>
     </div>
     <div id="global-links">
       <ul class="simple">
@@ -75,6 +76,10 @@
   <li><a class="reference" href="#toInt%2COption%5Bstring%5D" title="toInt(val: Option[string]): Option[int]">toInt(val: Option[string]): Option[int]</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">unionToInt
+  <li><a class="reference" href="#unionToInt%2CT" title="unionToInt[T: Union](val: T): Option[int]">unionToInt[T: Union](val: T): Option[int]</a></li>
+
+</ul>
 
     </ul>
   </details>
@@ -99,8 +104,8 @@
   <dd>
     
     Log messages to the JS console or stdout
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L53" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L53" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L66" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L66" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -112,8 +117,8 @@
   <dd>
     
     
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L60" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L60" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L73" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L73" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -126,8 +131,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">cstring</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L47" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L47" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L60" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L60" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -136,8 +141,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">int</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L11" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L11" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L24" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L24" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -147,8 +152,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">cstring</span><span class="Punctuation">]</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L21" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L21" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L34" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L34" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -158,8 +163,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">seq</span><span class="Punctuation">[</span><span class="Identifier">cstring</span><span class="Punctuation">]</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L31" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L31" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L44" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L44" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -169,8 +174,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">cstring</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L41" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L41" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L54" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L54" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -179,8 +184,8 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">string</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">cstring</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L16" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L16" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L29" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L29" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -193,8 +198,21 @@
   <dd>
     
     Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">int</span><span class="Punctuation">]</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L5" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L5" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L18" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L18" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
+<div id="unionToInt-procs-all">
+  <div id="unionToInt,T">
+  <dt><pre><span class="Keyword">proc</span> <a href="#unionToInt%2CT"><span class="Identifier">unionToInt</span></a><span class="Other">[</span><span class="Identifier">T</span><span class="Other">:</span> <span class="Identifier">Union</span><span class="Other">]</span><span class="Other">(</span><span class="Identifier">val</span><span class="Other">:</span> <span class="Identifier">T</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span></pre></dt>
+  <dd>
+    
+    Convert <tt class="docutils literal"><span class="pre"><span class="Identifier">union</span><span class="Punctuation">(</span><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">string</span><span class="Punctuation">]</span> <span class="Operator">|</span> <span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">int</span><span class="Punctuation">]</span><span class="Punctuation">)</span></span></tt> to <tt class="docutils literal"><span class="pre"><span class="Identifier">Option</span><span class="Punctuation">[</span><span class="Identifier">int</span><span class="Punctuation">]</span></span></tt>
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/sources/utils.nim#L8" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/sources/utils.nim#L8" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -210,7 +228,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-08-13 08:38:21 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2022-08-31 23:02:33 UTC</small>
       </div>
     </div>
   </div>
