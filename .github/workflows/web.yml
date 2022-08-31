@@ -27,7 +27,7 @@ jobs:
         run: npm install -g sass uglify-js html-minifier
 
       - name: Install
-        run: nimble install -d:js -y
+        run: nimble --silent install -d:js -y
 
       - name: Compile Sass
         run: nimble sass

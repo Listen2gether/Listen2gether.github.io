@@ -26,10 +26,10 @@ jobs:
           version: devel
 
       - name: Install
-        run: nimble install -d:js -y
+        run: nimble --silent install -d:js -y
 
       - name: Run tests
         env:
           LISTENBRAINZ_USER: ${{ secrets.LISTENBRAINZ_USER }}
           LASTFM_USER: ${{ secrets.LASTFM_USER }}
-        run: nimble test -d:c -y
+        run: nimble --silent test -d:c -y
