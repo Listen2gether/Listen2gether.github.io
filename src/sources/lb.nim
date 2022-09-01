@@ -122,7 +122,7 @@ proc updateUser*(lb: AsyncListenBrainz, user: User, resetLastUpdate, preMirror =
     updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
-proc pageUser*(lb: AsyncListenBrainz, user: var User, endInd: var int, `inc`: int = 10) {.async.} =
+proc pageUser*(lb: AsyncListenBrainz, user: var User, endInd: var int, `inc` = 10) {.async.} =
   ## Backfills ListenBrainz user's recent tracks
   let
     maxTs = get user.listenHistory[^1].listenedAt

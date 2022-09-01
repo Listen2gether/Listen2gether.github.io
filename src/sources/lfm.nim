@@ -244,7 +244,7 @@ proc updateUser*(fm: AsyncLastFM, user: User, resetLastUpdate, preMirror = false
     updatedUser.listenHistory = listenHistory & user.listenHistory
   return updatedUser
 
-proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc`: int = 10) {.async.} =
+proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc` = 10) {.async.} =
   ## Backfills Last.fm user's recent tracks
   let
     to = get user.listenHistory[^1].listenedAt
