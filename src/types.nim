@@ -4,7 +4,6 @@ type
   Client* = ref object
     users*: seq[cstring]
     mirror*: Option[cstring]
-    startTs*: Option[int]
 
   Service* = enum
     listenBrainzService = "listenbrainz",
@@ -18,6 +17,7 @@ type
     of lastFmService:
       sessionKey*: cstring
     lastUpdateTs*: int
+    lastSubmissionTs*: Option[int]
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
     submitQueue*: ListenQueue
@@ -35,12 +35,10 @@ type
 
 func newClient*(
   users: seq[cstring] = @[],
-  mirror: Option[cstring] = none(cstring),
-  startTs: Option[int] = none(int)): Client =
+  mirror: Option[cstring] = none(cstring)): Client =
   result = Client()
   result.users = users
   result.mirror = mirror
-  result.startTs = startTs
 
 func newListenQueue*(
   listens: seq[Listen] = @[],
@@ -54,6 +52,7 @@ func newUser*(
   service: Service,
   token, sessionKey: cstring = "",
   lastUpdateTs: int = 0,
+  lastSubmissionTs: Option[int] = none(int),
   playingNow: Option[Listen] = none(Listen),
   listenHistory: seq[Listen] = @[],
   submitQueue: ListenQueue = newListenQueue()): User =
@@ -67,6 +66,7 @@ func newUser*(
   of lastFmService:
     result.sessionKey = sessionKey
   result.lastUpdateTs = lastUpdateTs
+  result.lastSubmissionTs = lastSubmissionTs
   result.playingNow = playingNow
   result.listenHistory = listenHistory
   result.submitQueue = submitQueue
