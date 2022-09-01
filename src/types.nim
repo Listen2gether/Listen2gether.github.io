@@ -1,13 +1,14 @@
 import std/options
 
 type
+  Client* = ref object
+    users*: seq[cstring]
+    mirror*: Option[cstring]
+    startTs*: Option[int]
+
   Service* = enum
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
-
-  ListenQueue* = ref object
-    listens*: seq[Listen]
-    playingNow*: Option[Listen]
 
   User* = ref object
     userId*, username*: cstring
@@ -17,7 +18,6 @@ type
     of lastFmService:
       sessionKey*: cstring
     lastUpdateTs*: int
-    selected*: bool
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
     submitQueue*: ListenQueue
@@ -28,6 +28,19 @@ type
     artistMbids*: Option[seq[cstring]]
     trackNumber*, listenedAt*: Option[int]
     playingNow*: Option[bool]
+
+  ListenQueue* = ref object
+    listens*: seq[Listen]
+    playingNow*: Option[Listen]
+
+func newClient*(
+  users: seq[cstring] = @[],
+  mirror: Option[cstring] = none(cstring),
+  startTs: Option[int] = none(int)): Client =
+  result = Client()
+  result.users = users
+  result.mirror = mirror
+  result.startTs = startTs
 
 func newListenQueue*(
   listens: seq[Listen] = @[],
@@ -41,7 +54,6 @@ func newUser*(
   service: Service,
   token, sessionKey: cstring = "",
   lastUpdateTs: int = 0,
-  selected: bool = false,
   playingNow: Option[Listen] = none(Listen),
   listenHistory: seq[Listen] = @[],
   submitQueue: ListenQueue = newListenQueue()): User =
@@ -55,7 +67,6 @@ func newUser*(
   of lastFmService:
     result.sessionKey = sessionKey
   result.lastUpdateTs = lastUpdateTs
-  result.selected = selected
   result.playingNow = playingNow
   result.listenHistory = listenHistory
   result.submitQueue = submitQueue
