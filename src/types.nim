@@ -5,6 +5,10 @@ type
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
+  ListenQueue* = ref object
+    listens*: seq[Listen]
+    playingNow*: Option[Listen]
+
   User* = ref object
     userId*, username*: cstring
     case service*: Service
@@ -16,13 +20,21 @@ type
     selected*: bool
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
-    submitQueue*: seq[Listen]
+    submitQueue*: ListenQueue
 
   Listen* = object
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
     trackNumber*, listenedAt*: Option[int]
+    playingNow*: Option[bool]
+
+func newListenQueue*(
+  listens: seq[Listen] = @[],
+  playingNow: Option[Listen] = none(Listen)): ListenQueue =
+  result = ListenQueue()
+  result.listens = listens
+  result.playingNow = playingNow
 
 func newUser*(
   username: cstring,
@@ -31,7 +43,8 @@ func newUser*(
   lastUpdateTs: int = 0,
   selected: bool = false,
   playingNow: Option[Listen] = none(Listen),
-  listenHistory, submitQueue: seq[Listen] = @[]): User =
+  listenHistory: seq[Listen] = @[],
+  submitQueue: ListenQueue = newListenQueue()): User =
   ## Create new User object
   result = User(service: service)
   result.userId = cstring($service & ":" & $username)
@@ -54,7 +67,8 @@ func newListen*(
   releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
   artistMbids: Option[seq[cstring]] = none(seq[cstring]),
   trackNumber: Option[int] = none(int),
-  listenedAt: Option[int] = none(int)): Listen =
+  listenedAt: Option[int] = none(int),
+  playingNow: Option[bool] = none(bool)): Listen =
   ## Create new Listen object
   result.trackName = trackName
   result.artistName = artistName
@@ -64,11 +78,14 @@ func newListen*(
   result.artistMbids = artistMbids
   result.trackNumber = trackNumber
   result.listenedAt = listenedAt
+  result.playingNow = playingNow
 
 func `==`*(a, b: Listen): bool =
-  ## does not include `mirrored` or `preMirror`
+  ## Does not consider `listenedAt` and `playingNow` fields.
   return a.trackName == b.trackName and
     a.artistName == b.artistName and
     a.releaseName == b.releaseName and
+    a.recordingMbid == b.recordingMbid and
+    a.releaseMbid == b.releaseMbid and
     a.artistMbids == b.artistMbids and
     a.trackNumber == b.trackNumber
