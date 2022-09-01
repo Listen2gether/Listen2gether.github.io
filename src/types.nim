@@ -23,7 +23,6 @@ type
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
     trackNumber*, listenedAt*: Option[int]
-    mirrored*, preMirror*: Option[bool]
 
 func newUser*(
   username: cstring,
@@ -55,8 +54,7 @@ func newListen*(
   releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
   artistMbids: Option[seq[cstring]] = none(seq[cstring]),
   trackNumber: Option[int] = none(int),
-  listenedAt: Option[int] = none(int),
-  mirrored, preMirror: Option[bool] = none(bool)): Listen =
+  listenedAt: Option[int] = none(int)): Listen =
   ## Create new Listen object
   result.trackName = trackName
   result.artistName = artistName
@@ -66,8 +64,6 @@ func newListen*(
   result.artistMbids = artistMbids
   result.trackNumber = trackNumber
   result.listenedAt = listenedAt
-  result.mirrored = mirrored
-  result.preMirror = preMirror
 
 func `==`*(a, b: Listen): bool =
   ## does not include `mirrored` or `preMirror`
