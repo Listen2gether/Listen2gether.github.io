@@ -2,14 +2,18 @@ import std/options
 
 type
   Client* = ref object
+    ## Stores client state, including a `seq` of user IDs, and optionally a mirror user ID.
     users*: seq[cstring]
     mirror*: Option[cstring]
 
   Service* = enum
+    ## Store the supported services, used to create object variants of `User`.
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
   User* = ref object
+    ## Stores a client user for the application.
+    ## The supported services include ListenBrainz and LastFM.
     userId*, username*: cstring
     case service*: Service
     of listenBrainzService:
@@ -22,7 +26,8 @@ type
     listenHistory*: seq[Listen]
     submitQueue*: ListenQueue
 
-  Listen* = object
+  Listen* = ref object
+    ## A normalised listen format used across the client.
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
@@ -30,6 +35,7 @@ type
     playingNow*: Option[bool]
 
   ListenQueue* = ref object
+    ## Stores the listens that need to be submitted by a user, including a playing now listen.
     listens*: seq[Listen]
     playingNow*: Option[Listen]
 
@@ -81,6 +87,7 @@ func newListen*(
   listenedAt: Option[int] = none(int),
   playingNow: Option[bool] = none(bool)): Listen =
   ## Create new Listen object
+  result = Listen()
   result.trackName = trackName
   result.artistName = artistName
   result.releaseName = releaseName
