@@ -3,12 +3,9 @@
 ##
 
 import
-  std/[asyncjs, jsffi, tables, sugar],
   pkg/karax/[karaxdsl, vdom],
-  pkg/nodejs/jsindexeddb,
   pkg/[listenbrainz, lastfm],
-  sources/[lfm, utils],
-  types
+  sources/lfm
 
 type
   ClientView* = enum
