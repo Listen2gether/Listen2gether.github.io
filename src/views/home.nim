@@ -1,3 +1,7 @@
+## Home view module
+## Manages the home view for the web app, onboarding users to the mirror page.
+##
+
 {.experimental: "overloadableEnums".}
 
 import
@@ -37,7 +41,7 @@ var
 proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
-    let users = await db.getUsers(dbStore)
+    let users = await db.getTable(dbStore, IDBOptions(keyPath: "userId"))
     if users.len != 0:
       storedUsers = users
       view = ModalView.returningUser

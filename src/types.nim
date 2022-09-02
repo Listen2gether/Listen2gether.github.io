@@ -1,3 +1,7 @@
+## Types module
+## Where all the web app's types / data models are defined.
+##
+
 import std/options
 
 type

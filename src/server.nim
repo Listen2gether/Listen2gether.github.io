@@ -1,3 +1,7 @@
+## Server module
+## The development server for the web app.
+##
+
 import
   pkg/prologue,
   pkg/prologue/middlewares/staticfile

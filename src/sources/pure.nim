@@ -1,3 +1,7 @@
+## Pure module
+## Listen tracking source agnostic functions.
+##
+
 import
   std/[sugar, options],
   types

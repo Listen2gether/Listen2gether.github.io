@@ -1,3 +1,7 @@
+## Shared view module
+## This module holds shared functions and globals to be used across the frontend.
+##
+
 import
   std/[asyncjs, jsffi, tables, sugar],
   pkg/karax/[karaxdsl, vdom],

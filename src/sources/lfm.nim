@@ -1,3 +1,7 @@
+## Last.fm module
+## This contains support for the Last.fm backend.
+##
+
 when defined(js):
   import std/asyncjs
 else:

@@ -1,3 +1,7 @@
+## Mirror view module
+## Manages the mirror view for the web app, handling mirroring of users.
+##
+
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
   pkg/karax/[karax, karaxdsl, vdom, jstrutils],

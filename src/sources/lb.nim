@@ -1,3 +1,7 @@
+## ListenBrainz module
+## This contains support for the ListenBrainz backend.
+##
+
 when defined(js):
   import std/asyncjs
 else:
