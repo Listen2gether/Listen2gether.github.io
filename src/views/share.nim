@@ -19,16 +19,16 @@ var
   fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
   db*: IndexedDB = newIndexedDB()
-  dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
+  dbOptions*: IDBOptions = IDBOptions(keyPath: "id")
   clientUsers*: Table[cstring, User] = initTable[cstring, User]()
   mirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
 
 proc getSelectedIds*(users: Table[cstring, User]): seq[cstring] =
   result = collect:
-    for userId, user in users:
+    for id, user in users:
       if user.selected:
-        userId
+        id
 
 proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
   ## Gets users from a given IndexedDB store.
@@ -37,13 +37,13 @@ proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOption
     let objStore = await getAll(db, dbStore, dbOptions)
     if not objStore.isNil:
       result = collect:
-        for user in to(objStore, seq[User]): {user.userId: user}
+        for user in to(objStore, seq[User]): {user.id: user}
   except:
     logError "Failed to get stored users."
 
 proc storeUser*(db: IndexedDB, user: User, users: var Table[cstring, User], dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
   ## Stores a user in a given store in IndexedDB.
-  users[user.userId] = user
+  users[user.id] = user
   try:
     discard put(db, dbStore, toJs user, dbOptions)
   except:
