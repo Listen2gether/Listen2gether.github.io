@@ -3,7 +3,7 @@ import std/options
 type
   Client* = ref object
     ## Stores client state, including a `seq` of user IDs, and optionally a mirror user ID.
-    clientId*: cstring
+    id*: cstring
     users*: seq[cstring]
     mirror*: Option[cstring]
 
@@ -15,7 +15,7 @@ type
   User* = ref object
     ## Stores a client user for the application.
     ## The supported services include ListenBrainz and LastFM.
-    userId*, username*: cstring
+    id*, username*: cstring
     case service*: Service
     of listenBrainzService:
       token*: cstring
@@ -41,11 +41,11 @@ type
     playingNow*: Option[Listen]
 
 func newClient*(
-  clientId: cstring = "session",
+  id: cstring = "session",
   users: seq[cstring] = @[],
   mirror: Option[cstring] = none(cstring)): Client =
   result = Client()
-  result.clientId = clientId
+  result.id = id
   result.users = users
   result.mirror = mirror
 
@@ -67,7 +67,7 @@ func newUser*(
   submitQueue: ListenQueue = newListenQueue()): User =
   ## Create new User object
   result = User(service: service)
-  result.userId = cstring($service & ":" & $username)
+  result.id = cstring($service & ":" & $username)
   result.username = username
   case service:
   of listenBrainzService:
@@ -80,7 +80,7 @@ func newUser*(
   result.listenHistory = listenHistory
   result.submitQueue = submitQueue
 
-func `==`*(a, b: User): bool = a.userId == b.userId
+func `==`*(a, b: User): bool = a.id == b.id
 
 func newListen*(
   trackName, artistName: cstring,

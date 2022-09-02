@@ -88,6 +88,6 @@ suite "ListenBrainz source":
 
     # # Cannot be tested outside JS backend
     # test "Submit mirror queue":
-    #   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
+    #   var user = newUser(id = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
     #   user.listenHistory = @[newListen("track 1", "artist")]
     #   discard lb.submitMirrorQueue(user)

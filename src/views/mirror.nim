@@ -3,7 +3,7 @@ import
   pkg/karax/[karax, karaxdsl, vdom, jstrutils],
   pkg/jsony,
   sources/[lb, lfm, utils],
-  home, share, types
+  home, db, share, types
 
 type
   MirrorView = enum
@@ -166,7 +166,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
   if mirrorUsers.hasKey(mirrorUserId):
     let clientUserIds = getSelectedIds(clientUsers)
     if clientUserIds.len > 0:
-      if mirrorUsers[mirrorUserId].userId in clientUserIds:
+      if mirrorUsers[mirrorUserId].id in clientUserIds:
         mirrorToggle = false
       mirrorView = MirrorView.mirroring
     case mirrorUsers[mirrorUserId].service:
@@ -194,9 +194,9 @@ proc mirror*(username: cstring, service: Service): Vnode =
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   mirrorUsers = await db.getUsers(mirrorUsersDbStore)
-  let userId: cstring = cstring($service) & ":" & username
-  if userId in mirrorUsers:
-    mirrorUsers[mirrorUserId] = mirrorUsers[userId]
+  let id: cstring = cstring($service) & ":" & username
+  if id in mirrorUsers:
+    mirrorUsers[mirrorUserId] = mirrorUsers[id]
     let preMirror = not mirrorToggle
     case mirrorUsers[mirrorUserId].service:
     of Service.listenBrainzService:

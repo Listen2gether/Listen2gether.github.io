@@ -6,10 +6,6 @@ import
   sources/[lfm, utils],
   types
 
-const
-  clientUsersDbStore*: cstring = "clientUsers"
-  mirrorUsersDbStore*: cstring = "mirrorUsers"
-
 type
   ClientView* = enum
     homeView, mirrorView, loadingView, errorView
@@ -18,36 +14,7 @@ var
   globalView*: ClientView = ClientView.homeView
   fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
-  db*: IndexedDB = newIndexedDB()
-  dbOptions*: IDBOptions = IDBOptions(keyPath: "userId")
-  clientUsers*: Table[cstring, User] = initTable[cstring, User]()
-  mirrorUsers*: Table[cstring, User] = initTable[cstring, User]()
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
-
-proc getSelectedIds*(users: Table[cstring, User]): seq[cstring] =
-  result = collect:
-    for userId, user in users:
-      if user.selected:
-        userId
-
-proc getUsers*(db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions = dbOptions): Future[Table[cstring, User]] {.async.} =
-  ## Gets users from a given IndexedDB store.
-  result = initTable[cstring, User]()
-  try:
-    let objStore = await getAll(db, dbStore, dbOptions)
-    if not objStore.isNil:
-      result = collect:
-        for user in to(objStore, seq[User]): {user.userId: user}
-  except:
-    logError "Failed to get stored users."
-
-proc storeUser*(db: IndexedDB, user: User, users: var Table[cstring, User], dbStore: cstring, dbOptions: IDBOptions = dbOptions) {.async.} =
-  ## Stores a user in a given store in IndexedDB.
-  users[user.userId] = user
-  try:
-    discard put(db, dbStore, toJs user, dbOptions)
-  except:
-    logError "Failed to store users."
 
 proc errorModal*(message: cstring): Vnode =
   ## Render a div with a given error message
