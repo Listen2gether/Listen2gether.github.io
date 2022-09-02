@@ -1,40 +1,77 @@
+## Types module
+## Where all the web app's types / data models are defined.
+##
+
 import std/options
 
 type
+  Client* = ref object
+    ## Stores client state, including a `seq` of user IDs, and optionally a mirror user ID.
+    id*: cstring
+    users*: seq[cstring]
+    mirror*: Option[cstring]
+
   Service* = enum
+    ## Store the supported services, used to create object variants of `User`.
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
   User* = ref object
-    userId*, username*: cstring
+    ## Stores a client user for the application.
+    ## The supported services include ListenBrainz and LastFM.
+    id*, username*: cstring
     case service*: Service
     of listenBrainzService:
       token*: cstring
     of lastFmService:
       sessionKey*: cstring
     lastUpdateTs*: int
-    selected*: bool
+    lastSubmissionTs*: Option[int]
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
+    submitQueue*: ListenQueue
 
-  Listen* = object
+  Listen* = ref object
+    ## A normalised listen format used across the client.
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
     trackNumber*, listenedAt*: Option[int]
-    mirrored*, preMirror*: Option[bool]
+    playingNow*: Option[bool]
+
+  ListenQueue* = ref object
+    ## Stores the listens that need to be submitted by a user, including a playing now listen.
+    listens*: seq[Listen]
+    playingNow*: Option[Listen]
+
+func newClient*(
+  id: cstring = "session",
+  users: seq[cstring] = @[],
+  mirror: Option[cstring] = none(cstring)): Client =
+  result = Client()
+  result.id = id
+  result.users = users
+  result.mirror = mirror
+
+func newListenQueue*(
+  listens: seq[Listen] = @[],
+  playingNow: Option[Listen] = none(Listen)): ListenQueue =
+  result = ListenQueue()
+  result.listens = listens
+  result.playingNow = playingNow
 
 func newUser*(
   username: cstring,
   service: Service,
   token, sessionKey: cstring = "",
   lastUpdateTs: int = 0,
-  selected: bool = false,
+  lastSubmissionTs: Option[int] = none(int),
   playingNow: Option[Listen] = none(Listen),
-  listenHistory: seq[Listen] = @[]): User =
+  listenHistory: seq[Listen] = @[],
+  submitQueue: ListenQueue = newListenQueue()): User =
   ## Create new User object
   result = User(service: service)
-  result.userId = cstring($service & ":" & $username)
+  result.id = cstring($service & ":" & $username)
   result.username = username
   case service:
   of listenBrainzService:
@@ -42,11 +79,12 @@ func newUser*(
   of lastFmService:
     result.sessionKey = sessionKey
   result.lastUpdateTs = lastUpdateTs
-  result.selected = selected
+  result.lastSubmissionTs = lastSubmissionTs
   result.playingNow = playingNow
   result.listenHistory = listenHistory
+  result.submitQueue = submitQueue
 
-func `==`*(a, b: User): bool = a.userId == b.userId
+func `==`*(a, b: User): bool = a.id == b.id
 
 func newListen*(
   trackName, artistName: cstring,
@@ -54,8 +92,9 @@ func newListen*(
   artistMbids: Option[seq[cstring]] = none(seq[cstring]),
   trackNumber: Option[int] = none(int),
   listenedAt: Option[int] = none(int),
-  mirrored, preMirror: Option[bool] = none(bool)): Listen =
+  playingNow: Option[bool] = none(bool)): Listen =
   ## Create new Listen object
+  result = Listen()
   result.trackName = trackName
   result.artistName = artistName
   result.releaseName = releaseName
@@ -64,13 +103,14 @@ func newListen*(
   result.artistMbids = artistMbids
   result.trackNumber = trackNumber
   result.listenedAt = listenedAt
-  result.mirrored = mirrored
-  result.preMirror = preMirror
+  result.playingNow = playingNow
 
 func `==`*(a, b: Listen): bool =
-  ## does not include `mirrored` or `preMirror`
+  ## Does not consider `listenedAt` and `playingNow` fields.
   return a.trackName == b.trackName and
     a.artistName == b.artistName and
     a.releaseName == b.releaseName and
+    a.recordingMbid == b.recordingMbid and
+    a.releaseMbid == b.releaseMbid and
     a.artistMbids == b.artistMbids and
     a.trackNumber == b.trackNumber

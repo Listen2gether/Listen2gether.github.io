@@ -1,3 +1,7 @@
+## Home view module
+## Manages the home view for the web app, onboarding users to the mirror page.
+##
+
 {.experimental: "overloadableEnums".}
 
 import
@@ -9,7 +13,7 @@ import
   pkg/lastfm,
   pkg/lastfm/auth,
   sources/[lb, lfm, utils],
-  views/share,
+  views/[share, db],
   types
 
 type
@@ -37,7 +41,7 @@ var
 proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
-    let users = await db.getUsers(dbStore)
+    let users = await db.getTable(dbStore, IDBOptions(keyPath: "userId"))
     if users.len != 0:
       storedUsers = users
       view = ModalView.returningUser
@@ -56,7 +60,7 @@ proc loadMirror(user: User) =
 proc validateMirror(username: cstring, service: Service) {.async.} =
   ## Validates and gets now playing for user.
   var user = newUser(username, service, selected = true)
-  mirrorUsers[user.userId] = user
+  mirrorUsers[user.id] = user
   try:
     case service:
     of Service.listenBrainzService:
@@ -111,7 +115,7 @@ proc serviceToggle: Vnode =
     input(`type` = "checkbox", id = "service-switch", class = "toggle")
     span(id = "service-slider", class = "slider")
 
-proc validateLBToken(token: cstring, userId: cstring = "", newUser = true) {.async.} =
+proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
   lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken($token)
@@ -127,9 +131,9 @@ proc validateLBToken(token: cstring, userId: cstring = "", newUser = true) {.asy
     else:
       clientErrorMessage = "Token no longer valid!"
       try:
-        discard db.delete(clientUsersDbStore, userId, dbOptions)
+        discard db.delete(clientUsersDbStore, id, IDBOptions(keyPath: "id"))
       except:
-        clientUsers.del(userId)
+        clientUsers.del(id)
     redraw()
   serviceView = ServiceView.selection
 
@@ -148,9 +152,9 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
       clientErrorMessage = "Session no longer valid!"
       # maybe? serviceView = ServiceView.selection
       try:
-        discard db.delete(clientUsersDbStore, user.userId, dbOptions)
+        discard db.delete(clientUsersDbStore, user.id, IDBOptions(keyPath: "id"))
       except:
-        clientUsers.del(user.userId)
+        clientUsers.del(user.id)
     redraw()
 
 proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
@@ -159,34 +163,34 @@ proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mi
     serviceIconId: cstring
     buttonClass: cstring
   result = buildHtml(tdiv(id = "stored-users")):
-    for userId, user in storedUsers.pairs:
+    for id, user in storedUsers.pairs:
       buttonClass = "row"
       if user.selected:
         buttonClass = buttonClass & " selected"
-      button(id = userId, class = buttonClass, username = user.username, service = cstring $user.service):
+      button(id = id, class = buttonClass, username = user.username, service = cstring $user.service):
         serviceIconId = cstring $user.service & "-icon"
         tdiv(id = serviceIconId, class = "service-icon")
         text user.username
         proc onclick(ev: Event; n: VNode) =
-          let userId = n.id
-          if storedUsers[userId].selected:
-            storedUsers[userId].selected = false
-            discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
+          let id = n.id
+          if storedUsers[id].selected:
+            storedUsers[id].selected = false
+            discard db.storeUser(storedUsers[id], storedUsers, userDbStore)
           else:
             if mirror:
               let selectedIds = getSelectedIds(mirrorUsers)
               if selectedIds.len > 0:
                 storedUsers[selectedIds[0]].selected = false
-              storedUsers[userId].selected = true
-              discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
+              storedUsers[id].selected = true
+              discard db.storeUser(storedUsers[id], storedUsers, userDbStore)
             else:
-              storedUsers[userId].selected = true
-              case storedUsers[userId].service
+              storedUsers[id].selected = true
+              case storedUsers[id].service
               of Service.listenBrainzService:
                 serviceView = ServiceView.loading
-                discard validateLBToken(storedUsers[userId].token, storedUsers[userId].userId, newUser = false)
+                discard validateLBToken(storedUsers[id].token, storedUsers[id].id, newUser = false)
               of Service.lastFmService:
-                discard validateFMSession(storedUsers[userId], newUser = false)
+                discard validateFMSession(storedUsers[id], newUser = false)
 
 proc onLBTokenEnter(ev: Event; n: VNode) =
   ## Callback to validate a ListenBrainz token.

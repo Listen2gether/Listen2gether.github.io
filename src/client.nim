@@ -1,3 +1,7 @@
+## Client module
+## This module is where the web app is rendered.
+##
+
 import
   std/[dom, strutils],
   pkg/karax/[karax, karaxdsl, vdom, localstorage, jstrutils],
