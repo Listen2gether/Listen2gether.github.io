@@ -97,7 +97,7 @@ func parseMbids(mbid: string): Option[seq[cstring]] =
   else:
     result = some @[cstring mbid]
 
-func to(fmTrack: FMTrack, preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(fmTrack: FMTrack): Listen =
   ## Convert an `FMTrack` object to a `Listen` object
   result = newListen(trackName = cstring get fmTrack.name,
                     artistName = get getVal(fmTrack.artist, "#text"),
@@ -113,7 +113,7 @@ func to(fmTracks: seq[FMTrack]): seq[Listen] =
     for fmTrack in fmTracks:
       to(fmTrack)
 
-func to(scrobble: Scrobble, preMirror, mirrored: Option[bool] = none(bool)): Listen =
+func to(scrobble: Scrobble): Listen =
   ## Convert a `Scrobble` object to a `Listen` object
   result = newListen(trackName = cstring scrobble.track,
                     artistName = cstring scrobble.artist,
@@ -246,7 +246,7 @@ proc pageUser*(fm: AsyncLastFM, user: var User, endInd: var int, `inc` = 10) {.a
   endInd += `inc`
 
 proc submitMirrorQueue*(fm: AsyncLastFM, user: var User) {.async.} =
-  ## Submits Last.fm user's now playing and listen history that are not mirrored or preMirror
+  ## Submits Last.fm user's now playing and listen history
   if user.submitQueue.playingNow.isSome():
     try:
       discard fm.setNowPlayingTrack(to get user.playingNow)

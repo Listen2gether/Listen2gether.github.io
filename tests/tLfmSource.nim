@@ -16,7 +16,7 @@ suite "Last.FM source":
       )
       track: FMTrack = newFMTrack(
         artist = parseJson """{"mbid": "artist-mbid", "#text": "Soichi Terada"}""",
-        album = parseJson """{"mbid": "album-mbid", "#text": "Acid Face"}""",
+        album = parseJson """{"mbid": "release-mbid", "#text": "Acid Face"}""",
         date = some FMDate(uts: "0", text: ""),
         mbid = scrobble.mbid,
         name = some scrobble.track,
@@ -42,17 +42,20 @@ suite "Last.FM source":
       check parseMbids(get track.mbid) == some(@[cstring "recording-mbid"])
 
     test "Convert `FMTrack` to `Listen`":
-      var newListen = listen
+      var newListen = deepCopy listen
+      ## This field is not present in track objects, so they will not be checked.
       newListen.trackNumber = none int
       check to(track) == newListen
 
     test "Convert `seq[FMTrack]` to `seq[Listen]`":
-      var trackListen = listen
-      trackListen.trackNumber = none int
-      check to(@[track, track]) == @[trackListen, trackListen]
+      var newListen = deepCopy listen
+      ## This field is not present in track objects, so they will not be checked.
+      newListen.trackNumber = none int
+      check to(@[track, track]) == @[newListen, newListen]
 
     test "Convert `Scrobble` to `Listen`":
-      var newListen = listen
+      var newListen = deepCopy listen
+      ## These fields are not present in scrobbles, so they will not be checked.
       newListen.releaseMbid = none cstring
       newListen.artistMbids = none seq[cstring]
       check to(scrobble) == newListen
@@ -62,6 +65,7 @@ suite "Last.FM source":
 
     test "Convert `seq[Scrobble]` to `seq[Listen]`":
       var newListen = listen
+      ## These fields are not present in scrobbles, so they will not be checked.
       newListen.releaseMbid = none cstring
       newListen.artistMbids = none seq[cstring]
       check to(@[scrobble, scrobble]) == @[newListen, newListen]
@@ -73,7 +77,7 @@ suite "Last.FM source":
         username = cstring os.getEnv("LASTFM_USER")
 
     test "Get recent tracks":
-      let (nowplaying, recentTracks) = waitFor fm.getRecentTracks(username, preMirror = false)
+      let (nowplaying, recentTracks) = waitFor fm.getRecentTracks(username)
       check recentTracks.len == 100
 
     test "Initialise user":
@@ -93,5 +97,5 @@ suite "Last.FM source":
     ## Cannot be tested outside JS backend
     # test "Submit mirror queue":
     #   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
-    #   user.listenHistory = @[newListen("track 1", "artist", preMirror = some false, mirrored = some false)]
+    #   user.listenHistory = @[newListen("track 1", "artist")]
     #   discard lb.submitMirrorQueue(user)
