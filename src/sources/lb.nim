@@ -80,41 +80,42 @@ proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): F
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let username = cstring toLower($username)
-  result = newUser(username, Service.listenBrainzService, token)
-  result.lastUpdateTs = int toUnix getTime()
-  result.playingNow = await lb.getNowPlaying(username)
-  result.listenHistory = await lb.getRecentTracks(username)
+  var user = newUser(username, Service.listenBrainzService, token)
+  user.playingNow = await lb.getNowPlaying(username)
+  user.listenHistory = await lb.getRecentTracks(username)
+  return user
 
 proc updateUser*(lb: AsyncListenBrainz, user: User, resetLastUpdate = false): Future[User] {.async.} =
   ## Updates ListenBrainz user's history.
 
-  result = user
+  var updatedUser = user
   if resetLastUpdate or user.listenHistory.len > 0:
-    result.lastUpdateTs = get user.listenHistory[0].listenedAt
+    updatedUser.lastUpdateTs = get user.listenHistory[0].listenedAt
   else:
-    result.lastUpdateTs = int toUnix getTime()
+    updatedUser.lastUpdateTs = int toUnix getTime()
 
   if resetLastUpdate:
     let
       latestListenHistory = await lb.getRecentTracks(user.username)
       maxTs = get latestListenHistory[^1].listenedAt
 
-    if maxTs > result.lastUpdateTs: # fills in any gaps in history
-      var listenHistory = await lb.getRecentTracks(user.username, minTs = result.lastUpdateTs, maxTs = maxTs)
-      result.listenHistory = listenHistory & user.listenHistory
+    if maxTs > updatedUser.lastUpdateTs: # fills in any gaps in history
+      var listenHistory = await lb.getRecentTracks(user.username, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
       while listenHistory.len > 0:
-        listenHistory = await lb.getRecentTracks(user.username, minTs = result.lastUpdateTs, maxTs = maxTs)
-        result.listenHistory = listenHistory & result.listenHistory
-      result.playingNow = await lb.getNowPlaying(user.username)
-      result.listenHistory = latestListenHistory & result.listenHistory
+        listenHistory = await lb.getRecentTracks(user.username, minTs = updatedUser.lastUpdateTs, maxTs = maxTs)
+        updatedUser.listenHistory = listenHistory & updatedUser.listenHistory
+      updatedUser.playingNow = await lb.getNowPlaying(user.username)
+      updatedUser.listenHistory = latestListenHistory & updatedUser.listenHistory
     else: # no gap / overlap
-      result.playingNow = await lb.getNowPlaying(user.username)
-      let listenHistory = await lb.getRecentTracks(user.username, minTs = result.lastUpdateTs)
-      result.listenHistory = listenHistory & user.listenHistory
+      updatedUser.playingNow = await lb.getNowPlaying(user.username)
+      let listenHistory = await lb.getRecentTracks(user.username, minTs = updatedUser.lastUpdateTs)
+      updatedUser.listenHistory = listenHistory & user.listenHistory
   else:
-    result.playingNow = await lb.getNowPlaying(user.username)
+    updatedUser.playingNow = await lb.getNowPlaying(user.username)
     let listenHistory = await lb.getRecentTracks(user.username, minTs = user.lastUpdateTs)
-    result.listenHistory = listenHistory & user.listenHistory
+    updatedUser.listenHistory = listenHistory & user.listenHistory
+  return updatedUser
 
 proc pageUser*(lb: AsyncListenBrainz, user: var User, endInd: var int, `inc` = 10) {.async.} =
   ## Backfills ListenBrainz user's recent tracks
