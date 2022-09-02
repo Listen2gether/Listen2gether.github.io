@@ -3,6 +3,7 @@ import std/options
 type
   Client* = ref object
     ## Stores client state, including a `seq` of user IDs, and optionally a mirror user ID.
+    clientId*: cstring
     users*: seq[cstring]
     mirror*: Option[cstring]
 
@@ -40,9 +41,11 @@ type
     playingNow*: Option[Listen]
 
 func newClient*(
+  clientId: cstring = "session",
   users: seq[cstring] = @[],
   mirror: Option[cstring] = none(cstring)): Client =
   result = Client()
+  result.clientId = clientId
   result.users = users
   result.mirror = mirror
 
