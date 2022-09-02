@@ -26,9 +26,9 @@ suite "ListenBrainz source":
 
     test "Convert `seq[Listen]` to `seq[APIListen]` with `toMirror = true`":
       let
-        listens = @[newListen(cstring trackName, cstring artistName, listenedAt = listenedAt, mirrored = some false, preMirror = some false), newListen(cstring trackName, cstring artistName, listenedAt = listenedAt, mirrored = some true, preMirror = some false)]
+        listens = @[newListen(cstring trackName, cstring artistName, listenedAt = listenedAt), newListen(cstring trackName, cstring artistName, listenedAt = listenedAt)]
         apiListens = @[newAPIListen(listenedAt = listenedAt, trackMetadata = newTrackMetadata(trackName, artistName))]
-        newAPIListens = to(listens, toMirror = true)
+        newAPIListens = to(listens)
       check newAPIListens[0] == apiListens[0]
 
     test "Convert `Listen` to `APIListen` to `Listen`":
@@ -41,9 +41,8 @@ suite "ListenBrainz source":
     test "Convert `APIListen` to `Listen`":
       let
         apiListen = newAPIListen(trackMetadata = newTrackMetadata(trackName, artistName))
-        preMirror = some true
-        listen = newListen(cstring trackName, cstring artistName, preMirror = preMirror)
-        newListen = to(apiListen, preMirror)
+        listen = newListen(cstring trackName, cstring artistName)
+        newListen = to(apiListen)
       check listen == newListen
 
     test "Convert `seq[APIListen]` to `seq[Listen]`":
@@ -56,8 +55,7 @@ suite "ListenBrainz source":
     test "Convert `APIListen` to `Listen` to `APIListen`":
       let
         apiListen = newAPIListen(trackMetadata = newTrackMetadata(trackName, artistName))
-        preMirror = some true
-        listen = to(apiListen, preMirror)
+        listen = to(apiListen)
         newAPIListen = to listen
       check apiListen == newAPIListen
 
@@ -68,10 +66,10 @@ suite "ListenBrainz source":
         username = cstring os.getEnv("LISTENBRAINZ_USER")
 
     test "Get now playing":
-      let nowPlaying = waitFor lb.getNowPlaying(username, preMirror = false)
+      let nowPlaying = waitFor lb.getNowPlaying(username)
 
     test "Get recent tracks":
-      let recentTracks = waitFor lb.getRecentTracks(username, preMirror = false)
+      let recentTracks = waitFor lb.getRecentTracks(username)
       check recentTracks.len == 100
 
     test "Initialise user":
@@ -88,8 +86,8 @@ suite "ListenBrainz source":
     #   discard lb.pageUser(user, endInt, inc)
     #   check endInt == 20
 
-    ## Cannot be tested outside JS backend
+    # # Cannot be tested outside JS backend
     # test "Submit mirror queue":
     #   var user = newUser(userId = username, services = [Service.listenBrainzService: newServiceUser(Service.listenBrainzService, username), Service.lastFmService: newServiceUser(Service.lastFmService)])
-    #   user.listenHistory = @[newListen("track 1", "artist", preMirror = some false, mirrored = some false)]
+    #   user.listenHistory = @[newListen("track 1", "artist")]
     #   discard lb.submitMirrorQueue(user)
