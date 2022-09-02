@@ -12,6 +12,7 @@ import
 
 const
   CLIENT_DB_STORE*: cstring = "clients"
+  CLIENT_ID*: cstring = "session"
   USER_DB_STORE*: cstring = "users"
 
 var
@@ -19,7 +20,7 @@ var
   clients*: Table[cstring, Client] = initTable[cstring, Client]()
   users*: Table[cstring, User] = initTable[cstring, User]()
 
-proc getTable*[T](db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions): Future[Table[cstring, T]] {.async.} =
+proc getTable*[T](db: IndexedDB, dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")): Future[Table[cstring, T]] {.async.} =
   ## Gets objects from a given IndexedDB location and store in a Table.
   result = initTable[cstring, T]()
   try:
@@ -30,7 +31,7 @@ proc getTable*[T](db: IndexedDB, dbStore: cstring, dbOptions: IDBOptions): Futur
   except:
     logError "Failed to get stored objects."
 
-proc storeUser*[T](db: IndexedDB, obj: T, objs: var Table[cstring, T], dbStore: cstring, dbOptions: IDBOptions) {.async.} =
+proc storeTable*[T](db: IndexedDB, obj: T, objs: var Table[cstring, T], dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")) {.async.} =
   ## Stores an object in a given store in IndexedDB.
   objs[obj.id] = obj
   try:
