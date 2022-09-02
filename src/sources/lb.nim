@@ -8,7 +8,7 @@ import
   pkg/[listenbrainz, union],
   pkg/listenbrainz/utils/api,
   pkg/listenbrainz/core,
-  types, utils
+  types, utils, pure
 
 include pkg/listenbrainz/utils/tools
 
@@ -80,11 +80,10 @@ proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): F
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let username = cstring toLower($username)
-  var user = newUser(username, Service.listenBrainzService, token)
-  user.lastUpdateTs = int toUnix getTime()
-  user.playingNow = await lb.getNowPlaying(username)
-  user.listenHistory = await lb.getRecentTracks(username)
-  return user
+  result = newUser(username, Service.listenBrainzService, token)
+  result.lastUpdateTs = int toUnix getTime()
+  result.playingNow = await lb.getNowPlaying(username)
+  result.listenHistory = await lb.getRecentTracks(username)
 
 proc updateUser*(lb: AsyncListenBrainz, user: User, resetLastUpdate = false): Future[User] {.async.} =
   ## Updates ListenBrainz user's history.
@@ -136,12 +135,11 @@ proc submitMirrorQueue*(lb: AsyncListenBrainz, user: var User) {.async.} =
       user.submitQueue.playingNow = none Listen
     except HttpRequestError:
       logError("There was a problem submitting your now playing!")
-  else:
-    if user.submitQueue.listens.len > 0:
-      try:
-        let payload = newSubmitListens(listenType = ListenType.import, to(user.submitQueue.listens))
-        discard lb.submitListens(payload)
-        user.lastSubmissionTs = user.submitQueue.listens[0].listenedAt
-        user.submitQueue.listens = @[]
-      except HttpRequestError:
-        logError("There was a problem submitting your listens!")
+  if user.submitQueue.listens.len > 0:
+    try:
+      let payload = newSubmitListens(listenType = ListenType.import, to(user.submitQueue.listens))
+      discard lb.submitListens(payload)
+      user.lastSubmissionTs = user.submitQueue.listens[0].listenedAt
+      user.submitQueue.listens = @[]
+    except HttpRequestError:
+      logError("There was a problem submitting your listens!")
