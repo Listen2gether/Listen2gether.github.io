@@ -255,7 +255,7 @@ proc submitMirrorQueue*(fm: AsyncLastFM, user: var User) {.async.} =
       logError("There was a problem submitting your now playing!")
   if user.submitQueue.listens.len > 0:
     try:
-      discard fm.scrobbleTracks scrobbles
+      discard fm.scrobbleTracks to(user.submitQueue.listens)
       user.lastSubmissionTs = user.submitQueue.listens[0].listenedAt
       user.submitQueue.listens = @[]
     except:
