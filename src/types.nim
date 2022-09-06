@@ -19,7 +19,6 @@ type
     of lastFmService:
       sessionKey*: cstring
     lastUpdateTs*: int
-    selected*: bool
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
 
@@ -44,7 +43,6 @@ func newUser*(
   service: Service,
   token, sessionKey: cstring = "",
   lastUpdateTs: int = 0,
-  selected: bool = false,
   playingNow: Option[Listen] = none(Listen),
   listenHistory: seq[Listen] = @[]): User =
   ## Create new User object
@@ -57,7 +55,6 @@ func newUser*(
   of lastFmService:
     result.sessionKey = sessionKey
   result.lastUpdateTs = lastUpdateTs
-  result.selected = selected
   result.playingNow = playingNow
   result.listenHistory = listenHistory
 

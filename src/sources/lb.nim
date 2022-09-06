@@ -81,11 +81,11 @@ proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, 
   except HttpRequestError:
     logError("There was a problem getting $#'s listens!" % $username)
 
-proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = "", selected = false): Future[User] {.async.} =
+proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): Future[User] {.async.} =
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let username = cstring toLower($username)
-  var user = newUser(username, Service.listenBrainzService, token, selected = selected)
+  var user = newUser(username, Service.listenBrainzService, token)
   user.lastUpdateTs = int toUnix getTime()
   user.playingNow = await lb.getNowPlaying(username, preMirror = true)
   user.listenHistory = await lb.getRecentTracks(username, preMirror = true)
