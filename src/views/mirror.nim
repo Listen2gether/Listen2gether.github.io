@@ -117,13 +117,6 @@ proc renderListens*(playingNow: Option[Listen], listenHistory: seq[Listen], endI
                 hr()
           renderListen listen
 
-proc timeToUpdate(lastUpdateTs, ms: int): bool =
-  ## Returns true if it is time to update the user again.
-  let
-    currentTs = int toUnix getTime()
-    nextUpdateTs = lastUpdateTs + (ms div 1000)
-  if currentTs >= nextUpdateTs: return true
-
 proc setTimeoutAsync(ms: int): Future[void] =
   let promise = newPromise() do (res: proc(): void):
     discard setTimeout(res, ms)
