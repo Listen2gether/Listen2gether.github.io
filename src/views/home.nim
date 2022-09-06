@@ -62,8 +62,22 @@ var
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
+proc restoreClient*(db: IndexedDB, client: Client) {.async.} =
+  ## Restores a given client session.
+  for id in client.users:
+    if users[id]:
+      users[id] = await updateUser(users[id])
+    else:
+      users[id] = await initUser(*decodeUserId(id))
+  if users[client.mirror]:
+    users[client.mirror] = await updateUser(users[client.mirror])
+  else:
+    users[id] = await initUser(*decodeUserId(id))
+
 proc getClients(db: IndexedDB, view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets the client session from IndexedDB, stores in `clients`, sets `OnboardView` if there are existing, valid client sessions.
+  # get client table
+  # restore the session
 
 proc getUsers(db: IndexedDB, view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
@@ -86,14 +100,14 @@ proc loadMirror(user: User) =
 
 proc validateMirror(username: cstring, service: Service) {.async.} =
   ## Validates and gets now playing for user.
-  var user = newUser(username, service, selected = true)
+  var user = newUser(username, service)
   mirrorUsers[user.id] = user
   try:
     case service:
     of Service.listenBrainzService:
-      user = await lbClient.initUser(username, selected = true)
+      user = await lbClient.initUser(username)
     of Service.lastFmService:
-      user = await fmClient.initUser(username, selected = true)
+      user = await fmClient.initUser(username)
     discard db.storeTable[User](user, mirrorUsers, mirrorUsersDbStore)
     mirrorErrorMessage = ""
     loadMirror(user)
@@ -149,7 +163,7 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
   if res.valid:
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
-    let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
+    let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
     discard db.storeTable[User](clientUser, clientUsers, clientUsersDbStore)
     discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
@@ -167,7 +181,7 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
 proc validateFMSession(user: User, newUser = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
   try:
-    let clientUser = await fmClient.initUser(user.username, user.sessionKey, selected = true)
+    let clientUser = await fmClient.initUser(user.username, user.sessionKey)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     discard db.storeTable[User](clientUser, clientUsers, clientUsersDbStore)
@@ -187,8 +201,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
 proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
   ## Renders stored users, `mirror` should be true if rendering mirror users.
   var
-    serviceIconId: cstring
-    buttonClass: cstring
+    serviceIconId, buttonClass: cstring
   result = buildHtml(tdiv(id = "stored-users")):
     for id, user in storedUsers.pairs:
       buttonClass = "row"
