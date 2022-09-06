@@ -1,3 +1,7 @@
+## Mirror view module
+## Manages the mirror view for the web app, handling mirroring of users.
+##
+
 import
   std/[dom, times, options, asyncjs, sequtils, strutils, uri, tables],
   pkg/karax/[karax, karaxdsl, vdom, jstrutils],
@@ -7,10 +11,14 @@ import
 
 type
   MirrorView = enum
-    login, mirroring
+    ## Stores the state for the mirror page.
+    ## There are two states:
+    ##  - `onboard`: The client user must be onboarded.
+    ##  - `mirror`: The client user is mirroring another user.
+    onboard, mirror
 
 var
-  mirrorView = MirrorView.login
+  mirrorView = MirrorView.onboard
   mirrorid: cstring = ""
   listenEndInd: int = 10
   mirrorToggle = true
@@ -168,7 +176,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
     if clientids.len > 0:
       if mirrorUsers[mirrorid].id in clientids:
         mirrorToggle = false
-      mirrorView = MirrorView.mirroring
+      mirrorView = MirrorView.mirror
     case mirrorUsers[mirrorid].service:
     of Service.listenBrainzService:
       userUrl = lb.userBaseUrl & username
@@ -184,9 +192,9 @@ proc mirror*(username: cstring, service: Service): Vnode =
       mirrorSwitch()
     main:
       case mirrorView:
-      of MirrorView.login:
+      of MirrorView.onboard:
         onboardModal(mirrorModal = false)
-      of MirrorView.mirroring:
+      of MirrorView.mirror:
         if not polling:
           discard longPoll()
         renderListens(mirrorUsers[mirrorid].playingNow, mirrorUsers[mirrorid].listenHistory, listenEndInd)
@@ -204,7 +212,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
     of Service.lastFmService:
       mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
-    mirrorView = MirrorView.login
+    mirrorView = MirrorView.onboard
     globalView = ClientView.mirrorView
   else:
     try:
@@ -214,7 +222,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       of Service.lastFmService:
         mirrorUsers[mirrorid] = await fmClient.initUser(username)
       discard db.storeUser(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
-      mirrorView = MirrorView.login
+      mirrorView = MirrorView.onboard
       globalView = ClientView.mirrorView
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"
