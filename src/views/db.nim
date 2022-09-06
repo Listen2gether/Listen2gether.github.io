@@ -1,7 +1,7 @@
 ## Database module
 ## The web app's database structure is as follows:
-## - Client table: stores one client object per session.
-## - User table: stores users used by a client object.
+## - `Client` table: stores client sessions.
+## - `User` table: stores users referenced by a client session.
 ##
 
 import
