@@ -1,3 +1,7 @@
+## Home view module
+## Manages the home view for the web app, onboarding users to the mirror page.
+##
+
 {.experimental: "overloadableEnums".}
 
 import
@@ -14,35 +18,62 @@ import
 
 type
   OnboardView* = enum
+    ## Stores the state for the onboarding modal.
+    ## There are three states:
+    ##  - `initialise`: a new session is being initialised or an existing one is being restored.
+    ##  - `onboard`: a new session is being onboarded.
+    ##  - `loading`:  the user is being transferred to the mirror page.
     initialise, onboard, loading
-  ModalView = enum
-    newUser, returningUser
+  UserView = enum
+    ## Stores the state for the user modal:
+    ## There are two states:
+    ##  - `newUser`: a new user is being authenticated.
+    ##  - `existing`: an existing user is selected.
+    newUser, existing
   ServiceView = enum
+    ## Stores the state for the service selection view:
+    ## There are four states:
+    ##  - `selection`: all services are shown to be chosen from.
+    ##  - `loading`: a service is loading something, such as a token.
+    ##  - `listenBrainzService`: the ListenBrainz service authentication modal will be shown.
+    ##  - `lastFmService`: the Last.fm service authentication modal will be shown.
     selection, loading, listenBrainzService, lastFmService
   LastFmAuthView = enum
+    ## Stores the state for the Last.fm authentication view:
+    ## There are two states:
+    ##  - `signin`: The user is provided a link to sign-in on Last.fm.
+    ##  - `authorise`: The user is provided with a button to authorise the session.
     signin, authorise
   LastFMSessionView = enum
-    loading, success, retry
+    ## Stores the state for the Last.fm authentication view at the final step of retrieving the authenticated session.
+    ## There are three states:
+    ##  - `loading`: The session is being authorised.
+    ##  - `success`: The session has been authorised.
+    ##  - `fail`: The session has not been authorised.
+    loading, success, fail
 
 var
   onboardView* = OnboardView.initialise
-  loginView = ModalView.newUser
+  loginView = UserView.newUser
   serviceView = ServiceView.selection
   lastFmAuthView = LastFmAuthView.signin
   lastFMSessionView = LastFMSessionView.loading
-  mirrorUserView = ModalView.newUser
+  mirrorUserView = UserView.newUser
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
-proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
+proc getClients(db: IndexedDB, view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
+  ## Gets the client session from IndexedDB, stores in `clients`, sets `OnboardView` if there are existing, valid client sessions.
+
+proc getUsers(db: IndexedDB, view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
     let users = await db.getTable[User](dbStore)
     if users.len != 0:
       storedUsers = users
-      view = ModalView.returningUser
+      view = UserView.existing
     else:
-      view = ModalView.newUser
+      view = UserView.newUser
     redraw()
   except:
     logError "Failed to get client users from IndexedDB."
@@ -81,7 +112,7 @@ proc onMirrorClick(ev: Event; n: VNode) =
     mirrorService: Service
 
   case mirrorUserView:
-  of ModalView.newUser:
+  of UserView.newUser:
     if selectedMirrorIds.len > 0:
       mirrorUsers[selectedMirrorIds[0]].selected = false
     mirrorUsername = getElementById("username-input").value
@@ -95,7 +126,7 @@ proc onMirrorClick(ev: Event; n: VNode) =
       onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
-  of ModalView.returningUser:
+  of UserView.existing:
     if selectedMirrorIds.len == 1 and mirrorUsers.hasKey(selectedMirrorIds[0]) and selectedClientIds.len > 0:
       mirrorUsername = mirrorUsers[selectedMirrorIds[0]].username
       mirrorService = mirrorUsers[selectedMirrorIds[0]].service
@@ -213,7 +244,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     lastFmSessionView = LastFmSessionView.loading
   except:
     clientErrorMessage = "Authorisation failed!"
-    lastFmSessionView = LastFmSessionView.retry
+    lastFmSessionView = LastFmSessionView.fail
     redraw()
 
 proc handleVisibilityChange(ev: Event) =
@@ -246,13 +277,13 @@ proc lastFmModal*: Vnode =
           img(class = "lfm-auth-status", src = "/assets/spinner.svg")
         of LastFMSessionView.success:
           img(class = "lfm-auth-status", src = "/assets/mirrored.svg")
-        of LastFMSessionView.retry:
+        of LastFMSessionView.fail:
           img(class = "lfm-auth-status", src = "/assets/retry.svg")
         proc onclick(ev: Event; n: VNode) =
-          if lastFmSessionView == LastFMSessionView.retry:
+          if lastFmSessionView == LastFMSessionView.fail:
             discard fmClient.getLFMSession()
 
-proc returnButton*(loginView: var ModalView, serviceView: var ServiceView): Vnode =
+proc returnButton*(loginView: var UserView, serviceView: var ServiceView): Vnode =
   ## Renders the return button.
   result = buildHtml(tdiv):
     button(id = "return", class = "row login-button"):
@@ -261,7 +292,7 @@ proc returnButton*(loginView: var ModalView, serviceView: var ServiceView): Vnod
       proc onclick(ev: Event; n: VNode) =
         serviceView = ServiceView.selection
         if clientUsers.len > 0:
-          loginView = ModalView.returningUser
+          loginView = UserView.existing
 
 proc listenBrainzModal*: Vnode =
   ## Renders the ListenBrainz authorisation modal.
@@ -307,7 +338,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
 proc loginModal: Vnode =
   result = buildHtml(tdiv):
     case loginView:
-    of ModalView.newUser:
+    of UserView.newUser:
       tdiv(id = "service-modal-container"):
         p(id = "modal-text", class = "body"):
           text "Login to your service:"
@@ -325,28 +356,28 @@ proc loginModal: Vnode =
           errorModal clientErrorMessage
           lastFmModal()
           returnButton(loginView, serviceView)
-    of ModalView.returningUser:
+    of UserView.existing:
       p(id = "modal-text", class = "body"):
         text "Welcome!"
       tdiv(id = "returning-user"):
         a(id = "link"):
           text "Add another account?"
           proc onclick(ev: Event; n: VNode) =
-            loginView = ModalView.newUser
+            loginView = UserView.newUser
         renderUsers(clientUsers, clientUsersDbStore)
         errorModal clientErrorMessage
 
-proc mirrorUserModal(view: var ModalView): Vnode =
+proc mirrorUserModal(view: var UserView): Vnode =
   ## Renders the mirror user selection modal.
   result = buildHtml(tdiv(id = "mirror-modal")):
     case mirrorUserView:
-    of ModalView.newUser:
+    of UserView.newUser:
       p(id = "modal-text", class = "body"):
         text "Enter a username and select a service."
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirrorClick)
         serviceToggle()
-    of ModalView.returningUser:
+    of UserView.existing:
       p(id = "modal-text", class = "body"):
         text "Select a user to mirror..."
       a(id = "link"):
@@ -356,7 +387,7 @@ proc mirrorUserModal(view: var ModalView): Vnode =
           if selectedIds.len == 1:
             mirrorUsers[selectedIds[0]].selected = false
             discard db.storeTable[User](mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
-          view = ModalView.newUser
+          view = UserView.newUser
       renderUsers(mirrorUsers, mirrorUsersDbStore, mirror = true)
     errorModal(mirrorErrorMessage)
     button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
@@ -367,6 +398,8 @@ proc onboardModal*(mirrorModal = true): Vnode =
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
+      # TODO: get client and initialise
+
       discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
       if mirrorModal:
         discard db.getUsers(mirrorUserView, mirrorUsers, mirrorUsersDbStore)
