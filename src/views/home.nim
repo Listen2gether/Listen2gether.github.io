@@ -37,7 +37,7 @@ var
 proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
-    let users = await db.getUsers(dbStore)
+    let users = await db.getTable[User](dbStore)
     if users.len != 0:
       storedUsers = users
       view = ModalView.returningUser
@@ -63,7 +63,7 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
       user = await lbClient.initUser(username, selected = true)
     of Service.lastFmService:
       user = await fmClient.initUser(username, selected = true)
-    discard db.storeUser(user, mirrorUsers, mirrorUsersDbStore)
+    discard db.storeTable[User](user, mirrorUsers, mirrorUsersDbStore)
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
@@ -119,7 +119,7 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.storeTable[User](clientUser, clientUsers, clientUsersDbStore)
     discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
     if newUser:
@@ -139,7 +139,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
     let clientUser = await fmClient.initUser(user.username, user.sessionKey, selected = true)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.storeTable[User](clientUser, clientUsers, clientUsersDbStore)
     discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   except:
     if newUser:
@@ -171,14 +171,14 @@ proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mi
           let id = n.id
           if storedUsers[id].selected:
             storedUsers[id].selected = false
-            discard db.storeUser(storedUsers[id], storedUsers, userDbStore)
+            discard db.storeTable[User](storedUsers[id], storedUsers, userDbStore)
           else:
             if mirror:
               let selectedIds = getSelectedIds(mirrorUsers)
               if selectedIds.len > 0:
                 storedUsers[selectedIds[0]].selected = false
               storedUsers[id].selected = true
-              discard db.storeUser(storedUsers[id], storedUsers, userDbStore)
+              discard db.storeTable[User](storedUsers[id], storedUsers, userDbStore)
             else:
               storedUsers[id].selected = true
               case storedUsers[id].service
@@ -206,7 +206,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     clientErrorMessage = ""
     fmToken = ""
     let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
+    discard db.storeTable[User](clientUser, clientUsers, clientUsersDbStore)
     discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
     lastFmSessionView = LastFmSessionView.success
     serviceView = ServiceView.selection
@@ -355,7 +355,7 @@ proc mirrorUserModal(view: var ModalView): Vnode =
           let selectedIds = getSelectedIds(mirrorUsers)
           if selectedIds.len == 1:
             mirrorUsers[selectedIds[0]].selected = false
-            discard db.storeUser(mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
+            discard db.storeTable[User](mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
           view = ModalView.newUser
       renderUsers(mirrorUsers, mirrorUsersDbStore, mirror = true)
     errorModal(mirrorErrorMessage)
