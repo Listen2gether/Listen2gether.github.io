@@ -103,11 +103,7 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
   var user = newUser(username, service)
   mirrorUsers[user.id] = user
   try:
-    case service:
-    of Service.listenBrainzService:
-      user = await lbClient.initUser(username)
-    of Service.lastFmService:
-      user = await fmClient.initUser(username)
+    user = await initUser(username, service)
     discard db.storeTable[User](user, mirrorUsers, mirrorUsersDbStore)
     mirrorErrorMessage = ""
     loadMirror(user)
