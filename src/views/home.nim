@@ -25,7 +25,7 @@ type
     initialise, onboard, loading
   UserView = enum
     ## Stores the state for the user modal:
-    ##  - `newUser`: a new user is being authenticated.
+    ##  - `newUser`: a new user is being selected.
     ##  - `existing`: an existing user is selected.
     newUser, existing
   ServiceView = enum
@@ -49,7 +49,7 @@ type
 
 var
   onboardView* = OnboardView.initialise
-  loginView = UserView.newUser
+  authView = UserView.newUser
   serviceView = ServiceView.selection
   lastFmAuthView = LastFmAuthView.signin
   lastFMSessionView = LastFMSessionView.loading
@@ -64,7 +64,7 @@ proc restoreSession*(client: Session) {.async.} =
   updateOrInitUser(client.mirror)
 
 proc getSessions(view: var UserView, storedSessions: var Table[cstring, Session], dbStore = SESSIon_DB_STORE) {.async.} =
-  ## Gets the client session from IndexedDB, stores in `sessions`, sets `OnboardView` if there are existing, valid client sessions.
+  ## Gets the app session from IndexedDB, stores in `sessions`, sets `OnboardView` if there are existing, valid app sessions.
   try:
     let res = await get[Session](dbStore)
     if res.len != 0:
@@ -159,7 +159,7 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
     lbClient = newAsyncListenBrainz($token)
     let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
     discard store[User](clientUser, clientUsers, clientUsersDbStore)
-    discard getUsers(loginView, clientUsers, clientUsersDbStore)
+    discard getUsers(authView, clientUsers, clientUsersDbStore)
   else:
     if newUser:
       clientErrorMessage = "Please enter a valid token!"
@@ -179,7 +179,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
     discard store[User](clientUser, clientUsers, clientUsersDbStore)
-    discard getUsers(loginView, clientUsers, clientUsersDbStore)
+    discard getUsers(authView, clientUsers, clientUsersDbStore)
   except:
     if newUser:
       clientErrorMessage = "Authorisation failed!"
@@ -243,7 +243,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fmToken = ""
     let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
     discard store[User](clientUser, clientUsers, clientUsersDbStore)
-    discard getUsers(loginView, clientUsers, clientUsersDbStore)
+    discard getUsers(authView, clientUsers, clientUsersDbStore)
     lastFmSessionView = LastFmSessionView.success
     serviceView = ServiceView.selection
     lastFmSessionView = LastFmSessionView.loading
@@ -288,7 +288,7 @@ proc lastFmModal*: Vnode =
           if lastFmSessionView == LastFMSessionView.fail:
             discard fmClient.getLFMSession()
 
-proc returnButton*(loginView: var UserView, serviceView: var ServiceView): Vnode =
+proc returnButton*(authView: var UserView, serviceView: var ServiceView): Vnode =
   ## Renders the return button.
   result = buildHtml(tdiv):
     button(id = "return", class = "row login-button"):
@@ -297,7 +297,7 @@ proc returnButton*(loginView: var UserView, serviceView: var ServiceView): Vnode
       proc onclick(ev: Event; n: VNode) =
         serviceView = ServiceView.selection
         if clientUsers.len > 0:
-          loginView = UserView.existing
+          authView = UserView.existing
 
 proc listenBrainzModal*: Vnode =
   ## Renders the ListenBrainz authorisation modal.
@@ -307,7 +307,7 @@ proc listenBrainzModal*: Vnode =
     tdiv(id = "button-modal"):
       button(id = "listenbrainz-token", class = "row login-button", onclick = onLBTokenEnter):
         text "🆗"
-      returnButton(loginView, serviceView)
+      returnButton(authView, serviceView)
 
 proc getLFMToken(fm: AsyncLastFM) {.async.} =
   ## Gets a Last.fm token to be authorised.
@@ -342,7 +342,7 @@ proc serviceModal*(view: var ServiceView): Vnode =
 
 proc loginModal: Vnode =
   result = buildHtml(tdiv):
-    case loginView:
+    case authView:
     of UserView.newUser:
       tdiv(id = "service-modal-container"):
         p(id = "modal-text", class = "body"):
@@ -360,7 +360,7 @@ proc loginModal: Vnode =
         of ServiceView.lastFmService:
           errorModal clientErrorMessage
           lastFmModal()
-          returnButton(loginView, serviceView)
+          returnButton(authView, serviceView)
     of UserView.existing:
       p(id = "modal-text", class = "body"):
         text "Welcome!"
@@ -368,7 +368,7 @@ proc loginModal: Vnode =
         a(id = "link"):
           text "Add another account?"
           proc onclick(ev: Event; n: VNode) =
-            loginView = UserView.newUser
+            authView = UserView.newUser
         renderUsers(clientUsers, clientUsersDbStore)
         errorModal clientErrorMessage
 
@@ -403,9 +403,9 @@ proc onboardModal*(mirrorModal = true): Vnode =
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
-      # TODO: use client to display users in modals
-      discard getClients(loginView)
-      discard getUsers(loginView, clientUsers, clientUsersDbStore)
+      # TODO: use session to display users in modals
+      discard getSessions(authView)
+      discard getUsers(authView, clientUsers, clientUsersDbStore)
       if mirrorModal:
         discard getUsers(mirrorUserView, mirrorUsers, mirrorUsersDbStore)
       loadingModal "Loading users..."
