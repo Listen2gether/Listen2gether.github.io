@@ -1,4 +1,4 @@
-## Client module
+## App module
 ## This module is where the web app is rendered.
 ##
 
@@ -60,26 +60,26 @@ proc footerSection: Vnode =
     darkModeToggle()
 
 proc backButton(ev: Event) =
-  globalView = ClientView.home
+  globalView = AppView.home
   onboardView = OnboardView.initialise
   redraw()
 
 proc createDom: VNode =
   ## Renders the web app.
   window.addEventListener("popstate", backButton)
-  if globalView == ClientView.home and window.location.pathname == "/mirror":
+  if globalView == AppView.home and window.location.pathname == "/mirror":
     (mirrorUsername, mirrorService) = mirrorRoute()
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
-    of ClientView.home:
+    of AppView.home:
       home()
-    of ClientView.loading:
+    of AppView.loading:
       main:
         loadingModal "Loading " & mirrorUsername & "'s listens..."
-    of ClientView.error:
+    of AppView.error:
       errorSection mirrorErrorMessage
-    of ClientView.mirror:
+    of AppView.mirror:
       mirror(mirrorUsername, mirrorService)
     footerSection()
 

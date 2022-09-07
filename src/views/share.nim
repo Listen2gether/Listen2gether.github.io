@@ -10,7 +10,7 @@ import
   types, db
 
 type
-  ClientView* = enum
+  AppView* = enum
     ## Stores the overarching state for the webapp:
     ##  - `home`: the home page view is shown.
     ##  - `mirror`: the mirror page view is shown.
@@ -19,7 +19,7 @@ type
     home, mirror, loading, error
 
 var
-  globalView*: ClientView = ClientView.home
+  globalView*: AppView = AppView.home
   fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
   lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
