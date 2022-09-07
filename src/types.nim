@@ -1,8 +1,8 @@
 import std/options
 
 type
-  Client* = ref object
-    ## Stores client state, including a `seq` of user IDs, and optionally a mirror user ID.
+  Session* = ref object
+    ## Stores session state, including a `seq` of user IDs, and optionally a mirror user ID.
     id*: cstring
     users*: seq[cstring]
     mirror*: Option[cstring]
@@ -29,11 +29,11 @@ type
     trackNumber*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
-func newClient*(
+func newSession*(
   id: cstring = "session",
   users: seq[cstring] = @[],
-  mirror: Option[cstring] = none(cstring)): Client =
-  result = Client()
+  mirror: Option[cstring] = none(cstring)): Session =
+  result = Session()
   result.id = id
   result.users = users
   result.mirror = mirror

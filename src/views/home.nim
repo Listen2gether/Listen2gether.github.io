@@ -57,25 +57,25 @@ var
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
-proc restoreClient*(client: Client) {.async.} =
+proc restoreSession*(client: Session) {.async.} =
   ## Restores a given client session by updating and initialising users
   for id in client.users:
     updateOrInitUser(id)
   updateOrInitUser(client.mirror)
 
-proc getClients(view: var UserView, dbStore = CLIENT_DB_STORE) {.async.} =
-  ## Gets the client session from IndexedDB, stores in `clients`, sets `OnboardView` if there are existing, valid client sessions.
+proc getSessions(view: var UserView, storedSessions: var Table[cstring, Session], dbStore = CLIENT_DB_STORE) {.async.} =
+  ## Gets the client session from IndexedDB, stores in `sessions`, sets `OnboardView` if there are existing, valid client sessions.
   try:
-    let res = await get[Client](dbStore)
+    let res = await get[Session](dbStore)
     if res.len != 0:
-      clients = res
-      await restoreClient(clients[0])
+      storedSessions = res
+      await restoreSession(sessions[0])
       view = UserView.existing
     else:
       view = UserView.newUser
     redraw()
   except:
-    logError "Failed to get clients from IndexedDB."
+    logError "Failed to get sessions from IndexedDB."
 
 proc getUsers(view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.

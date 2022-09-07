@@ -1,6 +1,6 @@
 ## Database module
 ## The web app's database structure is as follows:
-## - `Client` table: stores client sessions.
+## - `Session` table: stores client sessions.
 ## - `User` table: stores users referenced by a client session.
 ##
 
@@ -11,12 +11,12 @@ import
   types
 
 const
-  CLIENT_DB_STORE*: cstring = "clients"
+  CLIENT_DB_STORE*: cstring = "sessions"
   CLIENT_ID*: cstring = "session"
   USER_DB_STORE*: cstring = "users"
 
 var
-  clients*: Table[cstring, Client] = initTable[cstring, Client]()
+  sessions*: Table[cstring, Session] = initTable[cstring, Session]()
   users*: Table[cstring, User] = initTable[cstring, User]()
 
 proc get*[T](
