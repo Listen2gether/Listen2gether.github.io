@@ -14,7 +14,7 @@ import
   pkg/lastfm/auth,
   sources/[lb, lfm, utils],
   views/share,
-  types
+  types, db
 
 type
   OnboardView* = enum
@@ -60,29 +60,22 @@ var
 proc restoreClient*(client: Client) {.async.} =
   ## Restores a given client session by updating and initialising users
   for id in client.users:
-    if users[id]:
-      store[User](await updateUser(users[id]))
-    else:
-      store[User](await initUser(*decodeUserId(id)))
-  if users[client.mirror]:
-    store[User](await updateUser(users[client.mirror]))
-  else:
-    store[User](await initUser(*decodeUserId(id)))
+    updateOrInitUser(id)
+  updateOrInitUser(client.mirror)
 
 proc getClients(view: var UserView, dbStore = CLIENT_DB_STORE) {.async.} =
   ## Gets the client session from IndexedDB, stores in `clients`, sets `OnboardView` if there are existing, valid client sessions.
-  # get client table
-  # restore the session
   try:
     let res = await get[Client](dbStore)
     if res.len != 0:
       clients = res
+      await restoreClient(clients[0])
       view = UserView.existing
     else:
       view = UserView.newUser
     redraw()
   except:
-    logError "Failed to get client users from IndexedDB."
+    logError "Failed to get clients from IndexedDB."
 
 proc getUsers(view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
@@ -410,9 +403,8 @@ proc onboardModal*(mirrorModal = true): Vnode =
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
-      # TODO: get client and initialise
       # TODO: use client to display users in modals
-
+      discard getClients(loginView)
       discard getUsers(loginView, clientUsers, clientUsersDbStore)
       if mirrorModal:
         discard getUsers(mirrorUserView, mirrorUsers, mirrorUsersDbStore)
