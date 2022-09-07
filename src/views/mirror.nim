@@ -124,7 +124,7 @@ proc setTimeoutAsync(ms: int): Future[void] =
 
 proc longPoll(ms: int = 60000) {.async.} =
   ## Updates the mirror user every 60 seconds and stores to the database
-  if globalView == ClientView.mirrorView:
+  if globalView == ClientView.mirror:
     if not polling:
       polling = true
     if timeToUpdate(mirrorUsers[mirrorid].lastUpdateTs, ms):
@@ -206,7 +206,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
     discard db.storeUser(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
     mirrorView = MirrorView.onboard
-    globalView = ClientView.mirrorView
+    globalView = ClientView.mirror
   else:
     try:
       case service:
@@ -216,13 +216,13 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
         mirrorUsers[mirrorid] = await fmClient.initUser(username)
       discard db.storeUser(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
       mirrorView = MirrorView.onboard
-      globalView = ClientView.mirrorView
+      globalView = ClientView.mirror
     except JsonError:
       mirrorErrorMessage = "There was an error parsing this user's listens!"
-      globalView = ClientView.errorView
+      globalView = ClientView.error
     except:
       mirrorErrorMessage = "The requested user is not valid!"
-      globalView = ClientView.errorView
+      globalView = ClientView.error
   redraw()
 
 proc mirrorRoute*: (cstring, Service) =
@@ -239,17 +239,17 @@ proc mirrorRoute*: (cstring, Service) =
             mirrorService = parseEnum[Service]($params["service"])
           mirrorid = cstring($mirrorService) & ":" & mirrorUsername
           result = (mirrorUsername, mirrorService)
-          if not mirrorUsers.hasKey(mirrorid) and globalView != ClientView.errorView:
-            globalView = ClientView.loadingView
+          if not mirrorUsers.hasKey(mirrorid) and globalView != ClientView.error:
+            globalView = ClientView.loading
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
-            globalView = ClientView.mirrorView
+            globalView = ClientView.mirror
         except ValueError:
           mirrorErrorMessage = "Invalid service!"
-          globalView = ClientView.errorView
+          globalView = ClientView.error
       else:
         mirrorErrorMessage = "Invalid parameters supplied! Links must include both service and user parameters!"
-        globalView = ClientView.errorView
+        globalView = ClientView.error
   else:
     mirrorErrorMessage = "No parameters supplied! Links must include both service and user parameters!"
-    globalView = ClientView.errorView
+    globalView = ClientView.error

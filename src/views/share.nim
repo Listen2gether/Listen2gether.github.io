@@ -11,12 +11,17 @@ import
 
 type
   ClientView* = enum
-    homeView, mirrorView, loadingView, errorView
+    ## Stores the overarching state for the webapp:
+    ##  - `home`: the home page view is shown.
+    ##  - `mirror`: the mirror page view is shown.
+    ##  - `loading`: a loading state is shown.
+    ##  - `error`: an error state is shown.
+    home, mirror, loading, error
 
 var
-  globalView*: ClientView = ClientView.homeView
-  fmClient*: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
-  lbClient*: AsyncListenBrainz = newAsyncListenBrainz()
+  globalView*: ClientView = ClientView.home
+  fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
+  lbClient: AsyncListenBrainz = newAsyncListenBrainz()
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
 
 proc decodeUserId*(id: cstring): (cstring, Service) =

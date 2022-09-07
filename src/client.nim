@@ -1,3 +1,7 @@
+## Client module
+## This module is where the web app is rendered.
+##
+
 import
   std/[dom, strutils],
   pkg/karax/[karax, karaxdsl, vdom, localstorage, jstrutils],
@@ -56,26 +60,26 @@ proc footerSection: Vnode =
     darkModeToggle()
 
 proc backButton(ev: Event) =
-  globalView = ClientView.homeView
+  globalView = ClientView.home
   onboardView = OnboardView.initialise
   redraw()
 
 proc createDom: VNode =
   ## Renders the web app.
   window.addEventListener("popstate", backButton)
-  if globalView == ClientView.homeView and window.location.pathname == "/mirror":
+  if globalView == ClientView.home and window.location.pathname == "/mirror":
     (mirrorUsername, mirrorService) = mirrorRoute()
   result = buildHtml(tdiv):
     headerSection()
     case globalView:
-    of ClientView.homeView:
+    of ClientView.home:
       home()
-    of ClientView.loadingView:
+    of ClientView.loading:
       main:
         loadingModal "Loading " & mirrorUsername & "'s listens..."
-    of ClientView.errorView:
+    of ClientView.error:
       errorSection mirrorErrorMessage
-    of ClientView.mirrorView:
+    of ClientView.mirror:
       mirror(mirrorUsername, mirrorService)
     footerSection()
 
