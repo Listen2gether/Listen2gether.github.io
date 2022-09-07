@@ -58,23 +58,23 @@ var
   fmEventListener, fmSigninClick, fmAway: bool = false
 
 proc restoreClient*(client: Client) {.async.} =
-  ## Restores a given client session.
+  ## Restores a given client session by updating and initialising users
   for id in client.users:
     if users[id]:
-      users[id] = await updateUser(users[id])
+      store[User](await updateUser(users[id]))
     else:
-      users[id] = await initUser(*decodeUserId(id))
+      store[User](await initUser(*decodeUserId(id)))
   if users[client.mirror]:
-    users[client.mirror] = await updateUser(users[client.mirror])
+    store[User](await updateUser(users[client.mirror]))
   else:
-    users[id] = await initUser(*decodeUserId(id))
+    store[User](await initUser(*decodeUserId(id)))
 
 proc getClients(view: var UserView, dbStore = CLIENT_DB_STORE) {.async.} =
   ## Gets the client session from IndexedDB, stores in `clients`, sets `OnboardView` if there are existing, valid client sessions.
   # get client table
   # restore the session
   try:
-    let res = await getTable[Client](dbStore)
+    let res = await get[Client](dbStore)
     if res.len != 0:
       clients = res
       view = UserView.existing
@@ -87,7 +87,7 @@ proc getClients(view: var UserView, dbStore = CLIENT_DB_STORE) {.async.} =
 proc getUsers(view: var UserView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
   ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
   try:
-    let users = await getTable[User](dbStore)
+    let users = await get[User](dbStore)
     if users.len != 0:
       storedUsers = users
       view = UserView.existing
@@ -109,7 +109,7 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
   mirrorUsers[user.id] = user
   try:
     user = await initUser(username, service)
-    discard storeTable[User](user, mirrorUsers, mirrorUsersDbStore)
+    discard store[User](user, mirrorUsers, mirrorUsersDbStore)
     mirrorErrorMessage = ""
     loadMirror(user)
   except:
@@ -165,7 +165,7 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
-    discard storeTable[User](clientUser, clientUsers, clientUsersDbStore)
+    discard store[User](clientUser, clientUsers, clientUsersDbStore)
     discard getUsers(loginView, clientUsers, clientUsersDbStore)
   else:
     if newUser:
@@ -185,7 +185,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
     let clientUser = await fmClient.initUser(user.username, user.sessionKey)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
-    discard storeTable[User](clientUser, clientUsers, clientUsersDbStore)
+    discard store[User](clientUser, clientUsers, clientUsersDbStore)
     discard getUsers(loginView, clientUsers, clientUsersDbStore)
   except:
     if newUser:
@@ -214,14 +214,14 @@ proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mi
           let id = n.id
           if storedUsers[id].selected:
             storedUsers[id].selected = false
-            discard storeTable[User](storedUsers[id], storedUsers, userDbStore)
+            discard store[User](storedUsers[id], storedUsers, userDbStore)
           else:
             if mirror:
               let selectedIds = getSelectedIds(mirrorUsers)
               if selectedIds.len > 0:
                 storedUsers[selectedIds[0]].selected = false
               storedUsers[id].selected = true
-              discard storeTable[User](storedUsers[id], storedUsers, userDbStore)
+              discard store[User](storedUsers[id], storedUsers, userDbStore)
             else:
               storedUsers[id].selected = true
               case storedUsers[id].service
@@ -249,7 +249,7 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     clientErrorMessage = ""
     fmToken = ""
     let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard storeTable[User](clientUser, clientUsers, clientUsersDbStore)
+    discard store[User](clientUser, clientUsers, clientUsersDbStore)
     discard getUsers(loginView, clientUsers, clientUsersDbStore)
     lastFmSessionView = LastFmSessionView.success
     serviceView = ServiceView.selection
@@ -398,7 +398,7 @@ proc mirrorUserModal(view: var UserView): Vnode =
           let selectedIds = getSelectedIds(mirrorUsers)
           if selectedIds.len == 1:
             mirrorUsers[selectedIds[0]].selected = false
-            discard storeTable[User](mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
+            discard store[User](mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
           view = UserView.newUser
       renderUsers(mirrorUsers, mirrorUsersDbStore, mirror = true)
     errorModal(mirrorErrorMessage)

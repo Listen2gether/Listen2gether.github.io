@@ -37,7 +37,7 @@ proc pageListens(ev: Event; n: VNode) =
         discard lbClient.pageUser(mirrorUsers[mirrorid], listenEndInd)
       of Service.lastFmService:
         discard fmClient.pageUser(mirrorUsers[mirrorid], listenEndInd)
-      discard storeTable(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
     else:
       listenEndInd += increment
 
@@ -139,7 +139,7 @@ proc longPoll(ms: int = 60000) {.async.} =
         mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], preMirror = preMirror)
         if mirrorToggle:
           discard fmClient.submitMirrorQueue(mirrorUsers[mirrorid])
-      discard storeTable(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -194,7 +194,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
 
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
-  mirrorUsers = await getTable(mirrorUsersDbStore)
+  mirrorUsers = await get(mirrorUsersDbStore)
   let id: cstring = cstring($service) & ":" & username
   if id in mirrorUsers:
     mirrorUsers[mirrorid] = mirrorUsers[id]
@@ -204,7 +204,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       mirrorUsers[mirrorid] = await lbClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
-    discard storeTable(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+    discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
     mirrorView = MirrorView.onboard
     globalView = ClientView.mirror
   else:
@@ -214,7 +214,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
         mirrorUsers[mirrorid] = await lbClient.initUser(username)
       of Service.lastFmService:
         mirrorUsers[mirrorid] = await fmClient.initUser(username)
-      discard storeTable(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
       mirrorView = MirrorView.onboard
       globalView = ClientView.mirror
     except JsonError:

@@ -19,7 +19,7 @@ var
   clients*: Table[cstring, Client] = initTable[cstring, Client]()
   users*: Table[cstring, User] = initTable[cstring, User]()
 
-proc getTable*[T](
+proc get*[T](
   dbStore: cstring,
   db = newIndexedDB(),
   dbOptions = IDBOptions(keyPath: "id")): Future[Table[cstring, T]] {.async.} =
@@ -33,7 +33,7 @@ proc getTable*[T](
   except:
     logError "Failed to get stored objects."
 
-proc storeTable*[T](
+proc store*[T](
   obj: T,
   objs: var Table[cstring, T],
   dbStore: cstring,
