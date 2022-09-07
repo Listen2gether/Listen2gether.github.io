@@ -63,7 +63,7 @@ proc restoreSession*(client: Session) {.async.} =
     updateOrInitUser(id)
   updateOrInitUser(client.mirror)
 
-proc getSessions(view: var UserView, storedSessions: var Table[cstring, Session], dbStore = CLIENT_DB_STORE) {.async.} =
+proc getSessions(view: var UserView, storedSessions: var Table[cstring, Session], dbStore = SESSIon_DB_STORE) {.async.} =
   ## Gets the client session from IndexedDB, stores in `sessions`, sets `OnboardView` if there are existing, valid client sessions.
   try:
     let res = await get[Session](dbStore)

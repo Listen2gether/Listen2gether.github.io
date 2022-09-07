@@ -1,7 +1,7 @@
 ## Database module
 ## The web app's database structure is as follows:
-## - `Session` table: stores client sessions.
-## - `User` table: stores users referenced by a client session.
+## - `Session` table: stores app sessions.
+## - `User` table: stores users referenced by an app session.
 ##
 
 import
@@ -11,8 +11,8 @@ import
   types
 
 const
-  CLIENT_DB_STORE*: cstring = "sessions"
-  CLIENT_ID*: cstring = "session"
+  SESSION_DB_STORE*: cstring = "sessions"
+  SESSION_ID*: cstring = "session"
   USER_DB_STORE*: cstring = "users"
 
 var
