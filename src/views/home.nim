@@ -18,21 +18,18 @@ import
 
 type
   OnboardView* = enum
-    ## Stores the state for the onboarding modal.
-    ## There are three states:
+    ## Stores the state for the onboarding modal:
     ##  - `initialise`: a new session is being initialised or an existing one is being restored.
     ##  - `onboard`: a new session is being onboarded.
     ##  - `loading`:  the user is being transferred to the mirror page.
     initialise, onboard, loading
   UserView = enum
     ## Stores the state for the user modal:
-    ## There are two states:
     ##  - `newUser`: a new user is being authenticated.
     ##  - `existing`: an existing user is selected.
     newUser, existing
   ServiceView = enum
     ## Stores the state for the service selection view:
-    ## There are four states:
     ##  - `selection`: all services are shown to be chosen from.
     ##  - `loading`: a service is loading something, such as a token.
     ##  - `listenBrainzService`: the ListenBrainz service authentication modal will be shown.
@@ -40,13 +37,11 @@ type
     selection, loading, listenBrainzService, lastFmService
   LastFmAuthView = enum
     ## Stores the state for the Last.fm authentication view:
-    ## There are two states:
     ##  - `signin`: The user is provided a link to sign-in on Last.fm.
     ##  - `authorise`: The user is provided with a button to authorise the session.
     signin, authorise
   LastFMSessionView = enum
-    ## Stores the state for the Last.fm authentication view at the final step of retrieving the authenticated session.
-    ## There are three states:
+    ## Stores the state for the Last.fm authentication view at the final step of retrieving the authenticated session:
     ##  - `loading`: The session is being authorised.
     ##  - `success`: The session has been authorised.
     ##  - `fail`: The session has not been authorised.
