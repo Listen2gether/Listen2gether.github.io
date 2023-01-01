@@ -57,11 +57,17 @@ var
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
-proc restoreSession*(client: Session) {.async.} =
-  ## Restores a given client session by updating and initialising users
-  for id in client.users:
-    updateOrInitUser(id)
-  updateOrInitUser(client.mirror)
+proc restoreSession*(sess: Session) {.async.} =
+  ## Restores a given session by updating and initialising `users`
+  for id in sess.users:
+    try:
+      updateOrInitUser(id)
+    except:
+      logError "Failed to restore user '" & sess.users[id].username & "'."
+  try:
+    updateOrInitUser(sess.mirror)
+  except:
+    logError "Failed to restore mirror user '" & sess.mirror.username & "'."
 
 proc getSessions(auth, mirror: var UserView, storedSessions: var Table[cstring, Session], dbStore = SESSION_DB_STORE) {.async.} =
   ## Gets the app session from IndexedDB and stores, sets `UserView`s if there are existing app sessions.
@@ -149,17 +155,13 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
     clientErrorMessage = ""
     lbClient = newAsyncListenBrainz($token)
     let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token)
-    discard store[User](clientUser, clientUsers, clientUsersDbStore)
-    discard getUsers(authView, clientUsers, clientUsersDbStore)
+    discard store[User](clientUser, users, USER_DB_STORE)
   else:
     if newUser:
       clientErrorMessage = "Please enter a valid token!"
     else:
       clientErrorMessage = "Token no longer valid!"
-      try:
-        discard delete(clientUsersDbStore, id, dbOptions)
-      except:
-        clientUsers.del(id)
+      await delete(id, USER_DB_STORE)
     redraw()
   serviceView = ServiceView.selection
 
@@ -169,8 +171,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
     let clientUser = await fmClient.initUser(user.username, user.sessionKey)
     clientErrorMessage = ""
     fmClient.sk = $user.sessionKey
-    discard store[User](clientUser, clientUsers, clientUsersDbStore)
-    discard getUsers(authView, clientUsers, clientUsersDbStore)
+    discard store[User](clientUser, users, USER_DB_STORE)
   except:
     if newUser:
       clientErrorMessage = "Authorisation failed!"
@@ -178,7 +179,6 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
       clientErrorMessage = "Session no longer valid!"
       # maybe? serviceView = ServiceView.selection
       await delete(user.id, USER_DB_STORE)
-      clientUsers.del(user.id)
     redraw()
 
 proc renderUsers(session: Session, mirror = false): Vnode =
