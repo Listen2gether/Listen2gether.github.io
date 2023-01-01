@@ -37,7 +37,7 @@ jobs:
         run: nimble buildjs
 
       - name: Minify JS
-        run: uglifyjs public/js/client.js -c -o public/js/client.js
+        run: uglifyjs public/js/listen2gether.js -c -o public/js/listen2gether.js
 
       - name: Minify HTML
         run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html
