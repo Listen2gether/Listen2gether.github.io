@@ -8,10 +8,15 @@ type
     mirror*: Option[cstring]
 
   Service* = enum
+    ## Stores the service that the user belongs to:
+    ##  - `listenBrainzService`: user of the ListenBrainz service
+    ##  - `lastFmService`: user of the Last.FM service
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
   User* = ref object
+    ## Stores the user information including the api keys for the service it belongs to.
+    ##  - `lastUpdateTs`: stores the last listen timestamp.
     id*, username*: cstring
     case service*: Service
     of listenBrainzService:
@@ -23,6 +28,9 @@ type
     listenHistory*: seq[Listen]
 
   Listen* = object
+    ## A normalised listen object.
+    ##  - `mirrored`: stores the state of whether a listen to be mirrored has been submitted.
+    ##  - `preMirror`: stores the state of whether a listen was submitted within a mirroring session.
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
