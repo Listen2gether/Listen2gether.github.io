@@ -72,8 +72,8 @@ proc timeToUpdate(lastUpdateTs, ms: int): bool =
 proc decodeUserId*(id: cstring): (cstring, Service) =
   ## Decodes user IDs into username and service enum.
   ## User IDs are stored in the format of `username:service`.
-  split = split($id, ":")
-  return (cstring(split[0]), parseEnum(split[1]))
+  let res = split($id, ":")
+  return (cstring(res[0]), parseEnum(res[1]))
 
 proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
   ## Updates or initialises a `User` and stores given an `id` and `ms` value.
@@ -81,8 +81,10 @@ proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
     if timeToUpdate(users[id].lastUpdateTs, ms):
       case users[id].service:
       of Service.listenBrainzService:
-        store[User](await lbClient.updateUser(users[id]), users, dbStore = USER_DB_STORE)
+        let res = await lbClient.updateUser(users[id])
+        store[User](res, users, dbStore = USER_DB_STORE)
       of Service.lastFmService:
-        store[User](await fmClient.updateUser(users[id]), users, dbStore = USER_DB_STORE)
+        let res = await fmClient.updateUser(users[id])
+        store[User](res, users, dbStore = USER_DB_STORE)
   else:
     store[User](await initUser(&decodeUserId(id)), users, dbStore = USER_DB_STORE)
