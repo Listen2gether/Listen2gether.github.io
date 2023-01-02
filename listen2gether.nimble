@@ -16,6 +16,7 @@ requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 requires "https://gitlab.com/tandy1000/lastfm-nim#refactor"
 requires "jsony"
+requires "https://github.com/treeform/jsutils"
 requires "karax"
 
 task docs, "Generate docs":

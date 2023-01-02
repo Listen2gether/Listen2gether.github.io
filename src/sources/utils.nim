@@ -2,7 +2,7 @@ when defined(js):
   import std/jsconsole
 import
   std/[options, strutils],
-  pkg/union,
+  pkg/[union, jsutils],
   pkg/union/uniontraits
 
 proc unionToInt*[T: Union](val: T): Option[int] =
@@ -63,11 +63,8 @@ func to*(val: Option[cstring]): Option[string] =
     if get(val) != cstring "":
       result = some $get(val)
 
-proc log*(msg: string) =
-  ## Log messages to the JS console or stdout
-  when defined(js):
-    console.log cstring msg
-  else:
-    echo msg
+proc log*(msg: cstring) =
+  ## Log messages to the JS console
+  console.log msg
 
-proc logError*(msg: string) = log "ERROR: " & msg
+proc logError*(msg: cstring) = log "ERROR: " & msg

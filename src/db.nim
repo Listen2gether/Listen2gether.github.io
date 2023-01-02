@@ -7,7 +7,7 @@
 import
   std/[asyncjs, jsffi, tables, sugar, times, strutils],
   pkg/nodejs/jsindexeddb,
-  pkg/[listenbrainz, lastfm],
+  pkg/[listenbrainz, lastfm, jsutils],
   sources/[lb, lfm, utils],
   types
 
@@ -75,8 +75,8 @@ proc timeToUpdate(lastUpdateTs, ms: int): bool =
 proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
   ## Decodes user IDs into username and service enum.
   ## User IDs are stored in the format of `username:service`.
-  let res = split($id, ":")
-  return (cstring(res[0]), parseEnum[Service](res[1]))
+  let res = split(id, ":")
+  return (res[0], parseEnum[Service]($res[1]))
 
 proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
   ## Updates or initialises a `User` and stores given an `id` and `ms` value.
