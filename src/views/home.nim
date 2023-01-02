@@ -61,13 +61,17 @@ proc restoreSession*(sess: Session) {.async.} =
   ## Restores a given session by updating and initialising `users`
   for id in sess.users:
     try:
-      updateOrInitUser(id)
+      await updateOrInitUser(id)
     except:
-      logError "Failed to restore user '" & sess.users[id].username & "'."
-  try:
-    updateOrInitUser(sess.mirror)
-  except:
-    logError "Failed to restore mirror user '" & sess.mirror.username & "'."
+      let err = "Failed to restore user '" & $users[id].username & "'."
+      logError err
+  if sess.mirror.isSome():
+    let mirror = sess.mirror.get()
+    try:
+      await updateOrInitUser(mirror)
+    except:
+      let err = "Failed to restore mirror user '" & $users[mirror].username & "'."
+      logError err
 
 proc getSessions(auth, mirror: var UserView, storedSessions: var Table[cstring, Session], dbStore = SESSION_DB_STORE) {.async.} =
   ## Gets the app session from IndexedDB and stores, sets `UserView`s if there are existing app sessions.
@@ -75,10 +79,10 @@ proc getSessions(auth, mirror: var UserView, storedSessions: var Table[cstring, 
     let res = await get[Session](dbStore)
     if res.len != 0:
       storedSessions = res
-      await restoreSession(storedSessions[0])
-      if storedSessions[0].users.len != 0:
+      await restoreSession(storedSessions[SESSION_ID])
+      if storedSessions[SESSION_ID].users.len != 0:
         auth = UserView.existing
-      if storedSessions[0].mirror.isSome():
+      if storedSessions[SESSION_ID].mirror.isSome():
         mirror = UserView.existing
     else:
       auth = UserView.newUser

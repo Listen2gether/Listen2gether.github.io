@@ -5,9 +5,10 @@
 ##
 
 import
-  std/[asyncjs, jsffi, tables, sugar],
+  std/[asyncjs, jsffi, tables, sugar, times, strutils],
   pkg/nodejs/jsindexeddb,
-  sources/utils,
+  pkg/[listenbrainz, lastfm],
+  sources/[lb, lfm, utils],
   types
 
 const
@@ -26,7 +27,7 @@ proc get*[T](
   ## Gets objects from a given IndexedDB location and store in a Table.
   result = initTable[cstring, T]()
   try:
-    let objStore = await getAll(db, dbStore, dbOptions)
+    let objStore = await db.getAll(dbStore, dbOptions)
     if not objStore.isNil:
       result = collect:
         for obj in to(objStore, seq[T]): {obj.id: obj}
@@ -42,14 +43,14 @@ proc store*[T](
   ## Stores an object in a given store in IndexedDB.
   objs[obj.id] = obj
   try:
-    discard put(db, dbStore, toJs obj, dbOptions)
+    discard db.put(dbStore, toJs obj, dbOptions)
   except:
     logError "Failed to store object."
 
 proc delete*(id, dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")) {.async.} =
   ## Deletes an item given an ID and database store name.`
   try:
-    let res = await db.delete(dbStore, id, dbOptions)
+    await db.delete(dbStore, id, dbOptions)
   except:
     logError "Failed to delete object."
 
@@ -57,8 +58,10 @@ proc initUser*(username: cstring, service: Service): Future[User] {.async.} =
   ## Initialises a `User` object given a `username` and `service`.
   case service:
   of Service.listenBrainzService:
+    let lbClient = newAsyncListenBrainz()
     result = await lbClient.initUser(username)
   of Service.lastFmService:
+    let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
     result = await fmClient.initUser(username)
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
@@ -69,22 +72,26 @@ proc timeToUpdate(lastUpdateTs, ms: int): bool =
     nextUpdateTs = lastUpdateTs + (ms div 1000)
   if currentTs >= nextUpdateTs: return true
 
-proc decodeUserId*(id: cstring): (cstring, Service) =
+proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
   ## Decodes user IDs into username and service enum.
   ## User IDs are stored in the format of `username:service`.
   let res = split($id, ":")
-  return (cstring(res[0]), parseEnum(res[1]))
+  return (cstring(res[0]), parseEnum[Service](res[1]))
 
 proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
   ## Updates or initialises a `User` and stores given an `id` and `ms` value.
-  if users[id]:
+  if users.hasKey(id):
     if timeToUpdate(users[id].lastUpdateTs, ms):
       case users[id].service:
       of Service.listenBrainzService:
+        let lbClient = newAsyncListenBrainz()
         let res = await lbClient.updateUser(users[id])
-        store[User](res, users, dbStore = USER_DB_STORE)
+        await store[User](res, users, dbStore = USER_DB_STORE)
       of Service.lastFmService:
+        let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
         let res = await fmClient.updateUser(users[id])
-        store[User](res, users, dbStore = USER_DB_STORE)
+        await store[User](res, users, dbStore = USER_DB_STORE)
   else:
-    store[User](await initUser(&decodeUserId(id)), users, dbStore = USER_DB_STORE)
+    let user = decodeUserId(id)
+    let res = await initUser(user.username, user.service)
+    await store[User](res, users, dbStore = USER_DB_STORE)
