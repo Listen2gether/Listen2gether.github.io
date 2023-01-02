@@ -29,4 +29,4 @@ task sass, "Generate CSS":
 
 task buildjs, "Compile JS":
   exec "mkdir -p public/js"
-  exec "nim -d:danger -o:public/js/listen2gether.js js src/listen2gether.nim"
+  exec "nim -d:danger -o:public/js/app.js js src/app.nim"
