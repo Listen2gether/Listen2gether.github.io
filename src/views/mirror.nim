@@ -225,7 +225,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       globalView = AppView.error
   redraw()
 
-proc mirrorRoute*: (cstring, Service) =
+proc mirrorRoute*: tuple[username: cstring, service: Service] =
   ## Routes the user to the mirror view.
   let path = $window.location.search
   if path != "":
