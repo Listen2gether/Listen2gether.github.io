@@ -54,6 +54,12 @@ proc delete*(id, dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")) {.asyn
   except:
     logError "Failed to delete object."
 
+proc updateOrInitSession*(session = newSession()) {.async.} =
+  if sessions.hasKey(SESSION_ID):
+    await store[User](session, sessions, dbStore = SESSION_DB_STORE)
+  else:
+    await store[User](session, sessions, dbStore = SESSION_DB_STORE)
+
 proc initUser*(username: cstring, service: Service, token, sessionKey: cstring = "") {.async.} =
   ## Initialises a `User` object given a `username` and `service` and stores.
   case service:

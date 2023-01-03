@@ -372,6 +372,8 @@ proc onboardModal*(mirrorModal = true): Vnode =
     case onboardView:
     of OnboardView.initialise:
       discard getSessions(authView, mirrorUserView, sessions)
+      if sessions.len == 0:
+        discard updateOrInitSession()
       loadingModal "Restoring previous session..."
       onboardView = OnboardView.onboard
     of OnboardView.onboard:
