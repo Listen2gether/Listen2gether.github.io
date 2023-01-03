@@ -20,6 +20,8 @@ type
 
 var
   globalView*: AppView = AppView.home
+  lbClient* = newAsyncListenBrainz()
+  fmClient* = newAsyncLastFM(apiKey, apiSecret)
   clientErrorMessage*, mirrorErrorMessage*: cstring = ""
 
 proc errorModal*(message: cstring): Vnode =

@@ -229,7 +229,6 @@ proc handleVisibilityChange(ev: Event) =
     lastFmAuthView = LastFmAuthView.authorise
     fmEventListener = false
     document.removeEventListener("visibilitychange", handleVisibilityChange)
-    let fmClient = newAsyncLastFM(apiKey, apiSecret)
     discard fmClient.getLFMSession()
   fmAway = document.hidden
 
@@ -258,7 +257,6 @@ proc lastFmModal*: Vnode =
           img(class = "lfm-auth-status", src = "/assets/retry.svg")
         proc onclick(ev: Event; n: VNode) =
           if lastFmSessionView == LastFMSessionView.fail:
-            let fmClient = newAsyncLastFM(apiKey, apiSecret)
             discard fmClient.getLFMSession()
 
 proc returnButton*(authView: var UserView, serviceView: var ServiceView): Vnode =
@@ -311,7 +309,6 @@ proc serviceModal*(view: var ServiceView): Vnode =
           of Service.lastFmService:
             view = ServiceView.loading
             clientErrorMessage = ""
-            let fmClient = newAsyncLastFM(apiKey, apiSecret)
             discard fmClient.getLFMToken()
 
 proc loginModal: Vnode =
