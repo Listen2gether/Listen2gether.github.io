@@ -9,7 +9,7 @@ Scrobble	sources/lfm.html#Scrobble	lfm: Scrobble
 `==`	sources/lfm.html#==,FMTrack,FMTrack	lfm: `==`(a, b: FMTrack): bool	
 `==`	sources/lfm.html#==,Attributes,Attributes	lfm: `==`(a, b: Attributes): bool	
 `==`	sources/lfm.html#==,Scrobble,Scrobble	lfm: `==`(a, b: Scrobble): bool	
-initUser	sources/lfm.html#initUser,AsyncLastFM,cstring,cstring	lfm: initUser(fm: AsyncLastFM; username: cstring; sessionKey: cstring = &quot;&quot;;\n         selected = false): Future[User]	
+initUser	sources/lfm.html#initUser,AsyncLastFM,cstring,cstring	lfm: initUser(fm: AsyncLastFM; username: cstring; sessionKey: cstring = &quot;&quot;): Future[\n    User]	
 updateUser	sources/lfm.html#updateUser,AsyncLastFM,User	lfm: updateUser(fm: AsyncLastFM; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
 pageUser	sources/lfm.html#pageUser,AsyncLastFM,User,int,int	lfm: pageUser(fm: AsyncLastFM; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	
 submitMirrorQueue	sources/lfm.html#submitMirrorQueue,AsyncLastFM,User	lfm: submitMirrorQueue(fm: AsyncLastFM; user: var User): owned(Future[void])	

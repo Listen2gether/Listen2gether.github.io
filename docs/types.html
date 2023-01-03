@@ -11,10 +11,6 @@
 <link rel="shortcut icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AAAAAAUAAAAF////AP///wD///8A////AP///wD///8A////AP///wD///8A////AAAAAAIAAABbAAAAlQAAAKIAAACbAAAAmwAAAKIAAACVAAAAWwAAAAL///8A////AP///wD///8A////AAAAABQAAADAAAAAYwAAAA3///8A////AP///wD///8AAAAADQAAAGMAAADAAAAAFP///wD///8A////AP///wAAAACdAAAAOv///wD///8A////AP///wD///8A////AP///wD///8AAAAAOgAAAJ3///8A////AP///wAAAAAnAAAAcP///wAAAAAoAAAASv///wD///8A////AP///wAAAABKAAAAKP///wAAAABwAAAAJ////wD///8AAAAAgQAAABwAAACIAAAAkAAAAJMAAACtAAAAFQAAABUAAACtAAAAkwAAAJAAAACIAAAAHAAAAIH///8A////AAAAAKQAAACrAAAAaP///wD///8AAAAARQAAANIAAADSAAAARf///wD///8AAAAAaAAAAKsAAACk////AAAAADMAAACcAAAAnQAAABj///8A////AP///wAAAAAYAAAAGP///wD///8A////AAAAABgAAACdAAAAnAAAADMAAAB1AAAAwwAAAP8AAADpAAAAsQAAAE4AAAAb////AP///wAAAAAbAAAATgAAALEAAADpAAAA/wAAAMMAAAB1AAAAtwAAAOkAAAD/AAAA/wAAAP8AAADvAAAA3gAAAN4AAADeAAAA3gAAAO8AAAD/AAAA/wAAAP8AAADpAAAAtwAAAGUAAAA/AAAA3wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAAD/AAAA/wAAAP8AAADfAAAAPwAAAGX///8A////AAAAAEgAAADtAAAAvwAAAL0AAADGAAAA7wAAAO8AAADGAAAAvQAAAL8AAADtAAAASP///wD///8A////AP///wD///8AAAAAO////wD///8A////AAAAAIcAAACH////AP///wD///8AAAAAO////wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A////AP///wD///8A//8AAP//AAD4HwAA7/cAAN/7AAD//wAAoYUAAJ55AACf+QAAh+EAAAAAAADAAwAA4AcAAP5/AAD//wAA//8AAA=="/>
 <link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4QQQEwksSS9ZWwAAAk1JREFUWMPtll2ITVEUx39nn/O7Y5qR8f05wtCUUr6ZIS++8pEnkZInPImneaCQ5METNdOkeFBKUhMPRIkHKfEuUZSUlGlKPN2TrgfncpvmnntnmlEyq1Z7t89/rf9a6+y99oZxGZf/XeIq61EdtgKXgdXA0xrYAvBjOIF1AI9zvjcC74BSpndrJPkBWDScTF8Aa4E3wDlgHbASaANmVqlcCnwHvgDvgVfAJ+AikAAvgfVZwLnSVZHZaOuKoQi3ZOMi4NkYkpe1p4J7A8BpYAD49hfIy/oqG0+hLomiKP2L5L+1ubn5115S+3OAn4EnwBlgMzCjyt6ZAnQCJ4A7wOs88iRJHvw50HoujuPBoCKwHWiosy8MdfZnAdcHk8dxXFJ3VQbQlCTJvRBCGdRbD4M6uc5glpY3eAihpN5S5w12diSEcCCEcKUO4ljdr15T76ur1FDDLIQQ3qv71EdDOe3Kxj3leRXyk+pxdWnFWod6Wt2bY3de3aSuUHcPBVimHs7mK9WrmeOF6lR1o9qnzskh2ar2qm1qizpfXaPeVGdlmGN5pb09qMxz1Xb1kLqgzn1RyH7JUXW52lr5e/Kqi9qpto7V1atuUzfnARrV7jEib1T76gG2qxdGmXyiekkt1GswPTtek0aBfJp6YySGBfWg2tPQ0FAYgf1stUfdmdcjarbYJEniKIq6gY/Aw+zWHAC+p2labGpqiorFYgGYCEzN7oQdQClN07O1/EfDyGgC0ALMBdYAi4FyK+4H3gLPsxfR1zRNi+NP7nH5J+QntnXe5B5mpfQAAAAASUVORK5CYII=">
 
-<!-- Google fonts -->
-<link href='https://fonts.googleapis.com/css?family=Lato:400,600,900' rel='stylesheet' type='text/css'/>
-<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
-
 <!-- CSS -->
 <link rel="stylesheet" type="text/css" href="nimdoc.out.css">
 
@@ -37,7 +33,7 @@
     </div>
     <div id="global-links">
       <ul class="simple">
-        <li><a href="index.html">Index</a></li>
+        <li><a id="indexLink" href="index.html">Index</a></li>
       </ul>
     </div>
     <div id="searchInputDiv">
@@ -63,8 +59,12 @@
   mirrored*, preMirror*: Option[bool]">Listen</a></li>
 <li><a class="reference" href="#Service" title="Service = enum
   listenBrainzService = &quot;listenbrainz&quot;, lastFmService = &quot;lastfm&quot;">Service</a></li>
+<li><a class="reference" href="#Session" title="Session = ref object
+  id*: cstring
+  users*: seq[cstring]
+  mirror*: Option[cstring]">Session</a></li>
 <li><a class="reference" href="#User" title="User = ref object
-  userId*, username*: cstring
+  id*, username*: cstring
   case service*: Service
   of listenBrainzService:
       token*: cstring
@@ -73,7 +73,6 @@
       sessionKey*: cstring
 
   lastUpdateTs*: int
-  selected*: bool
   playingNow*: Option[Listen]
   listenHistory*: seq[Listen]">User</a></li>
 
@@ -103,13 +102,17 @@
           mirrored, preMirror: Option[bool] = none(bool)): Listen</a></li>
 
 </ul>
+<ul class="simple nested-toc-section">newSession
+  <li><a class="reference" href="#newSession%2Ccstring%2Cseq%5Bcstring%5D%2COption%5Bcstring%5D" title="newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
+           mirror: Option[cstring] = none(cstring)): Session">newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
+           mirror: Option[cstring] = none(cstring)): Session</a></li>
+
+</ul>
 <ul class="simple nested-toc-section">newUser
-  <li><a class="reference" href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2Cbool%2COption%5BListen%5D%2Cseq%5BListen%5D" title="newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
-        lastUpdateTs: int = 0; selected: bool = false;
-        playingNow: Option[Listen] = none(Listen);
+  <li><a class="reference" href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2COption%5BListen%5D%2Cseq%5BListen%5D" title="newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
+        lastUpdateTs: int = 0; playingNow: Option[Listen] = none(Listen);
         listenHistory: seq[Listen] = @[]): User">newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
-        lastUpdateTs: int = 0; selected: bool = false;
-        playingNow: Option[Listen] = none(Listen);
+        lastUpdateTs: int = 0; playingNow: Option[Listen] = none(Listen);
         listenHistory: seq[Listen] = @[]): User</a></li>
 
 </ul>
@@ -141,9 +144,12 @@
 </pre></dt>
   <dd>
     
-    
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L20" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L20" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    A normalised listen object.<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">mirrored</span></span></tt>: stores the state of whether a listen to be mirrored has been submitted.</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">preMirror</span></span></tt>: stores the state of whether a listen was submitted within a mirroring session.</li>
+</ul>
+
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L30" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L30" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -152,7 +158,24 @@
   <span class="Identifier">listenBrainzService</span> <span class="Other">=</span> <span class="StringLit">&quot;listenbrainz&quot;</span><span class="Other">,</span> <span class="Identifier">lastFmService</span> <span class="Other">=</span> <span class="StringLit">&quot;lastfm&quot;</span></pre></dt>
   <dd>
     
+    Stores the service that the user belongs to:<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">listenBrainzService</span></span></tt>: user of the ListenBrainz service</li>
+<li><tt class="docutils literal"><span class="pre"><span class="Identifier">lastFmService</span></span></tt>: user of the Last.FM service</li>
+</ul>
+
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L10" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L10" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+<div id="Session">
+  <dt><pre><a href="types.html#Session"><span class="Identifier">Session</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
+  <span class="Identifier">id</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
+  <span class="Identifier">users</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span>
+  <span class="Identifier">mirror</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span>
+</pre></dt>
+  <dd>
     
+    Stores session state, including a <tt class="docutils literal"><span class="pre"><span class="Identifier">seq</span></span></tt> of user IDs, and optionally a mirror user ID.
     <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L4" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
 <a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L4" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
@@ -160,7 +183,7 @@
 </div>
 <div id="User">
   <dt><pre><a href="types.html#User"><span class="Identifier">User</span></a> <span class="Other">=</span> <span class="Keyword">ref</span> <span class="Keyword">object</span>
-  <span class="Identifier">userId</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">username</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
+  <span class="Identifier">id</span><span class="Operator">*</span><span class="Other">,</span> <span class="Identifier">username</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
   <span class="Keyword">case</span> <span class="Identifier">service</span><span class="Operator">*</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a>
   <span class="Keyword">of</span> <span class="Identifier">listenBrainzService</span><span class="Other">:</span>
       <span class="Identifier">token</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
@@ -169,15 +192,16 @@
       <span class="Identifier">sessionKey</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">cstring</span>
 
   <span class="Identifier">lastUpdateTs</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">int</span>
-  <span class="Identifier">selected</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">bool</span>
   <span class="Identifier">playingNow</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span>
   <span class="Identifier">listenHistory</span><span class="Operator">*</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span>
 </pre></dt>
   <dd>
     
-    
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L8" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L8" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    Stores the user information including the api keys for the service it belongs to.<ul class="simple"><li><tt class="docutils literal"><span class="pre"><span class="Identifier">lastUpdateTs</span></span></tt>: stores the last listen timestamp.</li>
+</ul>
+
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L17" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L17" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -189,22 +213,22 @@
   <dl class="item">
     <div id="==-procs-all">
   <div id="==,Listen,Listen">
-  <dt><pre><span class="Keyword">func</span> <a href="#%3D%3D%2CListen%2CListen"><span class="Identifier">`==`</span></a><span class="Other">(</span><span class="Identifier">a</span><span class="Other">,</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> </span><span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span>.}</pre></dt>
+  <dt><pre><span class="Keyword">func</span> <a href="#%3D%3D%2CListen%2CListen"><span class="Identifier">`==`</span></a><span class="Other">(</span><span class="Identifier">a</span><span class="Other">,</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     does not include <tt class="docutils literal"><span class="pre"><span class="Identifier">mirrored</span></span></tt> or <tt class="docutils literal"><span class="pre"><span class="Identifier">preMirror</span></span></tt>
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L70" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L70" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L90" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L90" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 <div id="==,User,User">
-  <dt><pre><span class="Keyword">func</span> <a href="#%3D%3D%2CUser%2CUser"><span class="Identifier">`==`</span></a><span class="Other">(</span><span class="Identifier">a</span><span class="Other">,</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> </span><span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span>.}</pre></dt>
+  <dt><pre><span class="Keyword">func</span> <a href="#%3D%3D%2CUser%2CUser"><span class="Identifier">`==`</span></a><span class="Other">(</span><span class="Identifier">a</span><span class="Other">,</span> <span class="Identifier">b</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">bool</span> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L49" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L49" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L69" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L69" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -218,29 +242,44 @@
                <span class="Identifier">trackNumber</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span>
                <span class="Identifier">listenedAt</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span>
                <span class="Identifier">mirrored</span><span class="Other">,</span> <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">bool</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">bool</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Listen"><span class="Identifier">Listen</span></a> {.
-    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> </span><span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span>.}</pre></dt>
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Create new Listen object
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L51" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L51" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L71" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L71" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+
+  </dd>
+</div>
+
+</div>
+<div id="newSession-procs-all">
+  <div id="newSession,cstring,seq[cstring],Option[cstring]">
+  <dt><pre><span class="Keyword">func</span> <a href="#newSession%2Ccstring%2Cseq%5Bcstring%5D%2COption%5Bcstring%5D"><span class="Identifier">newSession</span></a><span class="Other">(</span><span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;session&quot;</span><span class="Other">;</span> <span class="Identifier">users</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+                <span class="Identifier">mirror</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Session"><span class="Identifier">Session</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <dd>
+    
+    
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L40" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L40" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
 
 </div>
 <div id="newUser-procs-all">
-  <div id="newUser,cstring,Service,cstring,cstring,int,bool,Option[Listen],seq[Listen]">
-  <dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2Cbool%2COption%5BListen%5D%2Cseq%5BListen%5D"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span>
+  <div id="newUser,cstring,Service,cstring,cstring,int,Option[Listen],seq[Listen]">
+  <dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2COption%5BListen%5D%2Cseq%5BListen%5D"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span>
              <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">sessionKey</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">lastUpdateTs</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span>
-             <span class="Identifier">selected</span><span class="Other">:</span> <span class="Identifier">bool</span> <span class="Other">=</span> <span class="Identifier">false</span><span class="Other">;</span> <span class="Identifier">playingNow</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">;</span>
+             <span class="Identifier">playingNow</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">;</span>
              <span class="Identifier">listenHistory</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    </span><span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span>.}</pre></dt>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Create new User object
-    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L27" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
-<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L27" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
+    <a href="https://github.com/listen2gether/listen2gether.github.io/tree/develop/src/types.nim#L49" class="link-seesrc" target="_blank">Source</a>&nbsp;&nbsp;
+<a href="https://github.com/listen2gether/listen2gether.github.io/edit/devel/src/types.nim#L49" class="link-seesrc" target="_blank" >Edit</a>&nbsp;&nbsp;
 
   </dd>
 </div>
@@ -256,10 +295,13 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2022-08-31 23:02:33 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-01-03 17:26:50 UTC</small>
       </div>
     </div>
   </div>
   
+  <!-- Google fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,600,900' rel='stylesheet' type='text/css'/>
+  <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:400,500,600' rel='stylesheet' type='text/css'/>
 </body>
 </html>
