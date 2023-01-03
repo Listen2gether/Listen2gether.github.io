@@ -7,7 +7,8 @@ import
   pkg/karax/[karax, karaxdsl, vdom, jstrutils],
   pkg/jsony,
   sources/[lb, lfm, utils],
-  home, share, types
+  views/[home, share],
+  db, types
 
 type
   MirrorView = enum
@@ -19,7 +20,7 @@ type
 
 var
   mirrorView = MirrorView.onboard
-  mirrorid: cstring = ""
+  mirrorId: cstring = ""
   listenEndInd: int = 10
   mirrorToggle = true
   polling = false
@@ -31,13 +32,13 @@ proc pageListens(ev: Event; n: VNode) =
     d = n.dom
 
   if d != nil and ((d.scrollHeight - d.scrollTop) == d.offsetHeight):
-    if (mirrorUsers[mirrorid].listenHistory.len - 1) <= (listenEndInd + increment):
-      case mirrorUsers[mirrorid].service:
+    if (users[mirrorId].listenHistory.len - 1) <= (listenEndInd + increment):
+      case users[mirrorId].service:
       of Service.listenBrainzService:
-        discard lbClient.pageUser(mirrorUsers[mirrorid], listenEndInd)
+        discard lbClient.pageUser(users[mirrorId], listenEndInd)
       of Service.lastFmService:
-        discard fmClient.pageUser(mirrorUsers[mirrorid], listenEndInd)
-      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+        discard fmClient.pageUser(users[mirrorId], listenEndInd)
+      discard store(users[mirrorId], users, USER_DB_STORE)
     else:
       listenEndInd += increment
 
@@ -127,19 +128,19 @@ proc longPoll(ms: int = 60000) {.async.} =
   if globalView == AppView.mirror:
     if not polling:
       polling = true
-    if timeToUpdate(mirrorUsers[mirrorid].lastUpdateTs, ms):
-      log "Updating and submitting..."
+    if timeToUpdate(users[mirrorId].lastUpdateTs, ms):
+      utils.log "Updating and submitting..."
       let preMirror = not mirrorToggle
-      case mirrorUsers[mirrorid].service:
+      case users[mirrorId].service:
       of Service.listenBrainzService:
-        mirrorUsers[mirrorid] = await lbClient.updateUser(mirrorUsers[mirrorid], preMirror = preMirror)
+        users[mirrorId] = await lbClient.updateUser(users[mirrorId], preMirror = preMirror)
         if mirrorToggle:
-          discard lbClient.submitMirrorQueue(mirrorUsers[mirrorid])
+          discard lbClient.submitMirrorQueue(users[mirrorId])
       of Service.lastFmService:
-        mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], preMirror = preMirror)
+        users[mirrorId] = await fmClient.updateUser(users[mirrorId], preMirror = preMirror)
         if mirrorToggle:
-          discard fmClient.submitMirrorQueue(mirrorUsers[mirrorid])
-      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+          discard fmClient.submitMirrorQueue(users[mirrorId])
+      discard store(users[mirrorId], users, USER_DB_STORE)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
@@ -151,7 +152,7 @@ proc mirrorSwitch: Vnode =
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
         proc onclick(ev: Event; n: VNode) =
           let clientids = getSelectedIds(clientUsers)
-          if mirrorUsers[mirrorid].username in clientids:
+          if users[mirrorId].username in clientids:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
                 mirrorToggle = true
@@ -164,13 +165,13 @@ proc mirrorSwitch: Vnode =
 
 proc mirror*(username: cstring, service: Service): Vnode =
   var userUrl: cstring = ""
-  if mirrorUsers.hasKey(mirrorid):
+  if users.hasKey(mirrorId):
     let clientids = getSelectedIds(clientUsers)
     if clientids.len > 0:
-      if mirrorUsers[mirrorid].id in clientids:
+      if users[mirrorId].id in clientids:
         mirrorToggle = false
       mirrorView = MirrorView.mirror
-    case mirrorUsers[mirrorid].service:
+    case users[mirrorId].service:
     of Service.listenBrainzService:
       userUrl = lb.userBaseUrl & username
     of Service.lastFmService:
@@ -190,31 +191,31 @@ proc mirror*(username: cstring, service: Service): Vnode =
       of MirrorView.mirror:
         if not polling:
           discard longPoll()
-        renderListens(mirrorUsers[mirrorid].playingNow, mirrorUsers[mirrorid].listenHistory, listenEndInd)
+        renderListens(users[mirrorId].playingNow, users[mirrorId].listenHistory, listenEndInd)
 
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
-  mirrorUsers = await get(mirrorUsersDbStore)
+  users = await get(mirrorUsersDbStore)
   let id: cstring = cstring($service) & ":" & username
-  if id in mirrorUsers:
-    mirrorUsers[mirrorid] = mirrorUsers[id]
+  if id in users:
+    users[mirrorId] = users[id]
     let preMirror = not mirrorToggle
-    case mirrorUsers[mirrorid].service:
+    case users[mirrorId].service:
     of Service.listenBrainzService:
-      mirrorUsers[mirrorid] = await lbClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
+      users[mirrorId] = await lbClient.updateUser(users[mirrorId], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
-      mirrorUsers[mirrorid] = await fmClient.updateUser(mirrorUsers[mirrorid], resetLastUpdate = true, preMirror = preMirror)
-    discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+      users[mirrorId] = await fmClient.updateUser(users[mirrorId], resetLastUpdate = true, preMirror = preMirror)
+    discard store(users[mirrorId], users, USER_DB_STORE)
     mirrorView = MirrorView.onboard
     globalView = AppView.mirror
   else:
     try:
       case service:
       of Service.listenBrainzService:
-        mirrorUsers[mirrorid] = await lbClient.initUser(username)
+        users[mirrorId] = await lbClient.initUser(username)
       of Service.lastFmService:
-        mirrorUsers[mirrorid] = await fmClient.initUser(username)
-      discard store(mirrorUsers[mirrorid], mirrorUsers, mirrorUsersDbStore)
+        users[mirrorId] = await fmClient.initUser(username)
+      discard store(users[mirrorId], users, USER_DB_STORE)
       mirrorView = MirrorView.onboard
       globalView = AppView.mirror
     except JsonError:
@@ -237,9 +238,9 @@ proc mirrorRoute*: tuple[username: cstring, service: Service] =
           let
             mirrorUsername = cstring params["username"]
             mirrorService = parseEnum[Service]($params["service"])
-          mirrorid = cstring($mirrorService) & ":" & mirrorUsername
+          mirrorId = cstring($mirrorService) & ":" & mirrorUsername
           result = (mirrorUsername, mirrorService)
-          if not mirrorUsers.hasKey(mirrorid) and globalView != AppView.error:
+          if not users.hasKey(mirrorId) and globalView != AppView.error:
             globalView = AppView.loading
             discard getMirrorUser(mirrorUsername, mirrorService)
           else:
