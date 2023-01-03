@@ -151,8 +151,7 @@ proc mirrorSwitch: Vnode =
     label(class = "switch"):
       input(`type` = "checkbox", id = "mirror-switch", class = "toggle", checked = toChecked(mirrorToggle)):
         proc onclick(ev: Event; n: VNode) =
-          let clientids = getSelectedIds(clientUsers)
-          if users[mirrorId].username in clientids:
+          if users[mirrorId].id in sessions[SESSION_ID].users:
             if not mirrorToggle:
               if window.confirm("Are you sure you want to mirror your own listens?"):
                 mirrorToggle = true
@@ -166,9 +165,8 @@ proc mirrorSwitch: Vnode =
 proc mirror*(username: cstring, service: Service): Vnode =
   var userUrl: cstring = ""
   if users.hasKey(mirrorId):
-    let clientids = getSelectedIds(clientUsers)
-    if clientids.len > 0:
-      if users[mirrorId].id in clientids:
+    if sessions[SESSION_ID].users.len > 0:
+      if users[mirrorId].id in sessions[SESSION_ID].users:
         mirrorToggle = false
       mirrorView = MirrorView.mirror
     case users[mirrorId].service:
@@ -195,7 +193,7 @@ proc mirror*(username: cstring, service: Service): Vnode =
 
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
-  users = await get(mirrorUsersDbStore)
+  users = await get[User](USER_DB_STORE)
   let id: cstring = cstring($service) & ":" & username
   if id in users:
     users[mirrorId] = users[id]
