@@ -65,8 +65,12 @@ func to*(val: Option[cstring]): Option[string] =
     if get(val) != cstring "":
       result = some $get(val)
 
-proc log*(msg: cstring) =
-  ## Log messages to the JS console
-  console.log msg
 
-proc logError*(msg: cstring) = log "ERROR: " & msg
+proc log*(msg: string) =
+  ## Log messages to the JS console or stdout
+  when defined(js):
+    console.log cstring msg
+  else:
+    echo msg
+
+proc logError*(msg: string) = log "ERROR: " & msg
