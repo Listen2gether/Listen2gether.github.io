@@ -66,7 +66,7 @@ proc initUser*(username: cstring, service: Service, token, sessionKey: cstring =
     let res = await fmClient.initUser(username, sessionKey)
     await store[User](res, users, dbStore = USER_DB_STORE)
 
-proc timeToUpdate(lastUpdateTs, ms: int): bool =
+proc timeToUpdate*(lastUpdateTs, ms: int): bool =
   ## `ms`: The amount of milliseconds to wait before updating the user.
   ## Returns true if it is time to update the user.
   let
