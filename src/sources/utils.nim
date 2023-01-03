@@ -1,8 +1,10 @@
 when defined(js):
-  import std/jsconsole
+  import
+    std/jsconsole,
+    pkg/jsutils
 import
   std/[options, strutils],
-  pkg/[union, jsutils],
+  pkg/union,
   pkg/union/uniontraits
 
 proc unionToInt*[T: Union](val: T): Option[int] =
