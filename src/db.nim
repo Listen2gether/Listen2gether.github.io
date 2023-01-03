@@ -54,15 +54,17 @@ proc delete*(id, dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")) {.asyn
   except:
     logError "Failed to delete object."
 
-proc initUser*(username: cstring, service: Service): Future[User] {.async.} =
-  ## Initialises a `User` object given a `username` and `service`.
+proc initUser*(username: cstring, service: Service, token, sessionKey: cstring = "") {.async.} =
+  ## Initialises a `User` object given a `username` and `service` and stores.
   case service:
   of Service.listenBrainzService:
-    let lbClient = newAsyncListenBrainz()
-    result = await lbClient.initUser(username)
+    let lbClient = newAsyncListenBrainz($token)
+    let res = await lbClient.initUser(username, token)
+    await store[User](res, users, dbStore = USER_DB_STORE)
   of Service.lastFmService:
-    let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
-    result = await fmClient.initUser(username)
+    let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret, $sessionKey)
+    let res = await fmClient.initUser(username, sessionKey)
+    await store[User](res, users, dbStore = USER_DB_STORE)
 
 proc timeToUpdate(lastUpdateTs, ms: int): bool =
   ## `ms`: The amount of milliseconds to wait before updating the user.
@@ -71,6 +73,19 @@ proc timeToUpdate(lastUpdateTs, ms: int): bool =
     currentTs = int toUnix getTime()
     nextUpdateTs = lastUpdateTs + (ms div 1000)
   if currentTs >= nextUpdateTs: return true
+
+proc updateUser*(user: User, ms = 60000) {.async.} =
+  ## Updates a given user and stores if it is time to update.
+  if timeToUpdate(user.lastUpdateTs, ms):
+    case user.service:
+    of Service.listenBrainzService:
+      let lbClient = newAsyncListenBrainz()
+      let res = await lbClient.updateUser(user)
+      await store[User](res, users, dbStore = USER_DB_STORE)
+    of Service.lastFmService:
+      let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
+      let res = await fmClient.updateUser(user)
+      await store[User](res, users, dbStore = USER_DB_STORE)
 
 proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
   ## Decodes user IDs into username and service enum.
@@ -81,17 +96,7 @@ proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
 proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
   ## Updates or initialises a `User` and stores given an `id` and `ms` value.
   if users.hasKey(id):
-    if timeToUpdate(users[id].lastUpdateTs, ms):
-      case users[id].service:
-      of Service.listenBrainzService:
-        let lbClient = newAsyncListenBrainz()
-        let res = await lbClient.updateUser(users[id])
-        await store[User](res, users, dbStore = USER_DB_STORE)
-      of Service.lastFmService:
-        let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
-        let res = await fmClient.updateUser(users[id])
-        await store[User](res, users, dbStore = USER_DB_STORE)
+    await updateUser(users[id], ms)
   else:
     let user = decodeUserId(id)
-    let res = await initUser(user.username, user.service)
-    await store[User](res, users, dbStore = USER_DB_STORE)
+    await initUser(user.username, user.service)
