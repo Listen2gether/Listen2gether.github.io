@@ -145,17 +145,19 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
   let res = await lbClient.validateToken($token)
   if res.valid:
     clientErrorMessage = ""
-    lbClient = newAsyncListenBrainz($token)
-    let user = await lbClient.initUser(cstring res.userName.get(), token = token)
-    await store[User](user, users, USER_DB_STORE)
+    let id = genId(cstring(res.userName.get), Service.listenBrainzService)
+    await updateOrInitUser(id)
+    sessions[SESSION_ID].users.add(id)
+    await updateOrInitSession(sessions[SESSION_ID])
+    authView = UserView.existing
   else:
     if newUser:
       clientErrorMessage = "Please enter a valid token!"
     else:
       clientErrorMessage = "Token no longer valid!"
       await delete(id, USER_DB_STORE)
-    redraw()
   serviceView = ServiceView.selection
+  redraw()
 
 proc validateFMSession(user: User, newUser = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
