@@ -1,6 +1,6 @@
-import
-  std/options,
-  pkg/jsutils
+when defined(js):
+  import pkg/jsutils
+import std/options
 
 type
   Session* = ref object
@@ -48,7 +48,11 @@ func newSession*(
   result.users = users
   result.mirror = mirror
 
-func genId*(username: cstring, service: Service): cstring = cstring($service) & ":" & username
+func genId*(username: cstring, service: Service): cstring =
+  when defined(js):
+    return cstring($service) & ":" & username
+  else:
+    return cstring($service & ":" & $username)
 
 func newUser*(
   username: cstring,
