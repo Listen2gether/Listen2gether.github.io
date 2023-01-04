@@ -1,4 +1,6 @@
-import std/options
+import
+  std/options,
+  pkg/jsutils
 
 type
   Session* = ref object
@@ -46,6 +48,8 @@ func newSession*(
   result.users = users
   result.mirror = mirror
 
+func genId*(username: cstring, service: Service): cstring = cstring($service) & ":" & username
+
 func newUser*(
   username: cstring,
   service: Service,
@@ -55,7 +59,7 @@ func newUser*(
   listenHistory: seq[Listen] = @[]): User =
   ## Create new User object
   result = User(service: service)
-  result.id = cstring($service & ":" & $username)
+  result.id = genId(username, service)
   result.username = username
   case service:
   of listenBrainzService:

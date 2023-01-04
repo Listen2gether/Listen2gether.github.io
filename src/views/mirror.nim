@@ -194,8 +194,8 @@ proc mirror*(username: cstring, service: Service): Vnode =
 proc getMirrorUser(username: cstring, service: Service) {.async.} =
   ## Gets the mirror user from the database, if they aren't in the database, they are initialised
   users = await get[User](USER_DB_STORE)
-  let id: cstring = cstring($service) & ":" & username
-  if id in users:
+  let id = genId(username, service)
+  if users.hasKey(id):
     users[mirrorId] = users[id]
     let preMirror = not mirrorToggle
     case users[mirrorId].service:
