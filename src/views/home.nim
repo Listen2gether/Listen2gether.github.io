@@ -121,7 +121,8 @@ proc onMirrorClick(ev: Event; n: VNode) =
       mirrorService = Service.listenBrainzService
     if mirrorUsername != "" and sessions[SESSION_ID].users.len > 0:
       mirrorErrorMessage = ""
-      discard validateMirror(id = mirrorUsername & $mirrorService)
+      let id = genId(mirrorUsername, mirrorService)
+      discard validateMirror(id)
       onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
@@ -141,12 +142,11 @@ proc serviceToggle: Vnode =
 
 proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
-  var lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken($token)
   if res.valid:
     clientErrorMessage = ""
     let id = genId(cstring(res.userName.get), Service.listenBrainzService)
-    await updateOrInitUser(id)
+    await updateOrInitUser(id, token = token)
     sessions[SESSION_ID].users.add(id)
     await updateOrInitSession(sessions[SESSION_ID])
     authView = UserView.existing
@@ -161,12 +161,11 @@ proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.}
 
 proc validateFMSession(user: User, newUser = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
-  var fmClient = newAsyncLastFM(apiKey, apiSecret)
   try:
-    let clientUser = await fmClient.initUser(user.username, user.sessionKey)
     clientErrorMessage = ""
+    let id = genId(user.username, Service.lastFmService)
+    await updateOrInitUser(id, sessionKey = user.sessionKey)
     fmClient.sk = $user.sessionKey
-    await store[User](clientUser, users, USER_DB_STORE)
   except:
     if newUser:
       clientErrorMessage = "Authorisation failed!"
