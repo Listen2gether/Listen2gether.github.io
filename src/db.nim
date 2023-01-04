@@ -81,16 +81,16 @@ proc timeToUpdate*(lastUpdateTs, ms: int): bool =
     nextUpdateTs = lastUpdateTs + (ms div 1000)
   if currentTs >= nextUpdateTs: return true
 
-proc updateUser*(user: User, ms = 60000) {.async.} =
+proc updateUser*(user: User, ms = 60000, token, sessionKey: cstring = "") {.async.} =
   ## Updates a given user and stores if it is time to update.
   if timeToUpdate(user.lastUpdateTs, ms):
     case user.service:
     of Service.listenBrainzService:
-      let lbClient = newAsyncListenBrainz()
+      let lbClient = newAsyncListenBrainz($token)
       let res = await lbClient.updateUser(user)
       await store[User](res, users, dbStore = USER_DB_STORE)
     of Service.lastFmService:
-      let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret)
+      let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret, $sessionKey)
       let res = await fmClient.updateUser(user)
       await store[User](res, users, dbStore = USER_DB_STORE)
 
@@ -98,12 +98,12 @@ proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
   ## Decodes user IDs into username and service enum.
   ## User IDs are stored in the format of `username:service`.
   let res = split(id, ":")
-  return (res[0], parseEnum[Service]($res[1]))
+  return (res[1], parseEnum[Service]($res[0]))
 
-proc updateOrInitUser*(id: cstring, ms = 60000) {.async.} =
+proc updateOrInitUser*(id: cstring, ms = 60000, token, sessionKey: cstring = "") {.async.} =
   ## Updates or initialises a `User` and stores given an `id` and `ms` value.
   if users.hasKey(id):
-    await updateUser(users[id], ms)
+    await updateUser(users[id], ms, token, sessionKey)
   else:
     let user = decodeUserId(id)
     await initUser(user.username, user.service)
