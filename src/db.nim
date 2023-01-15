@@ -54,10 +54,7 @@ proc delete*(
 
 proc updateOrInitSession*(session = newSession()) {.async.} =
   ## Updates or initialises a session and stores.
-  if sessions.hasKey(SESSION_ID):
-    await store[Session](session, dbStore = SESSION_DB_STORE)
-  else:
-    await store[Session](session, dbStore = SESSION_DB_STORE)
+  await store[Session](session, dbStore = SESSION_DB_STORE)
 
 proc initUser*(
   username: cstring,
