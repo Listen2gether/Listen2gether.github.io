@@ -104,4 +104,4 @@ proc updateOrInitUser*(id: cstring, ms = 60000, token, sessionKey: cstring = "")
     await updateUser(users[id], ms, token, sessionKey)
   else:
     let user = decodeUserId(id)
-    await initUser(user.username, user.service)
+    await initUser(user.username, user.service, token, sessionKey)
