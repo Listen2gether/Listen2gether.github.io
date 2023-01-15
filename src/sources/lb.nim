@@ -38,7 +38,7 @@ proc to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
     else:
       result.add to track
 
-proc to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): Listen =
+proc to(listen: APIListen, preMirror, mirrored = none(bool)): Listen =
   ## Convert an `APIListen` object to a `Listen` object.
   result = newListen(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
@@ -51,7 +51,7 @@ proc to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): List
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to(listens: seq[APIListen], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+proc to(listens: seq[APIListen], preMirror, mirrored = none(bool)): seq[Listen] =
   ## Convert a sequence of `APIListen` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)

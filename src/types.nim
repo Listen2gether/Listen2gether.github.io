@@ -42,7 +42,7 @@ type
 func newSession*(
   id: cstring = "session",
   users: seq[cstring] = @[],
-  mirror: Option[cstring] = none(cstring)): Session =
+  mirror = none(cstring)): Session =
   result = Session()
   result.id = id
   result.users = users
@@ -58,8 +58,8 @@ func newUser*(
   username: cstring,
   service: Service,
   token, sessionKey: cstring = "",
-  lastUpdateTs: int = 0,
-  playingNow: Option[Listen] = none(Listen),
+  lastUpdateTs = 0,
+  playingNow = none(Listen),
   listenHistory: seq[Listen] = @[]): User =
   ## Create new User object
   result = User(service: service)
@@ -78,11 +78,11 @@ func `==`*(a, b: User): bool = a.id == b.id
 
 func newListen*(
   trackName, artistName: cstring,
-  releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
-  artistMbids: Option[seq[cstring]] = none(seq[cstring]),
-  trackNumber: Option[int] = none(int),
-  listenedAt: Option[int] = none(int),
-  mirrored, preMirror: Option[bool] = none(bool)): Listen =
+  releaseName, recordingMbid, releaseMbid = none(cstring),
+  artistMbids = none(seq[cstring]),
+  trackNumber = none(int),
+  listenedAt = none(int),
+  mirrored, preMirror = none(bool)): Listen =
   ## Create new Listen object
   result.trackName = trackName
   result.artistName = artistName
