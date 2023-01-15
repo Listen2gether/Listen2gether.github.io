@@ -26,7 +26,7 @@ proc get*[T](
   ## Gets objects from a given IndexedDB location and store in a Table.
   result = initTable[cstring, T]()
   try:
-    let objStore = await db.getAll(dbStore, dbOptions = IDBOptions(keyPath: "id"))
+    let objStore = await db.getAll(dbStore, IDBOptions(keyPath: "id"))
     if not objStore.isNil:
       result = collect:
         for obj in to(objStore, seq[T]): {obj.id: obj}
@@ -39,7 +39,7 @@ proc store*[T](
   db = newIndexedDB()) {.async.} =
   ## Stores an object in a given store in IndexedDB.
   try:
-    discard db.put(dbStore, toJs obj, dbOptions = IDBOptions(keyPath: "id"))
+    discard db.put(dbStore, toJs obj, IDBOptions(keyPath: "id"))
   except:
     logError "Failed to store object."
 
@@ -48,7 +48,7 @@ proc delete*(
   db = newIndexedDB()) {.async.} =
   ## Deletes an item given an ID and database store name.`
   try:
-    await db.delete(dbStore, id, dbOptions = IDBOptions(keyPath: "id"))
+    discard db.delete(dbStore, id, IDBOptions(keyPath: "id"))
   except:
     logError "Failed to delete object."
 

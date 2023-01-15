@@ -140,7 +140,7 @@ proc longPoll(ms: int = 60000) {.async.} =
         users[mirrorId] = await fmClient.updateUser(users[mirrorId], preMirror = preMirror)
         if mirrorToggle:
           discard fmClient.submitMirrorQueue(users[mirrorId])
-      discard store(users[mirrorId], users, USER_DB_STORE)
+      discard store(users[mirrorId], USER_DB_STORE)
     await setTimeoutAsync(ms)
     discard longPoll(ms)
 
