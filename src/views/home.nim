@@ -61,30 +61,31 @@ proc restoreSession*(sess: Session) {.async.} =
   ## Restores a given session by updating and initialising `users`
   for id in sess.users:
     try:
-      await updateOrInitUser(id)
+      await updateOrInitUser(id, ms = 300000)
     except:
       let err = "Failed to restore user '" & $users[id].username & "'."
       logError err
   if sess.mirror.isSome():
     let mirror = sess.mirror.get()
     try:
-      await updateOrInitUser(mirror)
+      await updateOrInitUser(mirror, ms = 300000)
     except:
       let err = "Failed to restore mirror user '" & $users[mirror].username & "'."
       logError err
 
-proc getSessions(auth, mirror: var UserView, sessions: var Table[cstring, Session], dbStore = SESSION_DB_STORE) {.async.} =
+proc getSessions(auth, mirror: var UserView) {.async.} =
   ## Gets the app session from IndexedDB and stores, sets `UserView`s if there are existing app sessions.
   try:
-    let res = await get[Session](dbStore)
-    if res.len != 0:
-      sessions = res
+    users = await get[User](dbStore = USER_DB_STORE)
+    sessions = await get[Session](dbStore = SESSION_DB_STORE)
+    if sessions.len != 0:
       await restoreSession(sessions[SESSION_ID])
       if sessions[SESSION_ID].users.len != 0:
         auth = UserView.existing
       if sessions[SESSION_ID].mirror.isSome():
         mirror = UserView.existing
     else:
+      await updateOrInitSession()
       auth = UserView.newUser
       mirror = UserView.newUser
     redraw()
@@ -376,9 +377,7 @@ proc onboardModal*(mirrorModal = true): Vnode =
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
-      discard getSessions(authView, mirrorUserView, sessions)
-      if sessions.len == 0:
-        discard updateOrInitSession()
+      discard getSessions(authView, mirrorUserView)
       loadingModal "Restoring previous session..."
       onboardView = OnboardView.onboard
     of OnboardView.onboard:
