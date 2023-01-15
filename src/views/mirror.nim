@@ -38,7 +38,7 @@ proc pageListens(ev: Event; n: VNode) =
         discard lbClient.pageUser(users[mirrorId], listenEndInd)
       of Service.lastFmService:
         discard fmClient.pageUser(users[mirrorId], listenEndInd)
-      discard store(users[mirrorId], users, USER_DB_STORE)
+      discard store(users[mirrorId], dbStore = USER_DB_STORE)
     else:
       listenEndInd += increment
 
@@ -203,7 +203,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
       users[mirrorId] = await lbClient.updateUser(users[mirrorId], resetLastUpdate = true, preMirror = preMirror)
     of Service.lastFmService:
       users[mirrorId] = await fmClient.updateUser(users[mirrorId], resetLastUpdate = true, preMirror = preMirror)
-    discard store(users[mirrorId], users, USER_DB_STORE)
+    discard store(users[mirrorId], dbStore = USER_DB_STORE)
     mirrorView = MirrorView.onboard
     globalView = AppView.mirror
   else:
@@ -213,7 +213,7 @@ proc getMirrorUser(username: cstring, service: Service) {.async.} =
         users[mirrorId] = await lbClient.initUser(username)
       of Service.lastFmService:
         users[mirrorId] = await fmClient.initUser(username)
-      discard store(users[mirrorId], users, USER_DB_STORE)
+      discard store(users[mirrorId], dbStore = USER_DB_STORE)
       mirrorView = MirrorView.onboard
       globalView = AppView.mirror
     except JsonError:

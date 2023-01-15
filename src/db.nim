@@ -22,12 +22,11 @@ var
 
 proc get*[T](
   dbStore: cstring,
-  db = newIndexedDB(),
-  dbOptions = IDBOptions(keyPath: "id")): Future[Table[cstring, T]] {.async.} =
+  db = newIndexedDB()): Future[Table[cstring, T]] {.async.} =
   ## Gets objects from a given IndexedDB location and store in a Table.
   result = initTable[cstring, T]()
   try:
-    let objStore = await db.getAll(dbStore, dbOptions)
+    let objStore = await db.getAll(dbStore, dbOptions = IDBOptions(keyPath: "id"))
     if not objStore.isNil:
       result = collect:
         for obj in to(objStore, seq[T]): {obj.id: obj}
@@ -36,42 +35,44 @@ proc get*[T](
 
 proc store*[T](
   obj: T,
-  objs: var Table[cstring, T],
   dbStore: cstring,
-  db = newIndexedDB(),
-  dbOptions = IDBOptions(keyPath: "id")) {.async.} =
+  db = newIndexedDB()) {.async.} =
   ## Stores an object in a given store in IndexedDB.
-  objs[obj.id] = obj
   try:
-    discard db.put(dbStore, toJs obj, dbOptions)
+    discard db.put(dbStore, toJs obj, dbOptions = IDBOptions(keyPath: "id"))
   except:
     logError "Failed to store object."
 
-proc delete*(id, dbStore: cstring, dbOptions = IDBOptions(keyPath: "id")) {.async.} =
+proc delete*(
+  id, dbStore: cstring,
+  db = newIndexedDB()) {.async.} =
   ## Deletes an item given an ID and database store name.`
   try:
-    await db.delete(dbStore, id, dbOptions)
+    await db.delete(dbStore, id, dbOptions = IDBOptions(keyPath: "id"))
   except:
     logError "Failed to delete object."
 
 proc updateOrInitSession*(session = newSession()) {.async.} =
   ## Updates or initialises a session and stores.
   if sessions.hasKey(SESSION_ID):
-    await store[Session](session, sessions, dbStore = SESSION_DB_STORE)
+    await store[Session](session, dbStore = SESSION_DB_STORE)
   else:
-    await store[Session](session, sessions, dbStore = SESSION_DB_STORE)
+    await store[Session](session, dbStore = SESSION_DB_STORE)
 
-proc initUser*(username: cstring, service: Service, token, sessionKey: cstring = "") {.async.} =
+proc initUser*(
+  username: cstring,
+  service: Service,
+  token, sessionKey: cstring = "") {.async.} =
   ## Initialises a `User` object given a `username` and `service` and stores.
   case service:
   of Service.listenBrainzService:
     let lbClient = newAsyncListenBrainz($token)
-    let res = await lbClient.initUser(username, token)
-    await store[User](res, users, dbStore = USER_DB_STORE)
+    let user = await lbClient.initUser(username, token)
+    await store[User](user, dbStore = USER_DB_STORE)
   of Service.lastFmService:
     let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret, $sessionKey)
-    let res = await fmClient.initUser(username, sessionKey)
-    await store[User](res, users, dbStore = USER_DB_STORE)
+    let user = await fmClient.initUser(username, sessionKey)
+    await store[User](user, dbStore = USER_DB_STORE)
 
 proc timeToUpdate*(lastUpdateTs, ms: int): bool =
   ## `ms`: The amount of milliseconds to wait before updating the user.
@@ -87,12 +88,12 @@ proc updateUser*(user: User, ms = 60000, token, sessionKey: cstring = "") {.asyn
     case user.service:
     of Service.listenBrainzService:
       let lbClient = newAsyncListenBrainz($token)
-      let res = await lbClient.updateUser(user)
-      await store[User](res, users, dbStore = USER_DB_STORE)
+      let user = await lbClient.updateUser(user)
+      await store[User](user, dbStore = USER_DB_STORE)
     of Service.lastFmService:
       let fmClient: AsyncLastFM = newAsyncLastFM(apiKey, apiSecret, $sessionKey)
-      let res = await fmClient.updateUser(user)
-      await store[User](res, users, dbStore = USER_DB_STORE)
+      let user = await fmClient.updateUser(user)
+      await store[User](user, dbStore = USER_DB_STORE)
 
 proc decodeUserId*(id: cstring): tuple[username: cstring, service: Service] =
   ## Decodes user IDs into username and service enum.
