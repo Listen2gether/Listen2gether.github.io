@@ -182,23 +182,24 @@ proc renderUsers(session: Session, users: Table[cstring, User], renderMirror = f
   ## `renderMirror`: should be true if rendering mirror users.
   result = buildHtml(tdiv(id = "previous-session")):
     for id in session.users:
-      let user = users[id]
-      button(id = user.id, class = "row selected", username = user.username, service = cstring $user.service):
-        tdiv(id = cstring $user.service & "-icon", class = "service-icon")
-        text user.username
-        proc onclick(ev: Event; n: VNode) =
-          if renderMirror:
-            if session.mirror.isSome():
-              session.mirror = none cstring
+      if users.hasKey(id):
+        let user = users[id]
+        button(id = user.id, class = "row selected", username = user.username, service = cstring $user.service):
+          tdiv(id = cstring $user.service & "-icon", class = "service-icon")
+          text user.username
+          proc onclick(ev: Event; n: VNode) =
+            if renderMirror:
+              if session.mirror.isSome():
+                session.mirror = none cstring
+              else:
+                session.mirror = some user.id
             else:
-              session.mirror = some user.id
-          else:
-            let id = n.id
-            if id in session.users:
-              session.users.delete(session.users.find(cstring id))
-            else:
-              session.users.add(cstring id)
-          discard updateOrInitSession(session)
+              let id = n.id
+              if id in session.users:
+                session.users.delete(session.users.find(cstring id))
+              else:
+                session.users.add(cstring id)
+            discard updateOrInitSession(session)
 
 proc onLBTokenEnter(ev: Event; n: VNode) =
   ## Callback to validate a ListenBrainz token.
