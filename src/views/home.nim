@@ -101,6 +101,8 @@ proc validateMirror(id: cstring) {.async.} =
   ## Validates and gets now playing for user.
   try:
     await updateOrInitUser(id)
+    sessions[SESSION_ID].mirror = some id
+    await updateOrInitSession(sessions[SESSION_ID])
     mirrorErrorMessage = ""
     let (id, service) = decodeUserId(id)
     loadMirror(id, service)
@@ -175,7 +177,7 @@ proc validateFMSession(user: User, newUser = true) {.async.} =
       await delete(user.id, USER_DB_STORE)
     redraw()
 
-proc renderUsers(session: var Session, users: Table[cstring, User], renderMirror = false): Vnode =
+proc renderUsers(session: Session, users: Table[cstring, User], renderMirror = false): Vnode =
   ## Renders users from a `Session` object.
   ## `renderMirror`: should be true if rendering mirror users.
   result = buildHtml(tdiv(id = "previous-session")):
@@ -196,7 +198,7 @@ proc renderUsers(session: var Session, users: Table[cstring, User], renderMirror
               session.users.delete(session.users.find(cstring id))
             else:
               session.users.add(cstring id)
-          discard store[Session](session, sessions, SESSION_DB_STORE)
+          discard updateOrInitSession(session)
 
 proc onLBTokenEnter(ev: Event; n: VNode) =
   ## Callback to validate a ListenBrainz token.
@@ -361,6 +363,7 @@ proc mirrorUserModal(view: var UserView): Vnode =
         text "Add another account?"
         proc onclick(ev: Event; n: VNode) =
           sessions[SESSION_ID].mirror = none cstring
+          discard updateOrInitSession(sessions[SESSION_ID])
           view = UserView.newUser
       renderUsers(sessions[SESSION_ID], users, renderMirror = true)
     errorModal(mirrorErrorMessage)
