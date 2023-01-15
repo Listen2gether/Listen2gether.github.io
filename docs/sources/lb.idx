@@ -1,13 +1,16 @@
-camel2snake	sources/lb.html#camel2snake,string	lb: camel2snake(s: string): string	
-dumpKey	sources/lb.html#dumpKey.t,string,string	lb: dumpKey(s: var string; v: string)	
-dumpHook	sources/lb.html#dumpHook,string,Option[T]	lb: dumpHook[T](s: var string; v: Option[T])	
-dumpHook	sources/lb.html#dumpHook,string,	lb: dumpHook(s: var string; v: object)	
-renameHook	sources/lb.html#renameHook,PlaylistExtension,string	lb: renameHook(v: var PlaylistExtension; fieldName: var string)	
-renameHook	sources/lb.html#renameHook,TrackExtension,string	lb: renameHook(v: var TrackExtension; fieldName: var string)	
-dumpHook	sources/lb.html#dumpHook,string,PlaylistExtension	lb: dumpHook(s: var string; v: PlaylistExtension)	
-dumpHook	sources/lb.html#dumpHook,string,TrackExtension	lb: dumpHook(s: var string; v: TrackExtension)	
-userBaseUrl	sources/lb.html#userBaseUrl	lb: userBaseUrl	
-initUser	sources/lb.html#initUser,AsyncListenBrainz,cstring,cstring	lb: initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = &quot;&quot;): Future[\n    User]	
-updateUser	sources/lb.html#updateUser,AsyncListenBrainz,User	lb: updateUser(lb: AsyncListenBrainz; user: User; resetLastUpdate, preMirror = false): Future[\n    User]	
-pageUser	sources/lb.html#pageUser,AsyncListenBrainz,User,int,int	lb: pageUser(lb: AsyncListenBrainz; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])	
-submitMirrorQueue	sources/lb.html#submitMirrorQueue,AsyncListenBrainz,User	lb: submitMirrorQueue(lb: AsyncListenBrainz; user: var User): owned(Future[void])	
+nimTitle	lb	sources/lb.html	module sources/lb		0
+nim	camel2snake	sources/lb.html#camel2snake,string	proc camel2snake(s: string): string		8
+nim	dumpKey	sources/lb.html#dumpKey.t,string,string	template dumpKey(s: var string; v: string)		20
+nim	dumpHook	sources/lb.html#dumpHook,string,Option[T]	proc dumpHook[T](s: var string; v: Option[T])		25
+nim	dumpHook	sources/lb.html#dumpHook,string,	proc dumpHook(s: var string; v: object)		30
+nim	renameHook	sources/lb.html#renameHook,PlaylistExtension,string	proc renameHook(v: var PlaylistExtension; fieldName: var string)		61
+nim	renameHook	sources/lb.html#renameHook,TrackExtension,string	proc renameHook(v: var TrackExtension; fieldName: var string)		66
+nim	dumpHook	sources/lb.html#dumpHook,string,PlaylistExtension	proc dumpHook(s: var string; v: PlaylistExtension)		71
+nim	dumpHook	sources/lb.html#dumpHook,string,TrackExtension	proc dumpHook(s: var string; v: TrackExtension)		78
+nim	userBaseUrl	sources/lb.html#userBaseUrl	const userBaseUrl		15
+nim	initUser	sources/lb.html#initUser,AsyncListenBrainz,cstring,cstring	proc initUser(lb: AsyncListenBrainz; username: cstring; token: cstring = ""): Future[\n    User]		84
+nim	updateUser	sources/lb.html#updateUser,AsyncListenBrainz,User	proc updateUser(lb: AsyncListenBrainz; user: User; resetLastUpdate, preMirror = false): Future[\n    User]		94
+nim	pageUser	sources/lb.html#pageUser,AsyncListenBrainz,User,int,int	proc pageUser(lb: AsyncListenBrainz; user: var User; endInd: var int; inc: int = 10): owned(\n    Future[void])		125
+nim	submitMirrorQueue	sources/lb.html#submitMirrorQueue,AsyncListenBrainz,User	proc submitMirrorQueue(lb: AsyncListenBrainz; user: var User): owned(Future[void])		133
+nimgrp	dumphook	sources/lb.html#dumpHook-procs-all	proc		25
+nimgrp	renamehook	sources/lb.html#renameHook-procs-all	proc		61

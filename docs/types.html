@@ -93,30 +93,26 @@
 
 </ul>
 <ul class="simple nested-toc-section">newListen
-  <li><a class="reference" href="#newListen%2Ccstring%2Ccstring%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bseq%5Bcstring%5D%5D%2COption%5Bint%5D%2COption%5Bint%5D%2COption%5Bbool%5D%2COption%5Bbool%5D" title="newListen(trackName, artistName: cstring; releaseName, recordingMbid,
-    releaseMbid: Option[cstring] = none(cstring);
-          artistMbids: Option[seq[cstring]] = none(seq[cstring]);
-          trackNumber: Option[int] = none(int);
-          listenedAt: Option[int] = none(int);
-          mirrored, preMirror: Option[bool] = none(bool)): Listen">newListen(trackName, artistName: cstring; releaseName, recordingMbid,
-    releaseMbid: Option[cstring] = none(cstring);
-          artistMbids: Option[seq[cstring]] = none(seq[cstring]);
-          trackNumber: Option[int] = none(int);
-          listenedAt: Option[int] = none(int);
-          mirrored, preMirror: Option[bool] = none(bool)): Listen</a></li>
+  <li><a class="reference" href="#newListen%2Ccstring%2Ccstring" title="newListen(trackName, artistName: cstring;
+          releaseName, recordingMbid, releaseMbid = none(cstring);
+          artistMbids = none(seq[cstring]); trackNumber = none(int);
+          listenedAt = none(int); mirrored, preMirror = none(bool)): Listen">newListen(trackName, artistName: cstring;
+          releaseName, recordingMbid, releaseMbid = none(cstring);
+          artistMbids = none(seq[cstring]); trackNumber = none(int);
+          listenedAt = none(int); mirrored, preMirror = none(bool)): Listen</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">newSession
-  <li><a class="reference" href="#newSession%2Ccstring%2Cseq%5Bcstring%5D%2COption%5Bcstring%5D" title="newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
-           mirror: Option[cstring] = none(cstring)): Session">newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
-           mirror: Option[cstring] = none(cstring)): Session</a></li>
+  <li><a class="reference" href="#newSession%2Ccstring%2Cseq%5Bcstring%5D" title="newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
+           mirror = none(cstring)): Session">newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];
+           mirror = none(cstring)): Session</a></li>
 
 </ul>
 <ul class="simple nested-toc-section">newUser
-  <li><a class="reference" href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2COption%5BListen%5D%2Cseq%5BListen%5D" title="newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
-        lastUpdateTs: int = 0; playingNow: Option[Listen] = none(Listen);
+  <li><a class="reference" href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2Cseq%5BListen%5D" title="newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
+        lastUpdateTs = 0; playingNow = none(Listen);
         listenHistory: seq[Listen] = @[]): User">newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;
-        lastUpdateTs: int = 0; playingNow: Option[Listen] = none(Listen);
+        lastUpdateTs = 0; playingNow = none(Listen);
         listenHistory: seq[Listen] = @[]): User</a></li>
 
 </ul>
@@ -253,13 +249,11 @@
 
 </div>
 <div id="newListen-procs-all">
-  <div id="newListen,cstring,cstring,Option[cstring],Option[cstring],Option[cstring],Option[seq[cstring]],Option[int],Option[int],Option[bool],Option[bool]">
-  <dt><pre><span class="Keyword">func</span> <a href="#newListen%2Ccstring%2Ccstring%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bcstring%5D%2COption%5Bseq%5Bcstring%5D%5D%2COption%5Bint%5D%2COption%5Bint%5D%2COption%5Bbool%5D%2COption%5Bbool%5D"><span class="Identifier">newListen</span></a><span class="Other">(</span><span class="Identifier">trackName</span><span class="Other">,</span> <span class="Identifier">artistName</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">releaseName</span><span class="Other">,</span> <span class="Identifier">recordingMbid</span><span class="Other">,</span>
-    <span class="Identifier">releaseMbid</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">;</span>
-               <span class="Identifier">artistMbids</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span><span class="Other">)</span><span class="Other">;</span>
-               <span class="Identifier">trackNumber</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span>
-               <span class="Identifier">listenedAt</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">int</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span>
-               <span class="Identifier">mirrored</span><span class="Other">,</span> <span class="Identifier">preMirror</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">bool</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">bool</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Listen"><span class="Identifier">Listen</span></a> {.
+  <div id="newListen,cstring,cstring">
+  <dt><pre><span class="Keyword">func</span> <a href="#newListen%2Ccstring%2Ccstring"><span class="Identifier">newListen</span></a><span class="Other">(</span><span class="Identifier">trackName</span><span class="Other">,</span> <span class="Identifier">artistName</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span>
+               <span class="Identifier">releaseName</span><span class="Other">,</span> <span class="Identifier">recordingMbid</span><span class="Other">,</span> <span class="Identifier">releaseMbid</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">;</span>
+               <span class="Identifier">artistMbids</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">trackNumber</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span>
+               <span class="Identifier">listenedAt</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">int</span><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">mirrored</span><span class="Other">,</span> <span class="Identifier">preMirror</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">bool</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Listen"><span class="Identifier">Listen</span></a> {.
     <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
@@ -272,10 +266,10 @@
 
 </div>
 <div id="newSession-procs-all">
-  <div id="newSession,cstring,seq[cstring],Option[cstring]">
-  <dt><pre><span class="Keyword">func</span> <a href="#newSession%2Ccstring%2Cseq%5Bcstring%5D%2COption%5Bcstring%5D"><span class="Identifier">newSession</span></a><span class="Other">(</span><span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;session&quot;</span><span class="Other">;</span> <span class="Identifier">users</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
-                <span class="Identifier">mirror</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Session"><span class="Identifier">Session</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <div id="newSession,cstring,seq[cstring]">
+  <dt><pre><span class="Keyword">func</span> <a href="#newSession%2Ccstring%2Cseq%5Bcstring%5D"><span class="Identifier">newSession</span></a><span class="Other">(</span><span class="Identifier">id</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;session&quot;</span><span class="Other">;</span> <span class="Identifier">users</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">cstring</span><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">;</span>
+                <span class="Identifier">mirror</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><span class="Identifier">cstring</span><span class="Other">)</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#Session"><span class="Identifier">Session</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
+    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     
@@ -287,12 +281,11 @@
 
 </div>
 <div id="newUser-procs-all">
-  <div id="newUser,cstring,Service,cstring,cstring,int,Option[Listen],seq[Listen]">
-  <dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2COption%5BListen%5D%2Cseq%5BListen%5D"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span>
-             <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">sessionKey</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">lastUpdateTs</span><span class="Other">:</span> <span class="Identifier">int</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span>
-             <span class="Identifier">playingNow</span><span class="Other">:</span> <span class="Identifier">Option</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">;</span>
-             <span class="Identifier">listenHistory</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a> {.<span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span>
-    <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
+  <div id="newUser,cstring,Service,cstring,cstring,int,seq[Listen]">
+  <dt><pre><span class="Keyword">func</span> <a href="#newUser%2Ccstring%2CService%2Ccstring%2Ccstring%2Cint%2Cseq%5BListen%5D"><span class="Identifier">newUser</span></a><span class="Other">(</span><span class="Identifier">username</span><span class="Other">:</span> <span class="Identifier">cstring</span><span class="Other">;</span> <span class="Identifier">service</span><span class="Other">:</span> <a href="types.html#Service"><span class="Identifier">Service</span></a><span class="Other">;</span>
+             <span class="Identifier">token</span><span class="Other">,</span> <span class="Identifier">sessionKey</span><span class="Other">:</span> <span class="Identifier">cstring</span> <span class="Other">=</span> <span class="StringLit">&quot;&quot;</span><span class="Other">;</span> <span class="Identifier">lastUpdateTs</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span>
+             <span class="Identifier">playingNow</span> <span class="Other">=</span> <span class="Identifier">none</span><span class="Other">(</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">)</span><span class="Other">;</span> <span class="Identifier">listenHistory</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><a href="types.html#Listen"><span class="Identifier">Listen</span></a><span class="Other">]</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="Other">]</span><span class="Other">)</span><span class="Other">:</span> <a href="types.html#User"><span class="Identifier">User</span></a> {.
+    <span><span class="Other pragmadots">...</span></span><span class="pragmawrap"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">forbids</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span>.}</pre></dt>
   <dd>
     
     Create new User object
@@ -313,7 +306,7 @@
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br>
-        <small style="color: var(--hint);">Made with Nim. Generated: 2023-01-04 00:55:51 UTC</small>
+        <small style="color: var(--hint);">Made with Nim. Generated: 2023-01-15 20:29:48 UTC</small>
       </div>
     </div>
   </div>

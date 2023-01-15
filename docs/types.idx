@@ -1,12 +1,14 @@
-Session	types.html#Session	types: Session	
-listenBrainzService	types.html#listenBrainzService	Service.listenBrainzService	
-lastFmService	types.html#lastFmService	Service.lastFmService	
-Service	types.html#Service	types: Service	
-User	types.html#User	types: User	
-Listen	types.html#Listen	types: Listen	
-newSession	types.html#newSession,cstring,seq[cstring],Option[cstring]	types: newSession(id: cstring = &quot;session&quot;; users: seq[cstring] = @[];\n           mirror: Option[cstring] = none(cstring)): Session	
-genId	types.html#genId,cstring,Service	types: genId(username: cstring; service: Service): cstring	
-newUser	types.html#newUser,cstring,Service,cstring,cstring,int,Option[Listen],seq[Listen]	types: newUser(username: cstring; service: Service; token, sessionKey: cstring = &quot;&quot;;\n        lastUpdateTs: int = 0; playingNow: Option[Listen] = none(Listen);\n        listenHistory: seq[Listen] = @[]): User	
-`==`	types.html#==,User,User	types: `==`(a, b: User): bool	
-newListen	types.html#newListen,cstring,cstring,Option[cstring],Option[cstring],Option[cstring],Option[seq[cstring]],Option[int],Option[int],Option[bool],Option[bool]	types: newListen(trackName, artistName: cstring; releaseName, recordingMbid,\n    releaseMbid: Option[cstring] = none(cstring);\n          artistMbids: Option[seq[cstring]] = none(seq[cstring]);\n          trackNumber: Option[int] = none(int);\n          listenedAt: Option[int] = none(int);\n          mirrored, preMirror: Option[bool] = none(bool)): Listen	
-`==`	types.html#==,Listen,Listen	types: `==`(a, b: Listen): bool	
+nimTitle	types	types.html	module types		0
+nim	Session	types.html#Session	type Session		6
+nim	listenBrainzService	types.html#listenBrainzService	Service.listenBrainzService		12
+nim	lastFmService	types.html#lastFmService	Service.lastFmService		12
+nim	Service	types.html#Service	enum Service		12
+nim	User	types.html#User	type User		19
+nim	Listen	types.html#Listen	object Listen		32
+nim	newSession	types.html#newSession,cstring,seq[cstring]	proc newSession(id: cstring = "session"; users: seq[cstring] = @[];\n           mirror = none(cstring)): Session		42
+nim	genId	types.html#genId,cstring,Service	proc genId(username: cstring; service: Service): cstring		51
+nim	newUser	types.html#newUser,cstring,Service,cstring,cstring,int,seq[Listen]	proc newUser(username: cstring; service: Service; token, sessionKey: cstring = "";\n        lastUpdateTs = 0; playingNow = none(Listen);\n        listenHistory: seq[Listen] = @[]): User		57
+nim	`==`	types.html#==,User,User	proc `==`(a, b: User): bool		77
+nim	newListen	types.html#newListen,cstring,cstring	proc newListen(trackName, artistName: cstring;\n          releaseName, recordingMbid, releaseMbid = none(cstring);\n          artistMbids = none(seq[cstring]); trackNumber = none(int);\n          listenedAt = none(int); mirrored, preMirror = none(bool)): Listen		79
+nim	`==`	types.html#==,Listen,Listen	proc `==`(a, b: Listen): bool		98
+nimgrp	==	types.html#==-procs-all	proc		77
