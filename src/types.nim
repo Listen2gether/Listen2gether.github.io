@@ -1,40 +1,69 @@
+when defined(js):
+  import pkg/jsutils
 import std/options
 
 type
+  Session* = ref object
+    ## Stores session state, including a `seq` of user IDs, and optionally a mirror user ID.
+    id*: cstring
+    users*: seq[cstring]
+    mirror*: Option[cstring]
+
   Service* = enum
+    ## Stores the service that the user belongs to:
+    ##  - `listenBrainzService`: user of the ListenBrainz service
+    ##  - `lastFmService`: user of the Last.FM service
     listenBrainzService = "listenbrainz",
     lastFmService = "lastfm"
 
   User* = ref object
-    userId*, username*: cstring
+    ## Stores the user information including the api keys for the service it belongs to.
+    ##  - `lastUpdateTs`: stores the last listen timestamp.
+    id*, username*: cstring
     case service*: Service
     of listenBrainzService:
       token*: cstring
     of lastFmService:
       sessionKey*: cstring
     lastUpdateTs*: int
-    selected*: bool
     playingNow*: Option[Listen]
     listenHistory*: seq[Listen]
 
   Listen* = object
+    ## A normalised listen object.
+    ##  - `mirrored`: stores the state of whether a listen to be mirrored has been submitted.
+    ##  - `preMirror`: stores the state of whether a listen was submitted within a mirroring session.
     trackName*, artistName*: cstring
     releaseName*, recordingMbid*, releaseMbid*: Option[cstring]
     artistMbids*: Option[seq[cstring]]
     trackNumber*, listenedAt*: Option[int]
     mirrored*, preMirror*: Option[bool]
 
+func newSession*(
+  id: cstring = "session",
+  users: seq[cstring] = @[],
+  mirror = none(cstring)): Session =
+  result = Session()
+  result.id = id
+  result.users = users
+  result.mirror = mirror
+
+func genId*(username: cstring, service: Service): cstring =
+  when defined(js):
+    return cstring($service) & ":" & username
+  else:
+    return cstring($service & ":" & $username)
+
 func newUser*(
   username: cstring,
   service: Service,
   token, sessionKey: cstring = "",
-  lastUpdateTs: int = 0,
-  selected: bool = false,
-  playingNow: Option[Listen] = none(Listen),
+  lastUpdateTs = 0,
+  playingNow = none(Listen),
   listenHistory: seq[Listen] = @[]): User =
   ## Create new User object
   result = User(service: service)
-  result.userId = cstring($service & ":" & $username)
+  result.id = genId(username, service)
   result.username = username
   case service:
   of listenBrainzService:
@@ -42,19 +71,18 @@ func newUser*(
   of lastFmService:
     result.sessionKey = sessionKey
   result.lastUpdateTs = lastUpdateTs
-  result.selected = selected
   result.playingNow = playingNow
   result.listenHistory = listenHistory
 
-func `==`*(a, b: User): bool = a.userId == b.userId
+func `==`*(a, b: User): bool = a.id == b.id
 
 func newListen*(
   trackName, artistName: cstring,
-  releaseName, recordingMbid, releaseMbid: Option[cstring] = none(cstring),
-  artistMbids: Option[seq[cstring]] = none(seq[cstring]),
-  trackNumber: Option[int] = none(int),
-  listenedAt: Option[int] = none(int),
-  mirrored, preMirror: Option[bool] = none(bool)): Listen =
+  releaseName, recordingMbid, releaseMbid = none(cstring),
+  artistMbids = none(seq[cstring]),
+  trackNumber = none(int),
+  listenedAt = none(int),
+  mirrored, preMirror = none(bool)): Listen =
   ## Create new Listen object
   result.trackName = trackName
   result.artistName = artistName

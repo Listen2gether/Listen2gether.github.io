@@ -1,5 +1,7 @@
 when defined(js):
-  import std/jsconsole
+  import
+    std/jsconsole,
+    pkg/jsutils
 import
   std/[options, strutils],
   pkg/union,
@@ -62,6 +64,7 @@ func to*(val: Option[cstring]): Option[string] =
   if isSome val:
     if get(val) != cstring "":
       result = some $get(val)
+
 
 proc log*(msg: string) =
   ## Log messages to the JS console or stdout

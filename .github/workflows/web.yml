@@ -1,10 +1,11 @@
 name: Web Deployment
 on:
   push:
-    tags:
-       - '*'
-
-  workflow_dispatch:
+    paths:
+      - ".github/workflows/**"
+      - "src/**"
+      - "public/**"
+      - "listen2gether.nimble"
 
 jobs:
   deploy:
@@ -27,7 +28,7 @@ jobs:
         run: npm install -g sass uglify-js html-minifier
 
       - name: Install
-        run: nimble --silent install -d:js -y
+        run: nimble install -d:js -y
 
       - name: Compile Sass
         run: nimble sass
@@ -35,11 +36,14 @@ jobs:
       - name: Compile JS
         run: nimble buildjs
 
-      - name: Minify
-        run: nimble minify
+      - name: Minify JS
+        run: uglifyjs public/js/app.js -c -o public/js/app.js
+
+      - name: Minify HTML
+        run: html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html
 
       - name: Create /mirror path
-        run: nimble prep
+        run: cp public/index.html public/mirror.html
 
       - name: Generate docs
         run: nimble docs

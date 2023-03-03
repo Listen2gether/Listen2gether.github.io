@@ -38,7 +38,7 @@ proc to(tracks: seq[Listen], toMirror = false): seq[APIListen] =
     else:
       result.add to track
 
-proc to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): Listen =
+proc to(listen: APIListen, preMirror, mirrored = none(bool)): Listen =
   ## Convert an `APIListen` object to a `Listen` object.
   result = newListen(trackName = cstring listen.trackMetadata.trackName,
                     artistName = cstring listen.trackMetadata.artistName,
@@ -51,7 +51,7 @@ proc to(listen: APIListen, preMirror, mirrored: Option[bool] = none(bool)): List
                     preMirror = preMirror,
                     mirrored = mirrored)
 
-proc to(listens: seq[APIListen], preMirror, mirrored: Option[bool] = none(bool)): seq[Listen] =
+proc to(listens: seq[APIListen], preMirror, mirrored = none(bool)): seq[Listen] =
   ## Convert a sequence of `APIListen` objects to a sequence of `Listen` objects
   for listen in listens:
     result.add to(listen, preMirror, mirrored)
@@ -81,11 +81,11 @@ proc getRecentTracks(lb: AsyncListenBrainz, username: cstring, preMirror: bool, 
   except HttpRequestError:
     logError("There was a problem getting $#'s listens!" % $username)
 
-proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = "", selected = false): Future[User] {.async.} =
+proc initUser*(lb: AsyncListenBrainz, username: cstring, token: cstring = ""): Future[User] {.async.} =
   ## Gets a given ListenBrainz user's now playing, recent tracks, and latest listen timestamp.
   ## Returns a `User` object
   let username = cstring toLower($username)
-  var user = newUser(username, Service.listenBrainzService, token, selected = selected)
+  var user = newUser(username, Service.listenBrainzService, token)
   user.lastUpdateTs = int toUnix getTime()
   user.playingNow = await lb.getNowPlaying(username, preMirror = true)
   user.listenHistory = await lb.getRecentTracks(username, preMirror = true)

@@ -1,3 +1,7 @@
+## Home view module
+## Manages the home view for the web app, onboarding users to the mirror page.
+##
+
 {.experimental: "overloadableEnums".}
 
 import
@@ -10,62 +14,99 @@ import
   pkg/lastfm/auth,
   sources/[lb, lfm, utils],
   views/share,
-  types
+  types, db
 
 type
   OnboardView* = enum
+    ## Stores the state for the onboarding modal:
+    ##  - `initialise`: a new session is being initialised or an existing one is being restored.
+    ##  - `onboard`: a new session is being onboarded.
+    ##  - `loading`: the user is being transferred to the mirror page.
     initialise, onboard, loading
-  ModalView = enum
-    newUser, returningUser
+  UserView = enum
+    ## Stores the state for the user modal:
+    ##  - `newUser`: a new user is being selected.
+    ##  - `existing`: an existing user is selected.
+    newUser, existing
   ServiceView = enum
+    ## Stores the state for the service selection view:
+    ##  - `selection`: all services are shown to be chosen from.
+    ##  - `loading`: a service is loading something, such as a token.
+    ##  - `listenBrainzService`: the ListenBrainz service authentication modal will be shown.
+    ##  - `lastFmService`: the Last.fm service authentication modal will be shown.
     selection, loading, listenBrainzService, lastFmService
   LastFmAuthView = enum
+    ## Stores the state for the Last.fm authentication view:
+    ##  - `signin`: The user is provided a link to sign-in on Last.fm.
+    ##  - `authorise`: The user is provided with a button to authorise the session.
     signin, authorise
   LastFMSessionView = enum
-    loading, success, retry
+    ## Stores the state for the Last.fm authentication view at the final step of retrieving the authenticated session:
+    ##  - `loading`: The session is being authorised.
+    ##  - `success`: The session has been authorised.
+    ##  - `fail`: The session has not been authorised.
+    loading, success, fail
 
 var
   onboardView* = OnboardView.initialise
-  loginView = ModalView.newUser
+  authView = UserView.newUser
   serviceView = ServiceView.selection
   lastFmAuthView = LastFmAuthView.signin
   lastFMSessionView = LastFMSessionView.loading
-  mirrorUserView = ModalView.newUser
+  mirrorUserView = UserView.newUser
   fmToken: string
   fmEventListener, fmSigninClick, fmAway: bool = false
 
-proc getUsers(db: IndexedDB, view: var ModalView, storedUsers: var Table[cstring, User], dbStore: cstring) {.async.} =
-  ## Gets client users from IndexedDB, stores them in `storedClientUsers`, and sets the `OnboardView` if there are any existing users.
+proc restoreSession*(sess: Session) {.async.} =
+  ## Restores a given session by updating and initialising `users`
+  for id in sess.users:
+    try:
+      await updateOrInitUser(id, ms = 300000)
+    except:
+      let err = "Failed to restore user '" & $users[id].username & "'."
+      logError err
+  if sess.mirror.isSome():
+    let mirror = sess.mirror.get()
+    try:
+      await updateOrInitUser(mirror, ms = 300000)
+    except:
+      let err = "Failed to restore mirror user '" & $users[mirror].username & "'."
+      logError err
+
+proc getSessions(auth, mirror: var UserView) {.async.} =
+  ## Gets the app session from IndexedDB and stores, sets `UserView`s if there are existing app sessions.
   try:
-    let users = await db.getUsers(dbStore)
-    if users.len != 0:
-      storedUsers = users
-      view = ModalView.returningUser
+    users = await get[User](dbStore = USER_DB_STORE)
+    sessions = await get[Session](dbStore = SESSION_DB_STORE)
+    if sessions.len != 0:
+      await restoreSession(sessions[SESSION_ID])
+      if sessions[SESSION_ID].users.len != 0:
+        auth = UserView.existing
+      if sessions[SESSION_ID].mirror.isSome():
+        mirror = UserView.existing
     else:
-      view = ModalView.newUser
+      await updateOrInitSession()
+      auth = UserView.newUser
+      mirror = UserView.newUser
     redraw()
   except:
-    logError "Failed to get client users from IndexedDB."
+    logError "Failed to get sessions from IndexedDB."
 
-proc loadMirror(user: User) =
+proc loadMirror(username: cstring, service: Service) =
   ## Sets the window url and sends information to the mirror view.
-  let url: cstring = "/mirror?service=" & cstring($user.service) & "&username=" & user.username
+  let url: cstring = "/mirror?service=" & cstring($service) & "&username=" & username
   pushState(dom.window.history, 0, "", url)
   onboardView = OnboardView.loading
 
-proc validateMirror(username: cstring, service: Service) {.async.} =
+proc validateMirror(id: cstring) {.async.} =
   ## Validates and gets now playing for user.
-  var user = newUser(username, service, selected = true)
-  mirrorUsers[user.userId] = user
   try:
-    case service:
-    of Service.listenBrainzService:
-      user = await lbClient.initUser(username, selected = true)
-    of Service.lastFmService:
-      user = await fmClient.initUser(username, selected = true)
-    discard db.storeUser(user, mirrorUsers, mirrorUsersDbStore)
+    await updateOrInitUser(id)
+    sessions[SESSION_ID].mirror = some id
+    await updateOrInitSession(sessions[SESSION_ID])
     mirrorErrorMessage = ""
-    loadMirror(user)
+    let (id, service) = decodeUserId(id)
+    loadMirror(id, service)
   except:
     onboardView = OnboardView.initialise
     mirrorErrorMessage = "Please enter a valid user!"
@@ -73,34 +114,25 @@ proc validateMirror(username: cstring, service: Service) {.async.} =
 
 proc onMirrorClick(ev: Event; n: VNode) =
   ## Callback that routes to mirror view on mirror button click.
-  let
-    selectedClientIds = getSelectedIds(clientUsers)
-    selectedMirrorIds = getSelectedIds(mirrorUsers)
-  var
-    mirrorUsername: cstring = ""
-    mirrorService: Service
-
   case mirrorUserView:
-  of ModalView.newUser:
-    if selectedMirrorIds.len > 0:
-      mirrorUsers[selectedMirrorIds[0]].selected = false
-    mirrorUsername = getElementById("username-input").value
+  of UserView.newUser:
+    let mirrorUsername = getElementById("username-input").value
+    var mirrorService: Service
     if getElementById("service-switch").checked:
       mirrorService = Service.lastFmService
     else:
       mirrorService = Service.listenBrainzService
-    if mirrorUsername != "" and selectedClientIds.len > 0:
+    if mirrorUsername != "" and sessions[SESSION_ID].users.len > 0:
       mirrorErrorMessage = ""
-      discard validateMirror(mirrorUsername, mirrorService)
+      let id = genId(mirrorUsername, mirrorService)
+      discard validateMirror(id)
       onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
-  of ModalView.returningUser:
-    if selectedMirrorIds.len == 1 and mirrorUsers.hasKey(selectedMirrorIds[0]) and selectedClientIds.len > 0:
-      mirrorUsername = mirrorUsers[selectedMirrorIds[0]].username
-      mirrorService = mirrorUsers[selectedMirrorIds[0]].service
+  of UserView.existing:
+    if sessions[SESSION_ID].mirror.isSome and sessions[SESSION_ID].users.len > 0:
       mirrorErrorMessage = ""
-      discard validateMirror(mirrorUsername, mirrorService)
+      discard validateMirror(sessions[SESSION_ID].mirror.get())
       onboardView = OnboardView.loading
     else:
       mirrorErrorMessage = "Please choose a user!"
@@ -111,82 +143,64 @@ proc serviceToggle: Vnode =
     input(`type` = "checkbox", id = "service-switch", class = "toggle")
     span(id = "service-slider", class = "slider")
 
-proc validateLBToken(token: cstring, userId: cstring = "", newUser = true) {.async.} =
+proc validateLBToken(token: cstring, id: cstring = "", newUser = true) {.async.} =
   ## Validates a given ListenBrainz token and stores the user.
-  lbClient = newAsyncListenBrainz()
   let res = await lbClient.validateToken($token)
   if res.valid:
     clientErrorMessage = ""
-    lbClient = newAsyncListenBrainz($token)
-    let clientUser = await lbClient.initUser(cstring res.userName.get(), token = token, selected = true)
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
-    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
+    let id = genId(cstring(res.userName.get), Service.listenBrainzService)
+    await updateOrInitUser(id, token = token)
+    sessions[SESSION_ID].users.add(id)
+    await updateOrInitSession(sessions[SESSION_ID])
+    authView = UserView.existing
   else:
     if newUser:
       clientErrorMessage = "Please enter a valid token!"
     else:
       clientErrorMessage = "Token no longer valid!"
-      try:
-        discard db.delete(clientUsersDbStore, userId, dbOptions)
-      except:
-        clientUsers.del(userId)
-    redraw()
+      await delete(id, USER_DB_STORE)
   serviceView = ServiceView.selection
+  redraw()
 
 proc validateFMSession(user: User, newUser = true) {.async.} =
   ## Validates a given LastFM session key and stores the user.
   try:
-    let clientUser = await fmClient.initUser(user.username, user.sessionKey, selected = true)
     clientErrorMessage = ""
+    let id = genId(user.username, Service.lastFmService)
+    await updateOrInitUser(id, sessionKey = user.sessionKey)
     fmClient.sk = $user.sessionKey
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
-    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
   except:
     if newUser:
       clientErrorMessage = "Authorisation failed!"
     else:
       clientErrorMessage = "Session no longer valid!"
       # maybe? serviceView = ServiceView.selection
-      try:
-        discard db.delete(clientUsersDbStore, user.userId, dbOptions)
-      except:
-        clientUsers.del(user.userId)
+      await delete(user.id, USER_DB_STORE)
     redraw()
 
-proc renderUsers(storedUsers: var Table[cstring, User], userDbStore: cstring, mirror = false): Vnode =
-  ## Renders stored users, `mirror` should be true if rendering mirror users.
-  var
-    serviceIconId: cstring
-    buttonClass: cstring
-  result = buildHtml(tdiv(id = "stored-users")):
-    for userId, user in storedUsers.pairs:
-      buttonClass = "row"
-      if user.selected:
-        buttonClass = buttonClass & " selected"
-      button(id = userId, class = buttonClass, username = user.username, service = cstring $user.service):
-        serviceIconId = cstring $user.service & "-icon"
-        tdiv(id = serviceIconId, class = "service-icon")
-        text user.username
-        proc onclick(ev: Event; n: VNode) =
-          let userId = n.id
-          if storedUsers[userId].selected:
-            storedUsers[userId].selected = false
-            discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
-          else:
-            if mirror:
-              let selectedIds = getSelectedIds(mirrorUsers)
-              if selectedIds.len > 0:
-                storedUsers[selectedIds[0]].selected = false
-              storedUsers[userId].selected = true
-              discard db.storeUser(storedUsers[userId], storedUsers, userDbStore)
+proc renderUsers(session: Session, users: Table[cstring, User], renderMirror = false): Vnode =
+  ## Renders users from a `Session` object.
+  ## `renderMirror`: should be true if rendering mirror users.
+  result = buildHtml(tdiv(id = "previous-session")):
+    for id in session.users:
+      if users.hasKey(id):
+        let user = users[id]
+        button(id = user.id, class = "row selected", username = user.username, service = cstring $user.service):
+          tdiv(id = cstring $user.service & "-icon", class = "service-icon")
+          text user.username
+          proc onclick(ev: Event; n: VNode) =
+            if renderMirror:
+              if session.mirror.isSome():
+                session.mirror = none cstring
+              else:
+                session.mirror = some user.id
             else:
-              storedUsers[userId].selected = true
-              case storedUsers[userId].service
-              of Service.listenBrainzService:
-                serviceView = ServiceView.loading
-                discard validateLBToken(storedUsers[userId].token, storedUsers[userId].userId, newUser = false)
-              of Service.lastFmService:
-                discard validateFMSession(storedUsers[userId], newUser = false)
+              let id = n.id
+              if id in session.users:
+                session.users.delete(session.users.find(cstring id))
+              else:
+                session.users.add(cstring id)
+            discard updateOrInitSession(session)
 
 proc onLBTokenEnter(ev: Event; n: VNode) =
   ## Callback to validate a ListenBrainz token.
@@ -205,15 +219,13 @@ proc getLFMSession(fm: AsyncLastFM) {.async.} =
     fm.sk = resp.session.key
     clientErrorMessage = ""
     fmToken = ""
-    let clientUser = await fm.initUser(cstring resp.session.name, cstring resp.session.key)
-    discard db.storeUser(clientUser, clientUsers, clientUsersDbStore)
-    discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
+    await initUser(username = cstring resp.session.name, service = Service.lastFmService, sessionKey = cstring resp.session.key)
     lastFmSessionView = LastFmSessionView.success
     serviceView = ServiceView.selection
     lastFmSessionView = LastFmSessionView.loading
   except:
     clientErrorMessage = "Authorisation failed!"
-    lastFmSessionView = LastFmSessionView.retry
+    lastFmSessionView = LastFmSessionView.fail
     redraw()
 
 proc handleVisibilityChange(ev: Event) =
@@ -234,7 +246,7 @@ proc lastFmModal*: Vnode =
   result = buildHtml(tdiv(id = "lastfm-auth")):
     case lastFmAuthView:
     of LastFmAuthView.signin:
-      let link: cstring = "http://www.last.fm/api/auth/?api_key=" & cstring(fmClient.key) & "&token=" & cstring(fmToken)
+      let link: cstring = "http://www.last.fm/api/auth/?api_key=" & cstring(apiKey) & "&token=" & cstring(fmToken)
       a(id = "auth-button", target = "_blank", href = link, class = "row login-button"):
         text "Sign-in"
         proc onclick(ev: Event; n: VNode) =
@@ -246,13 +258,13 @@ proc lastFmModal*: Vnode =
           img(class = "lfm-auth-status", src = "/assets/spinner.svg")
         of LastFMSessionView.success:
           img(class = "lfm-auth-status", src = "/assets/mirrored.svg")
-        of LastFMSessionView.retry:
+        of LastFMSessionView.fail:
           img(class = "lfm-auth-status", src = "/assets/retry.svg")
         proc onclick(ev: Event; n: VNode) =
-          if lastFmSessionView == LastFMSessionView.retry:
+          if lastFmSessionView == LastFMSessionView.fail:
             discard fmClient.getLFMSession()
 
-proc returnButton*(loginView: var ModalView, serviceView: var ServiceView): Vnode =
+proc returnButton*(authView: var UserView, serviceView: var ServiceView): Vnode =
   ## Renders the return button.
   result = buildHtml(tdiv):
     button(id = "return", class = "row login-button"):
@@ -260,8 +272,8 @@ proc returnButton*(loginView: var ModalView, serviceView: var ServiceView): Vnod
         text "🔙"
       proc onclick(ev: Event; n: VNode) =
         serviceView = ServiceView.selection
-        if clientUsers.len > 0:
-          loginView = ModalView.returningUser
+        if users.len > 0:
+          authView = UserView.existing
 
 proc listenBrainzModal*: Vnode =
   ## Renders the ListenBrainz authorisation modal.
@@ -271,7 +283,7 @@ proc listenBrainzModal*: Vnode =
     tdiv(id = "button-modal"):
       button(id = "listenbrainz-token", class = "row login-button", onclick = onLBTokenEnter):
         text "🆗"
-      returnButton(loginView, serviceView)
+      returnButton(authView, serviceView)
 
 proc getLFMToken(fm: AsyncLastFM) {.async.} =
   ## Gets a Last.fm token to be authorised.
@@ -306,8 +318,8 @@ proc serviceModal*(view: var ServiceView): Vnode =
 
 proc loginModal: Vnode =
   result = buildHtml(tdiv):
-    case loginView:
-    of ModalView.newUser:
+    case authView:
+    of UserView.newUser:
       tdiv(id = "service-modal-container"):
         p(id = "modal-text", class = "body"):
           text "Login to your service:"
@@ -324,40 +336,38 @@ proc loginModal: Vnode =
         of ServiceView.lastFmService:
           errorModal clientErrorMessage
           lastFmModal()
-          returnButton(loginView, serviceView)
-    of ModalView.returningUser:
+          returnButton(authView, serviceView)
+    of UserView.existing:
       p(id = "modal-text", class = "body"):
         text "Welcome!"
       tdiv(id = "returning-user"):
         a(id = "link"):
           text "Add another account?"
           proc onclick(ev: Event; n: VNode) =
-            loginView = ModalView.newUser
-        renderUsers(clientUsers, clientUsersDbStore)
+            authView = UserView.newUser
+        renderUsers(sessions[SESSION_ID], users)
         errorModal clientErrorMessage
 
-proc mirrorUserModal(view: var ModalView): Vnode =
+proc mirrorUserModal(view: var UserView): Vnode =
   ## Renders the mirror user selection modal.
   result = buildHtml(tdiv(id = "mirror-modal")):
     case mirrorUserView:
-    of ModalView.newUser:
+    of UserView.newUser:
       p(id = "modal-text", class = "body"):
         text "Enter a username and select a service."
       tdiv(id = "username", class = "row textbox"):
         input(`type` = "text", class = "text-input", id = "username-input", placeholder = "Enter username to mirror", onkeyupenter = onMirrorClick)
         serviceToggle()
-    of ModalView.returningUser:
+    of UserView.existing:
       p(id = "modal-text", class = "body"):
         text "Select a user to mirror..."
       a(id = "link"):
         text "Add another account?"
         proc onclick(ev: Event; n: VNode) =
-          let selectedIds = getSelectedIds(mirrorUsers)
-          if selectedIds.len == 1:
-            mirrorUsers[selectedIds[0]].selected = false
-            discard db.storeUser(mirrorUsers[selectedIds[0]], mirrorUsers, mirrorUsersDbStore)
-          view = ModalView.newUser
-      renderUsers(mirrorUsers, mirrorUsersDbStore, mirror = true)
+          sessions[SESSION_ID].mirror = none cstring
+          discard updateOrInitSession(sessions[SESSION_ID])
+          view = UserView.newUser
+      renderUsers(sessions[SESSION_ID], users, renderMirror = true)
     errorModal(mirrorErrorMessage)
     button(id = "mirror-button", class = "row login-button", onclick = onMirrorClick):
       text "Start mirroring!"
@@ -367,19 +377,17 @@ proc onboardModal*(mirrorModal = true): Vnode =
   result = buildHtml(tdiv(class = "col signin-container")):
     case onboardView:
     of OnboardView.initialise:
-      discard db.getUsers(loginView, clientUsers, clientUsersDbStore)
-      if mirrorModal:
-        discard db.getUsers(mirrorUserView, mirrorUsers, mirrorUsersDbStore)
-      loadingModal "Loading users..."
+      discard getSessions(authView, mirrorUserView)
+      loadingModal "Restoring previous session..."
       onboardView = OnboardView.onboard
     of OnboardView.onboard:
       loginModal()
       if mirrorModal:
         mirrorUserModal(mirrorUserView)
     of OnboardView.loading:
-      let selectedIds = getSelectedIds(mirrorUsers)
-      if selectedIds.len > 0:
-        loadingModal "Loading " & mirrorUsers[selectedIds[0]].username & "'s listens..."
+      if sessions[SESSION_ID].mirror.isSome():
+        let (username, _) = decodeUserId(sessions[SESSION_ID].mirror.get)
+        loadingModal "Loading " & username & "'s listens..."
       else:
         loadingModal "Loading..."
 

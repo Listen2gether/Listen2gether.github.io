@@ -9,13 +9,14 @@ bin           = @["server"]
 
 
 # Dependencies
-requires "nim >= 1.5.1"
+requires "nim >= 1.7.1"
 when defined(c):
   requires "prologue"
 requires "nodejs"
 requires "https://gitlab.com/tandy1000/listenbrainz-nim#head"
 requires "https://gitlab.com/tandy1000/lastfm-nim#refactor"
 requires "jsony"
+requires "https://github.com/treeform/jsutils"
 requires "karax"
 
 task docs, "Generate docs":
@@ -29,12 +30,4 @@ task sass, "Generate CSS":
 
 task buildjs, "Compile JS":
   exec "mkdir -p public/js"
-  exec "nim -d:danger -o:public/js/client.js js src/client.nim"
-
-task minify, "Minify HTML & JS":
-  exec """html-minifier --collapse-whitespace --remove-optional-tags --remove-script-type-attributes \
-    --remove-tag-whitespace --use-short-doctype public/index.html -o public/index.html"""
-  exec "uglifyjs public/js/client.js -c -o public/js/client.js"
-
-task prep, "Prepare deployment":
-  exec "cp public/index.html public/mirror.html"
+  exec "nim -d:danger -o:public/js/app.js js src/app.nim"
